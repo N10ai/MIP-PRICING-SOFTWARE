@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIP Pricing Workspace</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+<style>
+body{background:#f3f6fb;color:#0f172a}.card{background:#fff;border:1px solid #e2e8f0;box-shadow:0 10px 30px rgba(15,23,42,.05)}.field{width:100%;border:1px solid #cbd5e1;border-radius:.75rem;padding:.75rem}.pill{border-radius:999px;padding:.25rem .6rem;font-size:.75rem;font-weight:600}
+</style>
+</head>
+<body>
+<div id="login" class="min-h-screen grid place-items-center p-4">
+<form id="authForm" class="card rounded-3xl p-7 w-full max-w-md">
+<p class="text-sm font-semibold text-blue-600">MIP Cargo Express</p>
+<h1 class="text-2xl font-semibold">Pricing Workspace</h1>
+<p class="text-sm text-slate-500 mt-2 mb-5">Sign in with your internal account.</p>
+<div class="space-y-3">
+<input id="email" class="field" type="email" required placeholder="Email">
+<input id="password" class="field" type="password" required placeholder="Password">
+<button class="w-full bg-blue-600 text-white rounded-xl py-3 font-semibold">Sign in</button>
+<p id="authMsg" class="text-sm text-red-600"></p>
+</div>
+</form>
+</div>
+<div id="app" class="hidden">
+<header class="bg-slate-950 text-white px-5 py-4 flex justify-between">
+<div><div class="text-xs text-blue-300">MIP Cargo Express</div><b>Pricing OS</b></div>
+<div class="flex gap-4 items-center"><a href="request.html" class="text-sm">Request form</a><button id="logout" class="text-sm bg-white/10 px-3 py-2 rounded-lg">Sign out</button></div>
+</header>
+<main class="max-w-7xl mx-auto p-5">
+<div class="flex justify-between items-center mb-5"><div><h1 class="text-3xl font-semibold">Request Queue</h1><p class="text-sm text-slate-500">Open a request and create a prefilled quote.</p></div><button id="refresh" class="bg-blue-600 text-white px-4 py-2 rounded-xl">Refresh</button></div>
+<div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5"></div>
+<div class="card rounded-2xl overflow-hidden">
+<div class="p-4 border-b flex gap-3"><input id="search" class="field" placeholder="Search"><select id="filter" class="field max-w-xs"><option value="">All statuses</option><option value="new">New</option><option value="reviewing">Reviewing</option><option value="vendor_rfq">Vendor RFQ</option><option value="pricing">Pricing</option><option value="ready_to_send">Ready</option><option value="sent">Sent</option></select></div>
+<div id="rows" class="divide-y"></div>
+</div>
+</main>
+<div id="modal" class="hidden fixed inset-0 bg-black/40 z-50 p-4"><div class="bg-white max-w-3xl ml-auto h-full rounded-2xl overflow-y-auto"><div class="sticky top-0 bg-white border-b p-4 flex justify-between"><div><small class="text-blue-600">REQUEST</small><h2 id="title" class="text-xl font-semibold"></h2></div><button id="close" class="text-2xl">×</button></div><div id="detail" class="p-5"></div></div></div>
+</div>
+<script src="pricing.js"></script>
+</body>
+</html>
