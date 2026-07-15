@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIP Cargo Express — Quote Request</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{background:radial-gradient(circle at 15% 10%,rgba(59,130,246,.18),transparent 28%),linear-gradient(180deg,#0f172a,#020617);min-height:100vh;color:#e5e7eb}.glass{background:rgba(255,255,255,.06);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.1)}.field{width:100%;border-radius:.75rem;padding:.8rem 1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);outline:none}.field:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.16)}select option{background:#0f172a}.hidden{display:none}
+</style>
+</head>
+<body class="p-4 md:p-8">
+<main class="max-w-5xl mx-auto">
+<header class="flex items-center justify-between mb-7">
+<div><p class="text-sm text-blue-300">MIP Cargo Express</p><h1 class="text-3xl font-semibold">Request a Freight Quote</h1><p class="text-sm text-slate-400 mt-1">Structured enough for accurate pricing. Fast enough to complete in minutes.</p></div>
+<a href="admin.html" class="text-xs text-slate-500 hover:text-white">Internal access</a>
+</header>
+<form id="requestForm" class="space-y-5">
+<section class="glass rounded-2xl p-5 md:p-6">
+<h2 class="font-semibold mb-4">Contact</h2>
+<div class="grid md:grid-cols-2 gap-3">
+<input class="field" name="company" placeholder="Company name">
+<input class="field" name="contactName" placeholder="Contact name">
+<input class="field" name="email" type="email" required placeholder="Email address *">
+<input class="field" name="phone" placeholder="Phone">
+<input class="field md:col-span-2" name="referenceNumber" placeholder="Customer reference / PO (optional)">
+</div>
+</section>
+<section class="glass rounded-2xl p-5 md:p-6">
+<h2 class="font-semibold mb-4">Shipment</h2>
+<div class="grid md:grid-cols-3 gap-3">
+<select class="field" id="mode" name="mode" required><option value="">Transport mode *</option><option value="air">Air</option><option value="ocean">Ocean</option><option value="ground">Ground</option></select>
+<select class="field" id="serviceType" name="serviceType"><option value="">Service type</option></select>
+<input class="field" name="cargoReadyDate" type="date">
+<input class="field" name="originSearch" required placeholder="Origin airport, port, city or ZIP *">
+<input class="field" name="destinationSearch" required placeholder="Destination airport, port, city or ZIP *">
+<input class="field" name="incoterm" placeholder="Incoterm (optional)">
+</div>
+<div class="flex flex-wrap gap-5 mt-4 text-sm"><label><input type="checkbox" id="isBonded"> Bonded</label><label><input type="checkbox" id="isFTZ"> FTZ</label><label><input type="checkbox" id="includeInland"> Include pickup/delivery</label></div>
+</section>
+<section class="glass rounded-2xl p-5 md:p-6">
+<div class="flex items-center justify-between mb-4"><h2 class="font-semibold">Cargo</h2><button type="button" id="addCargo" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl text-sm">+ Add cargo line</button></div>
+<div id="cargoLines" class="space-y-3"></div>
+<div id="totals" class="text-sm text-slate-300 mt-4"></div>
+</section>
+<section id="inlandSection" class="glass rounded-2xl p-5 md:p-6 hidden">
+<h2 class="font-semibold mb-4">Pickup and Delivery</h2>
+<div class="grid md:grid-cols-2 gap-4">
+<div><p class="text-sm text-blue-300 mb-2">Pickup</p><div class="space-y-2"><input class="field" id="pickupCompany" placeholder="Company"><input class="field" id="pickupAddress" placeholder="Address"><div class="grid grid-cols-2 gap-2"><input class="field" id="pickupCity" placeholder="City"><input class="field" id="pickupZip" placeholder="ZIP / postal"></div><input class="field" id="pickupContact" placeholder="Contact"><input class="field" id="pickupPhone" placeholder="Phone"></div></div>
+<div><p class="text-sm text-blue-300 mb-2">Delivery</p><div class="space-y-2"><input class="field" id="deliveryCompany" placeholder="Company"><input class="field" id="deliveryAddress" placeholder="Address"><div class="grid grid-cols-2 gap-2"><input class="field" id="deliveryCity" placeholder="City"><input class="field" id="deliveryZip" placeholder="ZIP / postal"></div><input class="field" id="deliveryContact" placeholder="Contact"><input class="field" id="deliveryPhone" placeholder="Phone"></div></div>
+</div>
+</section>
+<section class="glass rounded-2xl p-5 md:p-6"><textarea class="field min-h-28" name="specialInstructions" placeholder="Special instructions, commodity details, stackability, DG information, deadlines, or anything else we should know"></textarea></section>
+<button id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-semibold">Submit Quote Request</button>
+<div id="message" class="hidden rounded-2xl p-5 text-center"></div>
+</form>
+</main>
+<script>
+const FUNCTION_URL='https://cqsxqjakdnvgcpkqyadj.supabase.co/functions/v1/submit-quote-request';
+const API_KEY='sb_publishable_IYA4_sjs0ImzwNHCtBvvTQ_DyjcwQHe';
+const mode=document.getElementById('mode'),service=document.getElementById('serviceType'),cargoLines=document.getElementById('cargoLines');
+const services={air:[['airport','Airport to Airport'],['door','Door to Door']],ocean:[['lcl','LCL'],['fcl','FCL']],ground:[['ltl','LTL'],['ftl','FTL']]};
+mode.addEventListener('change',()=>{service.innerHTML='<option value="">Service type</option>';(services[mode.value]||[]).forEach(([v,t])=>service.insertAdjacentHTML('beforeend',`<option value="${v}">${t}</option>`));});
+document.getElementById('includeInland').addEventListener('change',e=>document.getElementById('inlandSection').classList.toggle('hidden',!e.target.checked));
+function addCargo(){const n=cargoLines.children.length+1;const row=document.createElement('div');row.className='cargo-row border border-white/10 rounded-xl p-4';row.innerHTML=`<div class="flex justify-between mb-3"><span class="text-sm text-blue-300">Cargo line ${n}</span><button type="button" class="remove text-red-300 text-sm">Remove</button></div><div class="grid md:grid-cols-4 gap-2"><input class="field commodity" placeholder="Commodity"><select class="field packaging"><option value="pallet">Pallet</option><option value="box">Box</option><option value="crate">Crate</option><option value="skid">Skid</option><option value="drum">Drum</option></select><input class="field qty" type="number" min="1" value="1" placeholder="Qty"><select class="field cargoType"><option value="general">General cargo</option><option value="dg">Dangerous goods</option><option value="oversized">Oversized</option><option value="overweight">Overweight</option></select><input class="field weight" type="number" min="0" step="any" placeholder="Weight each"><select class="field weightUnit"><option value="kg">kg</option><option value="lb">lb</option></select><input class="field length" type="number" min="0" step="any" placeholder="Length"><input class="field width" type="number" min="0" step="any" placeholder="Width"><input class="field height" type="number" min="0" step="any" placeholder="Height"><select class="field dimUnit"><option value="cm">cm</option><option value="in">in</option></select><label class="text-sm flex items-center gap-2 px-2"><input class="stackable" type="checkbox"> Stackable</label></div>`;row.querySelector('.remove').onclick=()=>{row.remove();calculate();};row.addEventListener('input',calculate);cargoLines.appendChild(row);calculate();}
+document.getElementById('addCargo').onclick=addCargo;addCargo();
+function cargoData(){return [...document.querySelectorAll('.cargo-row')].map(r=>({commodity:r.querySelector('.commodity').value,packagingType:r.querySelector('.packaging').value,cargoType:r.querySelector('.cargoType').value,qty:Number(r.querySelector('.qty').value)||0,weight:{value:Number(r.querySelector('.weight').value)||0,unit:r.querySelector('.weightUnit').value},dimensions:{length:{value:Number(r.querySelector('.length').value)||0,unit:r.querySelector('.dimUnit').value},width:{value:Number(r.querySelector('.width').value)||0,unit:r.querySelector('.dimUnit').value},height:{value:Number(r.querySelector('.height').value)||0,unit:r.querySelector('.dimUnit').value}},stackable:r.querySelector('.stackable').checked}));}
+function calculate(){let kg=0,cbm=0;cargoData().forEach(x=>{const w=x.weight.unit==='lb'?x.weight.value*.453592:x.weight.value;const f=x.dimensions.length.unit==='in'?2.54:1;kg+=w*x.qty;cbm+=(x.dimensions.length.value*f*x.dimensions.width.value*f*x.dimensions.height.value*f/1e6)*x.qty;});const airVol=cbm*167,charge=Math.max(kg,airVol);document.getElementById('totals').textContent=`Total weight: ${kg.toFixed(2)} kg • Volume: ${cbm.toFixed(3)} CBM${mode.value==='air'?` • Estimated chargeable: ${charge.toFixed(2)} kg`:''}`;return{weight:{kg:{value:+kg.toFixed(2),unit:'kg'}},volume:{cbm:{value:+cbm.toFixed(3),unit:'m3'}},chargeableWeight:{kg:{value:+charge.toFixed(2),unit:'kg'}}};}
+function stop(prefix){return{company:document.getElementById(prefix+'Company').value,address:document.getElementById(prefix+'Address').value,city:document.getElementById(prefix+'City').value,zip:document.getElementById(prefix+'Zip').value,contact:document.getElementById(prefix+'Contact').value,phone:document.getElementById(prefix+'Phone').value,country:'USA'};}
+document.getElementById('requestForm').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('submitBtn'),msg=document.getElementById('message');btn.disabled=true;btn.textContent='Submitting…';msg.classList.add('hidden');try{const fd=new FormData(e.target),payload=Object.fromEntries(fd.entries());payload.isBonded=document.getElementById('isBonded').checked;payload.isFTZ=document.getElementById('isFTZ').checked;payload.includeInland=document.getElementById('includeInland').checked;payload.cargo=cargoData();payload.totals=calculate();if(payload.includeInland){payload.pickup=stop('pickup');payload.delivery=stop('delivery');}const res=await fetch(FUNCTION_URL,{method:'POST',headers:{'Content-Type':'application/json','apikey':API_KEY},body:JSON.stringify(payload)});const data=await res.json();if(!res.ok)throw new Error(data.error||'Submission failed');msg.className='rounded-2xl p-5 text-center bg-emerald-500/15 border border-emerald-400/30';msg.innerHTML=`<div class="text-xl font-semibold text-emerald-300">Request received</div><div class="mt-2">Your reference is <strong>${data.requestNumber}</strong></div><div class="text-sm text-slate-400 mt-1">Our pricing team will review it shortly.</div>`;e.target.reset();cargoLines.innerHTML='';addCargo();document.getElementById('inlandSection').classList.add('hidden');}catch(err){msg.className='rounded-2xl p-5 text-center bg-red-500/15 border border-red-400/30';msg.textContent=err.message;}finally{msg.classList.remove('hidden');btn.disabled=false;btn.textContent='Submit Quote Request';}});
+</script>
+</body>
+</html>
