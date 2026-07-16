@@ -1,0 +1,9 @@
+.ui-button{border:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 16px;border-radius:var(--mip-radius-control);font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:transform var(--mip-fast),box-shadow var(--mip-fast),background var(--mip-fast)}
+.ui-button:active{transform:scale(.97)}
+.ui-button-primary{background:var(--mip-text);color:#fff;box-shadow:0 10px 24px rgba(15,23,42,.18)}
+.ui-button-secondary{background:var(--mip-surface-strong);color:#475569;border:1px solid #e2e8f0}
+.ui-button-ghost{background:transparent;color:#475569}
+.ui-button-danger{background:#fee2e2;color:#b91c1c}
+.ui-card{border-radius:var(--mip-radius-card)}
+.ui-empty .ui-button{margin-top:16px}
+:focus-visible{outline:3px solid rgba(37,99,235,.25);outline-offset:3px}
