@@ -16,6 +16,7 @@ import './rfq-composer.css'
 import './pricing-workspace.css'
 import './rfq-template-builder.css'
 import './template-field-editor.css'
+import './vendor-rate-workspace.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
