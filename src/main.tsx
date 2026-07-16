@@ -6,6 +6,7 @@ import './design-system/tokens.css'
 import './design-system/components.css'
 import './styles.css'
 import './premium.css'
+import './request-workspace.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
