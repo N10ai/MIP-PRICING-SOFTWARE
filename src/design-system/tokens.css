@@ -1,0 +1,25 @@
+:root{
+  --mip-bg:#edf3fb;
+  --mip-surface:rgba(255,255,255,.72);
+  --mip-surface-strong:rgba(255,255,255,.9);
+  --mip-border:rgba(255,255,255,.92);
+  --mip-text:#0f172a;
+  --mip-muted:#64748b;
+  --mip-blue:#2563eb;
+  --mip-violet:#7c3aed;
+  --mip-green:#059669;
+  --mip-amber:#d97706;
+  --mip-red:#dc2626;
+  --mip-radius-control:14px;
+  --mip-radius-card:27px;
+  --mip-radius-panel:30px;
+  --mip-shadow-card:0 20px 70px rgba(15,23,42,.09);
+  --mip-shadow-float:0 24px 80px rgba(15,23,42,.12);
+  --mip-blur:28px;
+  --mip-fast:160ms;
+  --mip-normal:240ms;
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
