@@ -27,10 +27,10 @@ body{background:#f3f6fb;color:#0f172a}.card{background:#fff;border:1px solid #e2
 <div id="app" class="hidden">
 <header class="bg-slate-950 text-white px-5 py-4 flex justify-between">
 <div><div class="text-xs text-blue-300">MIP Cargo Express</div><b>Pricing OS</b></div>
-<div class="flex gap-4 items-center"><a href="request.html" class="text-sm">Request form</a><button id="logout" class="text-sm bg-white/10 px-3 py-2 rounded-lg">Sign out</button></div>
+<div class="flex gap-4 items-center"><a href="pricing.html" class="text-sm font-semibold">Requests</a><a href="vendors.html" class="text-sm text-slate-300">Vendors</a><a href="request.html" class="text-sm text-slate-300">Request form</a><button id="logout" class="text-sm bg-white/10 px-3 py-2 rounded-lg">Sign out</button></div>
 </header>
 <main class="max-w-7xl mx-auto p-5">
-<div class="flex justify-between items-center mb-5"><div><h1 class="text-3xl font-semibold">Request Queue</h1><p class="text-sm text-slate-500">Open a request and create a prefilled quote.</p></div><button id="refresh" class="bg-blue-600 text-white px-4 py-2 rounded-xl">Refresh</button></div>
+<div class="flex justify-between items-center mb-5"><div><h1 class="text-3xl font-semibold">Request Queue</h1><p class="text-sm text-slate-500">Open a request, obtain vendor rates, and create a prefilled quote.</p></div><button id="refresh" class="bg-blue-600 text-white px-4 py-2 rounded-xl">Refresh</button></div>
 <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5"></div>
 <div class="card rounded-2xl overflow-hidden">
 <div class="p-4 border-b flex gap-3"><input id="search" class="field" placeholder="Search"><select id="filter" class="field max-w-xs"><option value="">All statuses</option><option value="new">New</option><option value="reviewing">Reviewing</option><option value="vendor_rfq">Vendor RFQ</option><option value="pricing">Pricing</option><option value="ready_to_send">Ready</option><option value="sent">Sent</option></select></div>
