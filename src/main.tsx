@@ -28,6 +28,7 @@ import './quote-management.css'
 import './quote-output-and-rate-basis.css'
 import './pricing-usability-fixes.css'
 import './quote-mobile-workspace.css'
+import './controlled-pricing-and-print.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
