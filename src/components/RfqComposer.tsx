@@ -1,0 +1,25 @@
+import { useEffect, useMemo, useState } from 'react'
+import { Check, Mail, Search, Send, Star, X } from 'lucide-react'
+import { supabase } from '../lib/supabase'
+import { Button } from './ui'
+import type { RequestSummary } from './RequestWorkspace'
+
+type Vendor={id:string;company:string;vendor_type:string|null;preferred:boolean|null;modes:string[]|null;general_email:string|null;vendor_contacts?:{id:string;name:string|null;email:string|null;is_primary:boolean|null}[]}
+
+const route=(r:RequestSummary)=>`${r.origin_code||r.origin_name||'Origin'} → ${r.destination_code||r.destination_name||'Destination'}`
+const ref=()=>`RFQ-${new Date().toISOString().replace(/[-:TZ.]/g,'').slice(0,12)}-${crypto.randomUUID().slice(0,4).toUpperCase()}`
+
+export function RfqComposer({request,onClose,onCreated}:{request:RequestSummary;onClose:()=>void;onCreated:()=>void}){
+ const[vendors,setVendors]=useState<Vendor[]>([]),[selected,setSelected]=useState<string[]>([]),[search,setSearch]=useState(''),[loading,setLoading]=useState(true),[sending,setSending]=useState(false),[message,setMessage]=useState('')
+ useEffect(()=>{supabase.from('vendors').select('id,company,vendor_type,preferred,modes,general_email,vendor_contacts(id,name,email,is_primary)').is('archived_at',null).eq('status','active').order('preferred',{ascending:false}).order('company').then(({data,error})=>{if(error)setMessage(error.message);setVendors((data||[]) as unknown as Vendor[]);setLoading(false)})},[])
+ const filtered=useMemo(()=>vendors.filter(v=>{const modeOk=!request.mode||!v.modes?.length||v.modes.includes(request.mode);const q=[v.company,v.vendor_type,v.general_email,...(v.vendor_contacts||[]).flatMap(c=>[c.name,c.email])].join(' ').toLowerCase();return modeOk&&q.includes(search.toLowerCase())}),[vendors,request.mode,search])
+ const contact=(v:Vendor)=>v.vendor_contacts?.find(c=>c.is_primary&&c.email)||v.vendor_contacts?.find(c=>c.email)
+ const toggle=(id:string)=>setSelected(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id])
+ const createRfqs=async()=>{setSending(true);setMessage('');try{const chosen=vendors.filter(v=>selected.includes(v.id));const rows=chosen.map(v=>{const c=contact(v);const number=ref();return{rfq_number:number,quote_request_id:request.id,vendor_id:v.id,vendor_contact_id:c?.id||null,status:'draft',sent_to:c?.email||v.general_email||null,subject:`Rate request ${number} | ${route(request)}`,message_body:`Hello ${c?.name||v.company},\n\nPlease provide your best rate and routing for the following shipment:\n\nReference: ${request.request_number}\nMode: ${request.mode||'Freight'} ${request.service_type||''}\nRoute: ${route(request)}\nCustomer target: ${request.target_rate_amount?`${request.target_rate_currency||'USD'} ${request.target_rate_amount} ${request.target_rate_basis||''}`:'Not provided'}\n\nPlease include rate validity, transit time, routing, minimums, surcharges, and capacity.\n\nThank you,\nMIP Cargo Express`}})
+  const{error}=await supabase.from('vendor_rfqs').insert(rows);if(error)throw error
+  await supabase.from('quote_requests').update({status:'vendor_rfq',last_activity_at:new Date().toISOString()}).eq('id',request.id)
+  await supabase.from('commercial_activities').insert({quote_request_id:request.id,activity_type:'vendor_rfq_created',title:`${rows.length} vendor RFQ${rows.length===1?'':'s'} created`,description:`Draft rate requests prepared for ${chosen.map(v=>v.company).join(', ')}.`,actor_name:'Pricing Team',metadata:{vendor_ids:selected}})
+  onCreated();onClose()
+ }catch(e){setMessage(e instanceof Error?e.message:'Unable to create RFQs')}finally{setSending(false)}}
+ return <div className="rfq-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside className="rfq-composer"><header><div><small>VENDOR RATE REQUEST</small><h2>{route(request)}</h2><p>Select providers and create tracked draft RFQs.</p></div><button onClick={onClose}><X size={20}/></button></header><div className="rfq-search"><Search size={17}/><input placeholder="Search vendors or contacts" value={search} onChange={e=>setSearch(e.target.value)}/></div><div className="rfq-vendor-list">{loading?<p>Loading vendors…</p>:filtered.map(v=>{const c=contact(v);const active=selected.includes(v.id);return <button key={v.id} className={active?'selected':''} onClick={()=>toggle(v.id)}><i>{active?<Check size={15}/>:null}</i><div><b>{v.company}</b><span>{v.vendor_type||'Provider'} · {c?.email||v.general_email||'No email saved'}</span><small>{v.modes?.join(' · ')||'All modes'}</small></div>{v.preferred&&<Star size={16}/>}</button>})}</div>{message&&<div className="rfq-message">{message}</div>}<footer><span>{selected.length} selected</span><Button variant="secondary" onClick={onClose}>Cancel</Button><Button disabled={!selected.length||sending} onClick={createRfqs}>{sending?<Mail size={16}/>:<Send size={16}/>} {sending?'Creating…':`Create ${selected.length||''} RFQ${selected.length===1?'':'s'}`}</Button></footer></aside></div>
+}
