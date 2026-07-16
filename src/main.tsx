@@ -26,6 +26,7 @@ import './quote-workspace-layout-fix.css'
 import './workspace-stability.css'
 import './quote-management.css'
 import './quote-output-and-rate-basis.css'
+import './pricing-usability-fixes.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
