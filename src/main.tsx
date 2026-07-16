@@ -7,6 +7,7 @@ import './design-system/components.css'
 import './styles.css'
 import './premium.css'
 import './request-workspace.css'
+import './vendor-workspace.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
