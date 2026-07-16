@@ -12,6 +12,7 @@ import './vendor-workspace.css'
 import './public-portal.css'
 import './stability-fixes.css'
 import './rfq-composer.css'
+import './pricing-workspace.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
