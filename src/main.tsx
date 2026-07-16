@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { AppEnhancements } from './components/AppEnhancements'
+import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
 import './styles.css'
@@ -18,12 +19,15 @@ import './pricing-workspace.css'
 import './rfq-template-builder.css'
 import './template-field-editor.css'
 import './vendor-rate-workspace.css'
+import './auth-gate.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
-      <AppEnhancements />
-      <App />
+      <AuthGate>
+        <AppEnhancements />
+        <App />
+      </AuthGate>
     </HashRouter>
   </React.StrictMode>,
 )
