@@ -14,6 +14,7 @@ import './stability-fixes.css'
 import './rfq-composer.css'
 import './pricing-workspace.css'
 import './rfq-template-builder.css'
+import './template-field-editor.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
