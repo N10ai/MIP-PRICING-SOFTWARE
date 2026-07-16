@@ -19,6 +19,7 @@ import './pricing-workspace.css'
 import './rfq-template-builder.css'
 import './template-field-editor.css'
 import './vendor-rate-workspace.css'
+import './quote-workspace.css'
 import './auth-gate.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
