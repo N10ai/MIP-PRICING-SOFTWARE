@@ -23,6 +23,7 @@ import './quote-workspace.css'
 import './quote-workspace-v2.css'
 import './auth-gate.css'
 import './quote-workspace-layout-fix.css'
+import './workspace-stability.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
