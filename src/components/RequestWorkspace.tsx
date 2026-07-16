@@ -1,0 +1,40 @@
+import { ArrowRight, Box, Clock3, FileText, MapPin, Plane, Ship, Truck, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
+import { Button, StatusBadge } from './ui'
+
+export type RequestSummary={id:string;request_number:string;customer_company:string|null;contact_name:string|null;contact_email:string;contact_phone?:string|null;mode:string|null;service_type:string|null;origin_code:string|null;origin_name:string|null;destination_code:string|null;destination_name:string|null;status:string;submitted_at:string;special_instructions?:string|null;customer_reference?:string|null}
+type Cargo={id:string;quantity:number;packaging_type:string|null;commodity:string|null;weight_value:number|null;weight_unit:string|null;length_value:number|null;width_value:number|null;height_value:number|null;dimension_unit:string|null;stackable:boolean|null;dangerous_goods:boolean|null}
+type Stop={id:string;stop_type:string;company_name:string|null;address_line_1:string|null;city:string|null;state_region:string|null;postal_code:string|null;country:string|null;contact_name:string|null;contact_phone:string|null}
+type Activity={id:string;title:string;description:string|null;created_at:string}
+type Rfq={id:string;rfq_number:string;status:string;sent_to:string|null;vendors?:{company?:string}|null}
+type Quote={id:string;quote_number:string}
+
+const modeIcon=(mode:string|null)=>mode==='air'?<Plane size={18}/>:mode==='ocean'?<Ship size={18}/>:<Truck size={18}/>
+const route=(r:RequestSummary)=>`${r.origin_code||r.origin_name||'—'} → ${r.destination_code||r.destination_name||'—'}`
+
+export function RequestWorkspace({request,onClose}:{request:RequestSummary|null;onClose:()=>void}){
+ const[loading,setLoading]=useState(false);const[cargo,setCargo]=useState<Cargo[]>([]);const[stops,setStops]=useState<Stop[]>([]);const[activities,setActivities]=useState<Activity[]>([]);const[rfqs,setRfqs]=useState<Rfq[]>([]);const[quote,setQuote]=useState<Quote|null>(null)
+ useEffect(()=>{if(!request)return;setLoading(true);Promise.all([
+  supabase.from('quote_request_cargo').select('*').eq('quote_request_id',request.id).order('line_number'),
+  supabase.from('quote_request_stops').select('*').eq('quote_request_id',request.id).order('sequence'),
+  supabase.from('commercial_activities').select('*').eq('quote_request_id',request.id).order('created_at',{ascending:false}),
+  supabase.from('vendor_rfqs').select('id,rfq_number,status,sent_to,vendors(company)').eq('quote_request_id',request.id).order('created_at',{ascending:false}),
+  supabase.from('quotes').select('id,quote_number').eq('quote_request_id',request.id).order('version_number',{ascending:false}).limit(1).maybeSingle(),
+ ]).then(([c,s,a,r,q])=>{setCargo((c.data||[]) as Cargo[]);setStops((s.data||[]) as Stop[]);setActivities((a.data||[]) as Activity[]);setRfqs((r.data||[]) as unknown as Rfq[]);setQuote((q.data||null) as Quote|null);setLoading(false)})},[request])
+ if(!request)return null
+ const legacy=(file:string,query:string)=>`${import.meta.env.BASE_URL}${file}?${query}`
+ return <div className="request-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><aside className="request-drawer">
+  <header className="drawer-head"><div className="drawer-title"><span className="mode-mark">{modeIcon(request.mode)}</span><div><small>{request.request_number}</small><h2>{route(request)}</h2><p>{request.customer_company||request.contact_name||'Guest request'} · {request.mode||'Freight'} {request.service_type||''}</p></div></div><button className="drawer-close" onClick={onClose}><X size={20}/></button></header>
+  <div className="drawer-status"><StatusBadge status={request.status}/><span><Clock3 size={14}/>{new Date(request.submitted_at).toLocaleString()}</span></div>
+  <nav className="drawer-tabs"><a href="#overview">Overview</a><a href="#cargo">Cargo</a><a href="#rfqs">Vendor RFQs</a><a href="#timeline">Timeline</a></nav>
+  <div className="drawer-body">{loading?<div className="drawer-loading">Loading request workspace…</div>:<>
+   <section id="overview" className="workspace-section"><div className="section-label">SHIPMENT OVERVIEW</div><div className="detail-grid"><article><span>Customer</span><b>{request.customer_company||'—'}</b><small>{request.contact_name||''}<br/>{request.contact_email}</small></article><article><span>Route</span><b>{route(request)}</b><small>{request.mode||'Freight'} · {request.service_type||'Service pending'}</small></article><article><span>Reference</span><b>{request.customer_reference||'Not provided'}</b><small>Customer reference</small></article><article><span>Instructions</span><b>{request.special_instructions||'No special instructions'}</b></article></div></section>
+   <section className="workspace-section"><div className="section-label">SERVICE STOPS</div>{stops.length?<div className="stop-flow">{stops.map((s,i)=><article className="stop-card" key={s.id}><div className="stop-index">{i+1}</div><div><span>{s.stop_type}</span><b>{s.company_name||[s.city,s.state_region].filter(Boolean).join(', ')||'Location'}</b><small>{[s.address_line_1,s.city,s.state_region,s.postal_code,s.country].filter(Boolean).join(', ')}</small></div>{i<stops.length-1&&<ArrowRight size={16}/>}</article>)}</div>:<div className="soft-empty"><MapPin size={20}/>No pickup or delivery stops were added.</div>}</section>
+   <section id="cargo" className="workspace-section"><div className="section-label">CARGO</div>{cargo.length?<div className="cargo-grid">{cargo.map(line=><article className="cargo-card" key={line.id}><div className="cargo-icon"><Box size={19}/></div><div><b>{line.quantity||1} {line.packaging_type||'piece(s)'}</b><p>{line.commodity||'Cargo'}</p><small>{line.weight_value||0} {line.weight_unit||'kg'} · {line.length_value||0}×{line.width_value||0}×{line.height_value||0} {line.dimension_unit||'cm'}</small><div className="cargo-flags">{line.stackable===false&&<em>Non-stackable</em>}{line.dangerous_goods&&<em>Dangerous goods</em>}</div></div></article>)}</div>:<div className="soft-empty"><Box size={20}/>No cargo lines found.</div>}</section>
+   <section id="rfqs" className="workspace-section"><div className="section-label">VENDOR RFQS</div>{rfqs.length?<div className="rfq-grid">{rfqs.map(r=><article className="rfq-card" key={r.id}><div><b>{r.vendors?.company||'Vendor'}</b><small>{r.rfq_number}</small></div><StatusBadge status={r.status}/></article>)}</div>:<div className="soft-empty"><FileText size={20}/>No vendor rate requests yet.</div>}</section>
+   <section id="timeline" className="workspace-section"><div className="section-label">ACTIVITY TIMELINE</div>{activities.length?<div className="timeline">{activities.map(a=><article key={a.id}><i/><div><b>{a.title}</b><p>{a.description||''}</p><small>{new Date(a.created_at).toLocaleString()}</small></div></article>)}</div>:<div className="soft-empty"><Clock3 size={20}/>No activity yet.</div>}</section>
+  </>}</div>
+  <footer className="drawer-actions"><Button variant="secondary" onClick={()=>location.href=legacy('rfq.html',`request=${request.id}`)}>Request vendor rates</Button><Button onClick={()=>location.href=quote?legacy('quote-workspace.html',`id=${quote.id}`):legacy('pricing.html','')}>{quote?`Open ${quote.quote_number}`:'Create quote'}</Button></footer>
+ </aside></div>
+}
