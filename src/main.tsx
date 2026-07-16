@@ -8,6 +8,7 @@ import './styles.css'
 import './premium.css'
 import './request-workspace.css'
 import './vendor-workspace.css'
+import './public-portal.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
