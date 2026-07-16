@@ -1,0 +1,30 @@
+/* MIP Pricing OS — visible premium shell pass */
+.app-bg{background:radial-gradient(circle at 75% 4%,rgba(37,99,235,.22),transparent 28%),radial-gradient(circle at 20% 90%,rgba(124,58,237,.14),transparent 26%),linear-gradient(145deg,#e9f1ff 0%,#f8fbff 44%,#eef2ff 100%)}
+.orb.one{width:520px;height:520px;background:rgba(96,165,250,.18);filter:blur(18px)}
+.orb.two{width:460px;height:460px;background:rgba(139,92,246,.13);filter:blur(24px)}
+.sidebar{background:linear-gradient(165deg,rgba(7,18,40,.97),rgba(17,31,65,.94));border:1px solid rgba(255,255,255,.14);box-shadow:0 30px 90px rgba(15,23,42,.28);color:#fff}
+.brand{padding:8px 7px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brand img{width:47px;height:47px;padding:6px;border-radius:15px;background:rgba(255,255,255,.95);box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.brand b{font-size:15px;color:#fff;letter-spacing:-.02em}.brand span{color:#91a4c7}
+.sidebar nav{margin-top:22px}.sidebar nav a{color:#9fb0ce;padding:12px 13px;border:1px solid transparent;transition:.2s ease}
+.sidebar nav a:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(2px)}
+.sidebar nav a.active{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;border-color:rgba(255,255,255,.2);box-shadow:0 16px 35px rgba(37,99,235,.35)}
+.sidebar footer{border-color:rgba(255,255,255,.1)}.sidebar footer b{color:#fff}.sidebar footer span{color:#91a4c7}
+.topbar{background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.95);box-shadow:0 16px 55px rgba(30,64,175,.1)}
+.global-search{background:rgba(241,245,249,.82);border:1px solid rgba(203,213,225,.7)}
+.hero{position:relative;padding:30px 32px;border-radius:31px;background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(30,64,175,.94) 62%,rgba(79,70,229,.9));box-shadow:0 28px 80px rgba(30,64,175,.24);overflow:hidden;color:#fff;align-items:center}
+.hero:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;right:-80px;top:-130px;background:rgba(255,255,255,.12);filter:blur(2px)}
+.hero>div,.hero>button{position:relative;z-index:1}.hero .eyebrow{color:#a5c8ff}.hero h1{color:#fff}.hero p:not(.eyebrow){color:#dbeafe}.hero .primary{background:#fff;color:#0f172a;box-shadow:0 15px 35px rgba(0,0,0,.22)}
+.stats{margin-top:-3px;gap:15px}.stat{position:relative;padding:22px 22px 20px;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}.stat:hover{transform:translateY(-4px);box-shadow:0 28px 75px rgba(30,64,175,.14)}
+.stat:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(#2563eb,#7c3aed)}
+.stat strong{font-size:38px;color:#0f172a}.stat small{color:#94a3b8}
+.glass{background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.98);box-shadow:0 22px 75px rgba(30,64,175,.1)}
+.grid-two>.glass:first-child{overflow:hidden}.focus{background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(238,242,255,.92))}
+.focus-item{padding:12px;border-radius:16px;background:rgba(255,255,255,.7);border:1px solid rgba(226,232,240,.8)}
+.request-list{padding:8px 12px 14px}.request-row{margin:6px 0;padding:16px;border:1px solid rgba(226,232,240,.8);background:rgba(255,255,255,.58);transition:.2s ease}
+.request-row:hover{background:#fff;transform:translateY(-2px);box-shadow:0 14px 32px rgba(30,64,175,.1)}
+.section-head{padding:24px 24px 14px}.section-head h2,.focus h2{font-size:21px;letter-spacing:-.02em}
+.primary{background:linear-gradient(135deg,#2563eb,#4f46e5);box-shadow:0 12px 28px rgba(37,99,235,.28);transition:.18s ease}.primary:hover{transform:translateY(-1px);box-shadow:0 16px 34px rgba(37,99,235,.34)}
+.workspace{padding-top:108px}
+@media(max-width:1023px){.hero{padding:25px}.topbar{background:rgba(255,255,255,.86)}.bottom-nav{background:rgba(8,19,43,.9);border-color:rgba(255,255,255,.18)}.bottom-nav a,.bottom-nav button{color:#94a3b8}.bottom-nav a.active{color:#fff}}
+@media(max-width:640px){.hero{border-radius:25px;padding:23px 20px}.hero h1{font-size:35px}.stat strong{font-size:32px}}
