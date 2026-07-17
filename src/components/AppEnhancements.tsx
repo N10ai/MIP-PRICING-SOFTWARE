@@ -2,7 +2,8 @@ import {useEffect} from 'react'
 import {loadFreightLocations,freightLocations} from '../data/locations'
 import {supabase} from '../lib/supabase'
 
-const commercialLists={
+type ListKey='incoterms'|'services'|'commodities'|'packages'|'frequencies'|'transit'|'payment'|'vendorTypes'
+const commercialLists:Record<ListKey,string[]>={
  incoterms:['EXW','FCA','FAS','FOB','CFR','CIF','CPT','CIP','DAP','DPU','DDP'],
  services:['Airport to Airport','Door to Airport','Airport to Door','Door to Door','Air Express','Air Charter','Ocean LCL','Ocean FCL','Ocean Breakbulk','Ocean RoRo','Ground LTL','Ground FTL','Drayage','Pickup','Delivery','Customs Clearance','Bonded Transportation','FTZ Handling','Warehousing','Cross-dock','Cargo Insurance','Packing / Crating'],
  commodities:['General Cargo','Commercial Goods','Machinery','Electronics','Furniture','Auto Parts','Textiles','Food Products','Pharmaceuticals','Cosmetics','Trade Show Materials','Household Goods','Dangerous Goods','Lithium Batteries','Perishables','Oversized Cargo'],
@@ -11,55 +12,40 @@ const commercialLists={
  transit:['Same day','1 day','1–2 days','2–3 days','3–5 days','5–7 days','7–10 days','10–14 days','To be confirmed'],
  payment:['Prepaid','Collect','Due on receipt','Net 7','Net 15','Net 30','Net 45','Net 60'],
  vendorTypes:['Airline','GSA','Air Cargo Agent','NVOCC','Ocean Carrier','Co-loader','Trucker','Drayage Carrier','Customs Broker','Warehouse / CFS','Courier','Overseas Agent','Other Service Provider']
-} as const
-
+}
+const listTitles:Record<ListKey,string>={incoterms:'Select Incoterm',services:'Select service type',commodities:'Select commodity',packages:'Select package type',frequencies:'Select frequency',transit:'Select transit time',payment:'Select payment terms',vendorTypes:'Select vendor type'}
 const setNativeValue=(element:HTMLInputElement|HTMLTextAreaElement,value:string)=>{const proto=element instanceof HTMLTextAreaElement?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;const setter=Object.getOwnPropertyDescriptor(proto,'value')?.set;setter?.call(element,value);element.dispatchEvent(new Event('input',{bubbles:true}));element.dispatchEvent(new Event('change',{bubbles:true}))}
 const labelText=(input:HTMLInputElement)=>input.closest('label')?.querySelector('span')?.textContent?.trim().toLowerCase()||input.getAttribute('aria-label')?.toLowerCase()||''
-
-function ensureDatalists(){
- Object.entries(commercialLists).forEach(([id,values])=>{
-  const listId=`mip-${id}-list`;let list=document.getElementById(listId) as HTMLDataListElement|null
-  if(!list){list=document.createElement('datalist');list.id=listId;document.body.appendChild(list)}
-  list.innerHTML=values.map(value=>`<option value="${value.replaceAll('&','&amp;').replaceAll('"','&quot;')}"></option>`).join('')
- })
-}
-
-function connectCommercialSelectors(root:ParentNode=document){
- root.querySelectorAll<HTMLInputElement>('input').forEach(input=>{
-  const label=labelText(input)
-  if(label.includes('incoterm'))input.setAttribute('list','mip-incoterms-list')
-  else if(label==='service'||label.includes('service type'))input.setAttribute('list','mip-services-list')
-  else if(label.includes('commodity'))input.setAttribute('list','mip-commodities-list')
-  else if(label==='package'||label.includes('packaging'))input.setAttribute('list','mip-packages-list')
-  else if(label.includes('frequency'))input.setAttribute('list','mip-frequencies-list')
-  else if(label.includes('transit'))input.setAttribute('list','mip-transit-list')
-  else if(label.includes('payment terms'))input.setAttribute('list','mip-payment-list')
-  else if(label.includes('vendor type'))input.setAttribute('list','mip-vendorTypes-list')
- })
-}
+const selectorKey=(input:HTMLInputElement):ListKey|null=>{const label=labelText(input);if(label.includes('incoterm'))return'incoterms';if(label==='service'||label.includes('service type'))return'services';if(label.includes('commodity'))return'commodities';if(label==='package'||label.includes('packaging'))return'packages';if(label.includes('frequency'))return'frequencies';if(label.includes('transit'))return'transit';if(label.includes('payment terms'))return'payment';if(label.includes('vendor type'))return'vendorTypes';return null}
+const readStored=(name:string)=>{try{return JSON.parse(localStorage.getItem(name)||'[]') as string[]}catch{return[]}}
+const writeStored=(name:string,values:string[])=>localStorage.setItem(name,JSON.stringify(values.slice(0,8)))
 
 export function AppEnhancements(){
  useEffect(()=>{
   loadFreightLocations().then(rows=>{if(rows!==freightLocations)freightLocations.splice(0,freightLocations.length,...rows)})
-  ensureDatalists()
   let clauses:{title:string;body:string;modes:string[]}[]=[]
   supabase.from('quote_clauses').select('title,body,modes').eq('active',true).order('sort_order').then(({data})=>{clauses=(data||[]) as typeof clauses;enhance(document)})
+  const overlay=document.createElement('div');overlay.className='universal-select-overlay';overlay.innerHTML='<section class="universal-select-panel"><header><div><small>COMMERCIAL LIBRARY</small><h3></h3></div><button type="button" aria-label="Close">×</button></header><label class="universal-select-search"><span>⌕</span><input autocomplete="off" placeholder="Search or type a custom value"></label><div class="universal-select-results"></div><footer>Type any custom value if the option is not listed.</footer></section>';document.body.appendChild(overlay)
+  const panel=overlay.querySelector<HTMLElement>('.universal-select-panel')!,title=overlay.querySelector('h3')!,search=overlay.querySelector<HTMLInputElement>('.universal-select-search input')!,results=overlay.querySelector<HTMLElement>('.universal-select-results')!
+  let activeInput:HTMLInputElement|null=null,activeKey:ListKey|null=null,activeIndex=0,currentValues:string[]=[]
+  const close=()=>{overlay.classList.remove('open');activeInput=null;activeKey=null;currentValues=[]}
+  const position=()=>{if(!activeInput||matchMedia('(max-width: 700px)').matches)return;const r=activeInput.getBoundingClientRect();panel.style.left=`${Math.max(12,Math.min(r.left,innerWidth-390))}px`;panel.style.top=`${Math.min(r.bottom+8,innerHeight-440)}px`;panel.style.width=`${Math.max(330,Math.min(r.width,390))}px`}
+  const selectValue=(value:string)=>{if(!activeInput||!activeKey)return;setNativeValue(activeInput,value);const recent=readStored(`mip-recent-${activeKey}`).filter(x=>x!==value);writeStored(`mip-recent-${activeKey}`,[value,...recent]);close();activeInput.focus()}
+  const render=(query:string)=>{if(!activeKey)return;const q=query.trim().toLowerCase(),all=commercialLists[activeKey],recent=readStored(`mip-recent-${activeKey}`),favorites=readStored(`mip-favorites-${activeKey}`);currentValues=[...new Set([...favorites,...recent,...all])].filter(x=>!q||x.toLowerCase().includes(q));activeIndex=Math.min(activeIndex,Math.max(0,currentValues.length-1));results.innerHTML='';if(!currentValues.length){results.innerHTML='<div class="universal-select-empty">No matching saved option.<b>Keep typing to use a custom value.</b></div>';return}currentValues.forEach((value,index)=>{const row=document.createElement('button');row.type='button';row.className=`universal-select-option${index===activeIndex?' active':''}`;const isFavorite=favorites.includes(value),isRecent=recent.includes(value);row.innerHTML=`<span><b>${value}</b><small>${isFavorite?'Favorite':isRecent?'Recently used':listTitles[activeKey!]}</small></span><i title="Favorite">${isFavorite?'★':'☆'}</i>`;row.addEventListener('mousedown',e=>e.preventDefault());row.addEventListener('click',e=>{const target=e.target as HTMLElement;if(target.closest('i')){e.stopPropagation();const next=isFavorite?favorites.filter(x=>x!==value):[value,...favorites.filter(x=>x!==value)];writeStored(`mip-favorites-${activeKey}`,next);render(search.value);return}selectValue(value)});results.appendChild(row)})}
+  const open=(input:HTMLInputElement,key:ListKey)=>{activeInput=input;activeKey=key;activeIndex=0;title.textContent=listTitles[key];search.value=input.value;overlay.classList.add('open');position();render(input.value);if(matchMedia('(max-width: 700px)').matches)setTimeout(()=>{search.focus();search.setSelectionRange(search.value.length,search.value.length)},40)}
+  const move=(delta:number)=>{if(!currentValues.length)return;activeIndex=(activeIndex+delta+currentValues.length)%currentValues.length;render(search.value);results.querySelector('.active')?.scrollIntoView({block:'nearest'})}
+  const handleKeys=(e:KeyboardEvent)=>{if(!overlay.classList.contains('open'))return;if(e.key==='ArrowDown'){e.preventDefault();move(1)}else if(e.key==='ArrowUp'){e.preventDefault();move(-1)}else if(e.key==='Enter'&&currentValues[activeIndex]){e.preventDefault();selectValue(currentValues[activeIndex])}else if(e.key==='Escape'){e.preventDefault();close()}}
+  search.addEventListener('input',()=>{if(activeInput)setNativeValue(activeInput,search.value);activeIndex=0;render(search.value)});search.addEventListener('keydown',handleKeys)
+  overlay.querySelector('header button')?.addEventListener('click',close);overlay.addEventListener('mousedown',e=>{if(e.target===overlay)close()})
   const prepareNumericInputs=(root:ParentNode=document)=>root.querySelectorAll<HTMLInputElement>('input[type="number"], input[inputmode="decimal"]').forEach(input=>{input.step='any';input.inputMode='decimal';input.autocomplete='off'})
-  const enhance=(root:ParentNode)=>{
-   prepareNumericInputs(root);connectCommercialSelectors(root)
-   root.querySelectorAll<HTMLElement>('.quote-details label').forEach(label=>{
-    if(label.querySelector('span')?.textContent?.trim().toLowerCase()!=='terms'||label.dataset.clauses)return
-    const textarea=label.querySelector('textarea');if(!textarea)return;label.dataset.clauses='true'
-    const bar=document.createElement('div');bar.className='clause-library-bar';const select=document.createElement('select');select.innerHTML='<option value="">Add clause from library…</option>'+clauses.map((c,i)=>`<option value="${i}">${c.title}</option>`).join('');select.addEventListener('change',()=>{const c=clauses[Number(select.value)];if(!c)return;const current=textarea.value.trim();setNativeValue(textarea,current?`${current}\n\n${c.body}`:c.body);select.value=''});bar.appendChild(select);label.insertBefore(bar,textarea)
-   })
-  }
+  const connectSelectors=(root:ParentNode=document)=>root.querySelectorAll<HTMLInputElement>('input').forEach(input=>{const key=selectorKey(input);if(!key||input.dataset.universalSelector)return;input.dataset.universalSelector=key;input.removeAttribute('list');input.autocomplete='off';input.closest('label')?.classList.add('has-universal-selector');input.addEventListener('focus',()=>open(input,key));input.addEventListener('input',()=>{if(activeInput===input){search.value=input.value;activeIndex=0;render(input.value);position()}});input.addEventListener('keydown',handleKeys)})
+  const enhance=(root:ParentNode)=>{prepareNumericInputs(root);connectSelectors(root);root.querySelectorAll<HTMLElement>('.quote-details label').forEach(label=>{if(label.querySelector('span')?.textContent?.trim().toLowerCase()!=='terms'||label.dataset.clauses)return;const textarea=label.querySelector('textarea');if(!textarea)return;label.dataset.clauses='true';const bar=document.createElement('div');bar.className='clause-library-bar';const select=document.createElement('select');select.innerHTML='<option value="">Add clause from library…</option>'+clauses.map((c,i)=>`<option value="${i}">${c.title}</option>`).join('');select.addEventListener('change',()=>{const c=clauses[Number(select.value)];if(!c)return;const current=textarea.value.trim();setNativeValue(textarea,current?`${current}\n\n${c.body}`:c.body);select.value=''});bar.appendChild(select);label.insertBefore(bar,textarea)})}
   enhance(document)
-  const observer=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node instanceof HTMLElement)enhance(node)})))
-  observer.observe(document.body,{childList:true,subtree:true})
+  const observer=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node instanceof HTMLElement&&node!==overlay)enhance(node)})));observer.observe(document.body,{childList:true,subtree:true})
   const onClick=(event:MouseEvent)=>{const target=event.target as HTMLElement;const tab=target.closest('.drawer-tabs button') as HTMLButtonElement|null;if(tab&&tab.dataset.target){event.preventDefault();document.getElementById(tab.dataset.target)?.scrollIntoView({behavior:'smooth',block:'start'})}}
   const onFocus=(event:FocusEvent)=>{const input=event.target as HTMLInputElement;if(input.matches('.cargo-grid input[type="number"], .cargo-grid input[inputmode="decimal"], .cargo-grid input[inputmode="numeric"]'))input.select()}
-  document.addEventListener('click',onClick,true);document.addEventListener('focusin',onFocus,true)
-  return()=>{observer.disconnect();document.removeEventListener('click',onClick,true);document.removeEventListener('focusin',onFocus,true)}
+  const onWindow=()=>position();document.addEventListener('click',onClick,true);document.addEventListener('focusin',onFocus,true);addEventListener('resize',onWindow);addEventListener('scroll',onWindow,true)
+  return()=>{observer.disconnect();overlay.remove();document.removeEventListener('click',onClick,true);document.removeEventListener('focusin',onFocus,true);removeEventListener('resize',onWindow);removeEventListener('scroll',onWindow,true)}
  },[])
  return null
 }
