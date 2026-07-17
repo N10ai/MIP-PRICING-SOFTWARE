@@ -1,4 +1,5 @@
 import {useEffect} from 'react'
+import '../universal-selector.css'
 import {loadFreightLocations,freightLocations} from '../data/locations'
 import {supabase} from '../lib/supabase'
 
