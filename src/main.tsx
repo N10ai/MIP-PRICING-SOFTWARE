@@ -30,6 +30,7 @@ import './pricing-usability-fixes.css'
 import './quote-mobile-workspace.css'
 import './controlled-pricing-and-print.css'
 import './final-ui-stabilization.css'
+import './mobile-stability-final.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
