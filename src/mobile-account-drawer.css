@@ -1,0 +1,110 @@
+@media (max-width:760px){
+  /* Logo account menu: compact black slide-out drawer */
+  .account-popover{
+    position:fixed!important;
+    inset:0 auto 0 0!important;
+    z-index:2000!important;
+    width:min(82vw,340px)!important;
+    height:100dvh!important;
+    padding:calc(28px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom))!important;
+    border:0!important;
+    border-radius:0 30px 30px 0!important;
+    background:#0e1015!important;
+    color:#fff!important;
+    box-shadow:24px 0 70px rgba(0,0,0,.34)!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    animation:accountDrawerIn .22s cubic-bezier(.22,.8,.3,1)!important;
+  }
+  .account-popover:before{
+    content:'ACCOUNT';
+    display:block;
+    margin:0 0 20px!important;
+    color:#6f9cff!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    letter-spacing:.18em!important;
+  }
+  .account-popover header{
+    display:grid!important;
+    grid-template-columns:68px minmax(0,1fr)!important;
+    gap:15px!important;
+    align-items:center!important;
+    padding:0 0 22px!important;
+    border:0!important;
+    border-bottom:1px solid rgba(255,255,255,.12)!important;
+    background:transparent!important;
+  }
+  .account-popover header>span{
+    display:grid!important;
+    place-items:center!important;
+    width:68px!important;
+    height:68px!important;
+    border-radius:50%!important;
+    background:#2f6ff2!important;
+    color:#fff!important;
+    font-size:20px!important;
+    font-weight:900!important;
+    box-shadow:0 10px 26px rgba(53,111,240,.28)!important;
+  }
+  .account-popover header b,
+  .account-popover header small{
+    display:block!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  .account-popover header b{
+    color:#fff!important;
+    font-size:20px!important;
+    line-height:1.15!important;
+    letter-spacing:-.025em!important;
+  }
+  .account-popover header small{
+    margin-top:6px!important;
+    color:#9da5b4!important;
+    font-size:12px!important;
+  }
+  .account-company{
+    position:relative!important;
+    margin:18px 0 0!important;
+    padding:16px 44px 16px 16px!important;
+    border:1px solid rgba(255,255,255,.09)!important;
+    border-radius:17px!important;
+    background:#171a21!important;
+  }
+  .account-company:after{
+    content:'›';
+    position:absolute!important;
+    right:17px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    color:#687182!important;
+    font-size:26px!important;
+  }
+  .account-company b,
+  .account-company span{display:block!important}
+  .account-company b{color:#fff!important;font-size:14px!important}
+  .account-company span{margin-top:5px!important;color:#8e97a7!important;font-size:12px!important;line-height:1.35!important}
+  .account-popover>button{
+    margin-top:auto!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:13px!important;
+    width:100%!important;
+    min-height:54px!important;
+    padding:0 16px!important;
+    border:1px solid rgba(255,255,255,.1)!important;
+    border-radius:17px!important;
+    background:#171a21!important;
+    color:#fff!important;
+    font-size:14px!important;
+    font-weight:800!important;
+    box-shadow:none!important;
+  }
+  .account-popover>button svg{color:#7ea7ff!important}
+  @keyframes accountDrawerIn{from{opacity:.4;transform:translateX(-105%)}to{opacity:1;transform:translateX(0)}}
+}
