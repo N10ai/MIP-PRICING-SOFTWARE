@@ -1,0 +1,184 @@
+@media (max-width: 760px) {
+  .account-drawer-backdrop {
+    display: none !important;
+  }
+
+  .account-popover {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 78px) !important;
+    left: 16px !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: min(340px, calc(100vw - 32px)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 120px) !important;
+    padding: 18px !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    border-radius: 24px !important;
+    background: #101217 !important;
+    box-shadow: 0 22px 60px rgba(0,0,0,.28) !important;
+    overflow: auto !important;
+    transform: none !important;
+    animation: accountMenuIn .18s ease-out !important;
+    z-index: 10050 !important;
+  }
+
+  .account-popover::before,
+  .account-popover::after {
+    display: none !important;
+  }
+
+  .account-popover > header {
+    display: grid !important;
+    grid-template-columns: 50px minmax(0,1fr) !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 0 42px 16px 0 !important;
+    margin: 0 0 14px !important;
+    border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  }
+
+  .account-popover > header > span {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 16px !important;
+    display: grid !important;
+    place-items: center !important;
+    background: #356ff0 !important;
+    color: #fff !important;
+    font-size: 17px !important;
+    font-weight: 850 !important;
+  }
+
+  .account-popover > header b,
+  .account-popover > header small,
+  .account-company b,
+  .account-company span {
+    overflow-wrap: anywhere !important;
+  }
+
+  .account-popover > header b {
+    display: block !important;
+    color: #fff !important;
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+  }
+
+  .account-popover > header small {
+    display: block !important;
+    margin-top: 4px !important;
+    color: #9ba3b2 !important;
+    font-size: 12px !important;
+  }
+
+  .account-company {
+    display: grid !important;
+    gap: 4px !important;
+    padding: 14px !important;
+    margin: 0 0 14px !important;
+    border: 1px solid rgba(255,255,255,.1) !important;
+    border-radius: 16px !important;
+    background: rgba(255,255,255,.045) !important;
+  }
+
+  .account-company b {
+    color: #fff !important;
+    font-size: 14px !important;
+  }
+
+  .account-company span {
+    color: #8f98aa !important;
+    font-size: 11px !important;
+  }
+
+  .account-popover > button:not(.account-drawer-close) {
+    width: 100% !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    padding: 0 14px !important;
+    border: 1px solid rgba(255,255,255,.1) !important;
+    border-radius: 15px !important;
+    background: rgba(255,255,255,.045) !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 750 !important;
+  }
+
+  .account-drawer-close {
+    position: absolute !important;
+    top: 14px !important;
+    right: 14px !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,.08) !important;
+    color: #fff !important;
+    font-size: 25px !important;
+    line-height: 1 !important;
+  }
+
+  .request-view-cards .request-queue-item.is-card > .status-badge,
+  .request-queue-item.is-card > .status-badge {
+    position: static !important;
+    width: max-content !important;
+    max-width: 108px !important;
+    min-width: 0 !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    aspect-ratio: auto !important;
+    align-self: start !important;
+    justify-self: start !important;
+    padding: 0 10px !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
+    font-size: 9px !important;
+    line-height: 26px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-shadow: none !important;
+  }
+
+  .request-queue-item.is-card > .status-badge::before,
+  .request-queue-item.is-card > .status-badge::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .request-queue-item.is-card {
+    grid-template-columns: minmax(0,1fr) !important;
+    grid-template-areas:
+      'primary'
+      'status'
+      'customer'
+      'route'
+      'open' !important;
+    align-content: start !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+    padding: 18px !important;
+  }
+
+  .request-queue-item.is-card .request-queue-primary { grid-area: primary !important; }
+  .request-queue-item.is-card > .status-badge { grid-area: status !important; }
+  .request-queue-item.is-card .request-queue-customer { grid-area: customer !important; }
+  .request-queue-item.is-card .request-queue-route { grid-area: route !important; }
+  .request-queue-item.is-card .request-open-button {
+    grid-area: open !important;
+    position: static !important;
+    margin-top: 4px !important;
+  }
+}
+
+@keyframes accountMenuIn {
+  from { opacity: 0; transform: translateY(-8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
