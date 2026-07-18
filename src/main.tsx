@@ -6,6 +6,7 @@ import { AppEnhancements } from './components/AppEnhancements'
 import { PremiumMobileInteractions } from './components/PremiumMobileInteractions'
 import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnhancer'
 import { MobileQueueControls } from './components/MobileQueueControls'
+import { MobileRequestNavigation } from './components/MobileRequestNavigation'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -58,6 +59,7 @@ import './mobile-request-queue-v2.css'
 import './mobile-request-queue-v3.css'
 import './mobile-request-queue-compact.css'
 import './mobile-request-queue-v4.css'
+import './mobile-request-account-final.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -67,6 +69,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <PremiumMobileInteractions />
         <MobileAccountDrawerEnhancer />
         <MobileQueueControls />
+        <MobileRequestNavigation />
         <App />
       </AuthGate>
     </HashRouter>
