@@ -1,0 +1,92 @@
+@media (max-width:760px){
+  html,body,#root,.app-bg{min-height:100%!important;overflow-y:auto!important}
+  .workspace{overflow:visible!important}
+  .request-queue-card{
+    display:block!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  .request-filter-bar{
+    position:relative!important;
+    top:auto!important;
+    z-index:10!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    align-items:stretch!important;
+    padding:14px!important;
+    border-bottom:1px solid #ececf0!important;
+    border-radius:27px 27px 0 0!important;
+    background:#fff!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .request-filter-scroll{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:9px!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+  .request-filter-scroll label{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    padding:9px 11px!important;
+    border-radius:14px!important;
+  }
+  .request-filter-scroll select{
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  .request-filter-scroll>button{
+    grid-column:1/2!important;
+    width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+  }
+  .request-view-toggle{
+    position:absolute!important;
+    right:14px!important;
+    bottom:14px!important;
+    width:calc(50% - 18px)!important;
+    height:46px!important;
+    align-self:auto!important;
+  }
+  .request-view-toggle button{
+    width:100%!important;
+    height:40px!important;
+  }
+  .request-results-meta{
+    position:relative!important;
+    z-index:1!important;
+    padding:12px 18px 8px!important;
+    background:#fff!important;
+  }
+  .request-queue,
+  .request-groups{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  .request-queue{
+    padding-bottom:calc(180px + env(safe-area-inset-bottom))!important;
+  }
+  .request-group .request-queue{padding-bottom:0!important}
+  .request-groups{padding-bottom:calc(180px + env(safe-area-inset-bottom))!important}
+  .request-queue-item{flex-shrink:0!important}
+}
+
+@media(max-width:390px){
+  .request-filter-bar{padding:11px!important}
+  .request-filter-scroll{gap:8px!important}
+  .request-filter-scroll label{padding:8px 9px!important}
+  .request-view-toggle{right:11px!important;bottom:11px!important;width:calc(50% - 15px)!important}
+}
