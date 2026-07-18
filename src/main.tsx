@@ -5,7 +5,6 @@ import App from './App'
 import { AppEnhancements } from './components/AppEnhancements'
 import { PremiumMobileInteractions } from './components/PremiumMobileInteractions'
 import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnhancer'
-import { MobileRequestQueueEnhancer } from './components/MobileRequestQueueEnhancer'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -65,7 +64,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <AppEnhancements />
         <PremiumMobileInteractions />
         <MobileAccountDrawerEnhancer />
-        <MobileRequestQueueEnhancer />
         <App />
       </AuthGate>
     </HashRouter>
