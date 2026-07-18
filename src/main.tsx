@@ -41,6 +41,7 @@ import './mobile-public-request.css'
 import './premium-mobile-v3.css'
 import './mobile-quote-tabs-fix.css'
 import './mobile-rebuild.css'
+import './mobile-native-v1.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
