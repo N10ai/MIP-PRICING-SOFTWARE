@@ -36,6 +36,7 @@ import './mobile-system-v2.css'
 import './mobile-quote-app.css'
 import './mobile-vendor-rate.css'
 import './mobile-rfq-composer.css'
+import './mobile-public-request.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
