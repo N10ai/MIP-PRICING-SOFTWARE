@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react'
-import { FileText, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { ArrowUpRight, FileText, Filter, LayoutGrid, LayoutList, Plus, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { Button, EmptyState, GlassCard, SectionHeading, StatusBadge } from './ui'
+import { Button, EmptyState, GlassCard, StatusBadge } from './ui'
 import { ResponsiveQuoteWorkspace } from './ResponsiveQuoteWorkspace'
 
 type QuoteRow={id:string;quote_number:unknown;customer_name:unknown;status:unknown;quote_data:any;quote_request_id:string|null;created_at:string|null}
+type QuoteView='list'|'cards'
+type QuoteGroup='none'|'status'|'customer'|'date'
+
 const uid=()=>crypto.randomUUID()
 const text=(v:any,f='')=>{if(v==null||v==='')return f;if(typeof v==='string'||typeof v==='number')return String(v);if(Array.isArray(v))return v.map(x=>text(x)).filter(Boolean).join(' · ');if(typeof v==='object'){for(const k of ['label','name','value','code','title','text','type']){const s=text(v[k]);if(s)return s}}return f}
 const number=(v:any)=>Number(v)||0
@@ -14,6 +17,10 @@ const qnum=()=>`Q-${new Date().toISOString().slice(2,10).replaceAll('-','')}-${M
 const field=(rows:any[],label:string)=>text((rows||[]).find(x=>text(x?.label).toLowerCase()===label.toLowerCase())?.value)
 const routeValue=(rows:any[],labels:string[])=>{for(const label of labels){const value=field(rows,label);if(value)return value}return''}
 const basis=(v:string)=>({per_kg:'per_actual_kg',per_actual_kg:'per_actual_kg',per_chargeable_kg:'per_chargeable_kg',per_lb:'per_lb',per_cbm:'per_cbm',per_piece:'per_piece',per_pallet:'per_pallet',per_container:'per_container'} as any)[v]||'flat'
+const quoteCustomer=(q:QuoteRow)=>text(q.customer_name,'Customer')
+const quoteStatus=(q:QuoteRow)=>text(q.status,'draft')
+const quoteRoute=(q:QuoteRow)=>{const d=q.quote_data&&typeof q.quote_data==='object'?q.quote_data:{};return text(d.route,text(d.routing,'Route pending'))}
+const quoteCreated=(q:QuoteRow)=>q.created_at?new Date(q.created_at):null
 
 function cargoMetrics(cargo:any[]){let actualKg=0,cbm=0,pieces=0,pallets=0,containers=0;for(const c of cargo){const qty=number(c.quantity??c.qty)||1,w=number(c.weight_value??c.weight),wu=text(c.weight_unit??c.wUnit,'kg').toLowerCase(),du=text(c.dimension_unit??c.dUnit,'cm').toLowerCase(),f=du==='in'?2.54:1;pieces+=qty;actualKg+=(wu==='lb'?w*.453592:w)*qty;cbm+=number(c.length_value??c.l)*f*number(c.width_value??c.w)*f*number(c.height_value??c.h)*f/1e6*qty;const p=text(c.packaging_type??c.desc).toLowerCase();if(p.includes('pallet'))pallets+=qty;if(p.includes('container'))containers+=qty}return{actualKg,chargeableKg:Math.max(actualKg,cbm*167),lb:actualKg*2.20462,cbm,pieces,pallets,containers}}
 function qtyFor(type:string,m:any){return({flat:1,per_actual_kg:m.actualKg,per_chargeable_kg:m.chargeableKg,per_lb:m.lb,per_cbm:m.cbm,per_piece:m.pieces,per_pallet:m.pallets,per_container:m.containers} as any)[basis(type)]||1}
@@ -22,6 +29,7 @@ function isUS(country:any,code:any){return /united states|usa|u\.s\./i.test(text
 
 export function QuoteRoute(){
  const[params,setParams]=useSearchParams(),[rows,setRows]=useState<QuoteRow[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[booting,setBooting]=useState(false)
+ const[filtersOpen,setFiltersOpen]=useState(false),[status,setStatus]=useState('all'),[customer,setCustomer]=useState('all'),[dateRange,setDateRange]=useState('all'),[group,setGroup]=useState<QuoteGroup>('none'),[view,setView]=useState<QuoteView>('list')
  const requestId=params.get('request'),quoteId=params.get('quote'),editorOpen=Boolean(requestId||quoteId)
  const load=()=>{setLoading(true);setError('');supabase.from('quotes').select('id,quote_number,customer_name,status,quote_data,quote_request_id,created_at').order('created_at',{ascending:false}).then(({data,error})=>{if(error){setError(error.message);setRows([])}else setRows((data||[]) as QuoteRow[]);setLoading(false)})}
  useEffect(()=>{if(!editorOpen)load()},[editorOpen])
@@ -34,6 +42,57 @@ export function QuoteRoute(){
  const migrateAndOpen=async(q:QuoteRow)=>{if(q.quote_request_id){setParams({quote:q.id});return}const d=q.quote_data&&typeof q.quote_data==='object'?q.quote_data:{},info=Array.isArray(d.info)?d.info:[],route=Array.isArray(d.route)?d.route:[],origin=routeValue(route,['Origin','POL'])||text(d.origin),destination=routeValue(route,['Destination','POD'])||text(d.destination),mode=text(d.mode,d.preset?.toLowerCase().includes('ocean')?'ocean':d.preset?.toLowerCase().includes('air')?'air':'ground'),insert=await supabase.from('quote_requests').insert({request_number:text(d.requestNumber,`LEGACY-${Date.now()}`),customer_company:text(q.customer_name,field(info,'Customer'))||'Legacy customer',contact_name:field(info,'Contact')||null,contact_email:text(d.customerEmail,field(info,'Email'))||'legacy@mipcargoexp.com',contact_phone:text(d.customerPhone,field(info,'Phone'))||null,customer_reference:text(d.customerReference,field(info,'Customer Reference'))||null,status:'pricing',priority:'best_value',mode,service_type:text(d.serviceType,routeValue(route,['Service']))||null,origin_code:origin||null,origin_name:origin||null,destination_code:destination||null,destination_name:destination||null,incoterm:text(d.incoterm,routeValue(route,['Incoterm']))||null,source:'legacy_quote',notes:text(d.requestNotes)||null,request_data:{legacy_quote_id:q.id}}).select('id').single();if(insert.error){alert(insert.error.message);return}const legacyCargo=Array.isArray(d.cargo)?d.cargo:[];if(legacyCargo.length)await supabase.from('quote_request_cargo').insert(legacyCargo.map((c:any,i:number)=>({quote_request_id:insert.data.id,line_number:i+1,commodity:text(c.commodity??c.desc,'Cargo'),packaging_type:text(c.packaging_type??c.desc,'piece'),quantity:number(c.quantity??c.qty)||1,weight_value:number(c.weight_value??c.weight),weight_unit:text(c.weight_unit??c.wUnit,'kg'),length_value:number(c.length_value??c.l),width_value:number(c.width_value??c.w),height_value:number(c.height_value??c.h),dimension_unit:text(c.dimension_unit??c.dUnit,'cm'),stackable:true,dangerous_goods:false,normalized_data:{legacy:true}})));await supabase.from('quotes').update({quote_request_id:insert.data.id}).eq('id',q.id);setParams({quote:q.id})}
  const createNew=async()=>{const req=await supabase.from('quote_requests').insert({request_number:`MANUAL-${Date.now()}`,customer_company:'New customer',contact_email:'pricing@mipcargoexp.com',status:'pricing',priority:'best_value',source:'manual_quote',request_data:{manual:true}}).select('id').single();if(req.error){alert(req.error.message);return}const quote=await supabase.from('quotes').insert({quote_number:qnum(),customer_name:'New customer',status:'draft',quote_data:{mode:'',route:'Origin → Destination',cargo:[],charges:[],totals:{cost:0,sell:0,profit:0,margin:0},currency:'USD'},quote_request_id:req.data.id,version_number:1}).select('id').single();if(quote.error){alert(quote.error.message);return}setParams({quote:quote.data.id})}
  const remove=async(q:QuoteRow)=>{if(!confirm(`Delete ${text(q.quote_number,'this quote')}? This cannot be undone.`))return;const{error}=await supabase.from('quotes').delete().eq('id',q.id);if(error)alert(error.message);else load()}
+
+ const customers=useMemo(()=>[...new Set(rows.map(quoteCustomer))].sort((a,b)=>a.localeCompare(b)),[rows])
+ const statuses=useMemo(()=>[...new Set(rows.map(quoteStatus))].sort(),[rows])
+ const visible=useMemo(()=>rows.filter(q=>{
+  if(status!=='all'&&quoteStatus(q)!==status)return false
+  if(customer!=='all'&&quoteCustomer(q)!==customer)return false
+  if(dateRange!=='all'){
+   const created=quoteCreated(q)
+   if(!created||created.getTime()<Date.now()-Number(dateRange)*86400000)return false
+  }
+  return true
+ }),[rows,status,customer,dateRange])
+ const grouped=useMemo(()=>{
+  if(group==='none')return new Map([['',visible]])
+  const map=new Map<string,QuoteRow[]>()
+  visible.forEach(q=>{
+   const label=group==='status'?quoteStatus(q).replaceAll('_',' '):group==='customer'?quoteCustomer(q):(quoteCreated(q)?.toLocaleDateString(undefined,{month:'long',year:'numeric'})||'Date unavailable')
+   map.set(label,[...(map.get(label)||[]),q])
+  })
+  return map
+ },[visible,group])
+
  if(editorOpen)return booting?<div className="quote-index-state fullscreen">Preparing quote from request…</div>:<ResponsiveQuoteWorkspace/>
- return <><section className="hero compact"><div><p className="eyebrow">CUSTOMER PRICING</p><h1>Quotes</h1><p>Build, edit, and manage request-linked and legacy quotations.</p></div><Button onClick={createNew}><Plus size={16}/>New quote</Button></section><GlassCard><SectionHeading eyebrow="QUOTE PIPELINE" title="All quotes"/>{loading?<div className="quote-index-state">Loading quotes…</div>:error?<div className="quote-index-error"><b>Quotes could not be loaded.</b><span>{error}</span><button onClick={load}>Retry</button></div>:rows.length?<div className="quote-list managed">{rows.map(q=>{const d=q.quote_data&&typeof q.quote_data==='object'?q.quote_data:{},legacy=!q.quote_request_id;return <article key={q.id}><button className="quote-main" onClick={()=>migrateAndOpen(q)}><div><b>{text(q.quote_number,'Draft quote')}</b><small>{q.created_at?new Date(q.created_at).toLocaleDateString():'Date unavailable'}{legacy?' · Legacy':''}</small></div><div><b>{text(q.customer_name,'Customer')}</b><small>{text(d.route,text(d.routing,'Route pending'))}</small></div><div><b>{money(d.totals?.sell,d.currency)}</b><small>{number(d.totals?.margin).toFixed(1)}% margin</small></div><StatusBadge status={text(q.status,'draft')}/></button><div className="quote-row-actions"><button title="Edit" onClick={()=>migrateAndOpen(q)}><Pencil size={15}/></button><button className="danger" title="Delete" onClick={()=>remove(q)}><Trash2 size={15}/></button></div></article>})}</div>:<EmptyState icon={<FileText size={28}/>} title="No quotes yet" copy="Create a manual quote or build one from a customer request."/>}</GlassCard></>
+
+ return <>
+  <section className="hero compact quote-queue-hero"><div><p className="eyebrow">CUSTOMER PRICING</p><h1>Quotes</h1><p>Build, edit, and manage request-linked and legacy quotations.</p></div><Button onClick={createNew}><Plus size={16}/>New quote</Button></section>
+  <GlassCard className="quote-queue-card">
+   <div className="quote-queue-toolbar">
+    <div><b>Quote queue</b><small>Newest created first</small></div>
+    <div className="quote-queue-tools">
+     <button className={filtersOpen?'active':''} onClick={()=>setFiltersOpen(v=>!v)}><Filter size={17}/><span>{filtersOpen?'Done':'Filters'}</span></button>
+     <div className="quote-view-toggle" aria-label="Quote view"><button className={view==='list'?'active':''} onClick={()=>setView('list')} aria-label="List view"><LayoutList size={18}/></button><button className={view==='cards'?'active':''} onClick={()=>setView('cards')} aria-label="Card view"><LayoutGrid size={18}/></button></div>
+    </div>
+   </div>
+   {filtersOpen&&<div className="quote-filter-panel">
+    <label><span>Status</span><select value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(value=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></label>
+    <label><span>Customer</span><select value={customer} onChange={e=>setCustomer(e.target.value)}><option value="all">All customers</option>{customers.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
+    <label><span>Date</span><select value={dateRange} onChange={e=>setDateRange(e.target.value)}><option value="all">Any date</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></label>
+    <label><span>Group</span><select value={group} onChange={e=>setGroup(e.target.value as QuoteGroup)}><option value="none">No grouping</option><option value="status">By status</option><option value="customer">By customer</option><option value="date">By month</option></select></label>
+   </div>}
+   <div className="quote-results-meta"><b>{visible.length} quotes</b><span>{group==='none'?(view==='list'?'List view':'Card view'):`Grouped by ${group}`}</span></div>
+   {loading?<div className="quote-index-state">Loading quotes…</div>:error?<div className="quote-index-error"><b>Quotes could not be loaded.</b><span>{error}</span><button onClick={load}>Retry</button></div>:visible.length?<div className="quote-groups">{[...grouped.entries()].map(([label,items])=><section className="quote-group" key={label||'all'}>{label&&<header><b>{label}</b><span>{items.length}</span></header>}<div className={`quote-queue quote-view-${view}`}>{items.map(q=>{const d=q.quote_data&&typeof q.quote_data==='object'?q.quote_data:{},legacy=!q.quote_request_id;return <article className="quote-queue-item" key={q.id}>
+    <button className="quote-queue-main" onClick={()=>migrateAndOpen(q)}>
+     <div className="quote-queue-primary"><b>{text(q.quote_number,'Draft quote')}</b><small>{q.created_at?new Date(q.created_at).toLocaleString():'Date unavailable'}{legacy?' · Legacy':''}</small></div>
+     <div className="quote-queue-customer"><b>{quoteCustomer(q)}</b><small>{quoteRoute(q)}</small></div>
+     <div className="quote-queue-value"><b>{money(d.totals?.sell,d.currency)}</b><small>{number(d.totals?.margin).toFixed(1)}% margin</small></div>
+     <StatusBadge status={quoteStatus(q)}/>
+     <span className="quote-open-button" aria-hidden="true"><ArrowUpRight size={20}/></span>
+    </button>
+    <button className="quote-delete-button" title="Delete" onClick={()=>remove(q)}><Trash2 size={15}/></button>
+   </article>})}</div></section>)}</div>:<EmptyState icon={<FileText size={28}/>} title="No quotes found" copy="Quotes matching these filters will appear here."/>}
+  </GlassCard>
+ </>
 }
