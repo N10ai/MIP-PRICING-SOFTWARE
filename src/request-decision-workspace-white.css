@@ -1,0 +1,32 @@
+@media (max-width:760px){
+  .request-overlay{background:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .request-drawer.pricing-decision-workspace{background:#fff!important;color:#0b0d12!important}
+  .pricing-decision-workspace .drawer-body,
+  .pricing-decision-workspace .decision-body,
+  .pricing-decision-workspace .workspace-section{background:#fff!important}
+  .pricing-decision-workspace .compact-request-head{background:#fff!important;border:1px solid #e4e7ec!important;box-shadow:0 10px 28px rgba(15,23,42,.07)!important;color:#0b0d12!important}
+  .pricing-decision-workspace .compact-request-head .drawer-title h2{color:#0b0d12!important}
+  .pricing-decision-workspace .compact-request-head .drawer-title p{color:#8b93a1!important}
+  .pricing-decision-workspace .compact-request-head .drawer-close{background:#f5f6f8!important;color:#0b0d12!important}
+  .pricing-decision-workspace .request-quick-meta{background:#fff!important;border-bottom:1px solid #eef0f3!important}
+  .pricing-decision-workspace .decision-tabs{background:#f3f4f6!important;border:1px solid #e7e9ed!important}
+  .pricing-decision-workspace .decision-tabs button{color:#747b87!important}
+  .pricing-decision-workspace .decision-tabs button.active{background:#0d0f14!important;color:#fff!important}
+  .pricing-decision-workspace .pricing-decision-card,
+  .pricing-decision-workspace .pricing-decision-card.tone-required,
+  .pricing-decision-workspace .pricing-decision-card.tone-pending,
+  .pricing-decision-workspace .pricing-decision-card.tone-ready{background:#fff!important;color:#0b0d12!important;border:1px solid #dfe3e8!important;border-left:7px solid #3d72ed!important;box-shadow:0 12px 30px rgba(15,23,42,.06)!important}
+  .pricing-decision-workspace .pricing-decision-card small{color:#3d72ed!important}
+  .pricing-decision-workspace .pricing-decision-card p{color:#737b88!important}
+  .pricing-decision-workspace .pricing-decision-card button{background:#0d0f14!important;color:#fff!important}
+  .pricing-decision-workspace .compact-shipment-facts article,
+  .pricing-decision-workspace .workflow-snapshot,
+  .pricing-decision-workspace .request-supporting-info article,
+  .pricing-decision-workspace .cargo-card,
+  .pricing-decision-workspace .rfq-card,
+  .pricing-decision-workspace .document-grid button,
+  .pricing-decision-workspace .soft-empty{background:#fff!important;border-color:#dfe3e8!important;color:#0b0d12!important;box-shadow:none!important}
+  .pricing-decision-workspace .decision-actions{background:rgba(255,255,255,.97)!important;border-top:1px solid #e5e7eb!important}
+  .pricing-decision-workspace .decision-actions button{background:#0d0f14!important;color:#fff!important;border-color:#0d0f14!important}
+  .pricing-decision-workspace .decision-actions button:last-child{background:#3d72ed!important;color:#fff!important;border-color:#3d72ed!important}
+}
