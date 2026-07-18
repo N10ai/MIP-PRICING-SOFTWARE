@@ -54,6 +54,7 @@ import './mobile-account-menu-fix.css'
 import './mobile-account-drawer.css'
 import './mobile-account-drawer-native.css'
 import './mobile-request-queue-v2.css'
+import './mobile-request-queue-v3.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
