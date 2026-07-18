@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { AppEnhancements } from './components/AppEnhancements'
+import { PremiumMobileInteractions } from './components/PremiumMobileInteractions'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -37,12 +38,14 @@ import './mobile-quote-app.css'
 import './mobile-vendor-rate.css'
 import './mobile-rfq-composer.css'
 import './mobile-public-request.css'
+import './premium-mobile-v3.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
       <AuthGate>
         <AppEnhancements />
+        <PremiumMobileInteractions />
         <App />
       </AuthGate>
     </HashRouter>
