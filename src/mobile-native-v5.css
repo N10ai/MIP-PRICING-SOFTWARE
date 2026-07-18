@@ -1,0 +1,37 @@
+@media (max-width:760px){
+  html,body,#root,.app-bg{background:#fff!important}
+  .topbar{position:sticky!important;top:0!important;z-index:950!important;display:grid!important;grid-template-columns:54px minmax(0,1fr) 46px!important;gap:10px!important;align-items:center!important;min-height:76px!important;padding:10px 16px!important;background:rgba(255,255,255,.94)!important;border-bottom:1px solid #ececf0!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important}
+  .topbar .mobile-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:54px!important;height:54px!important;padding:0!important;border:0!important;background:transparent!important;color:#0d0f14!important;cursor:pointer!important}
+  .mobile-brand>div{display:none!important}
+  .mobile-logo-wrap{display:grid!important;place-items:center!important;width:54px!important;height:54px!important;border-radius:18px!important;background:#111318!important;box-shadow:0 8px 22px rgba(17,19,24,.16)!important}
+  .mobile-logo-wrap img{width:38px!important;height:38px!important;object-fit:contain!important;border-radius:12px!important;background:#fff!important}
+  .topbar .global-search{display:grid!important;grid-template-columns:20px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;width:100%!important;height:52px!important;padding:0 16px!important;margin:0!important;border:1px solid #dddfe5!important;border-radius:18px!important;background:#f6f7f9!important;box-shadow:none!important;color:#7b8494!important;overflow:hidden!important}
+  .global-search svg{flex:0 0 auto!important;color:#7c8799!important}
+  .global-search input{display:block!important;min-width:0!important;width:100%!important;height:50px!important;padding:0!important;border:0!important;outline:0!important;background:transparent!important;color:#0d0f14!important;-webkit-text-fill-color:#0d0f14!important;font-size:16px!important;font-weight:650!important;line-height:1!important;caret-color:#356ff0!important;opacity:1!important}
+  .global-search input::placeholder{color:#9198a5!important;-webkit-text-fill-color:#9198a5!important;opacity:1!important;font-weight:500!important}
+  .global-search kbd{display:none!important}
+  .topbar>div:last-of-type{display:flex!important;justify-content:flex-end!important;margin:0!important}
+  .topbar .icon{display:grid!important;place-items:center!important;width:46px!important;height:46px!important;border:0!important;border-radius:16px!important;background:#111318!important;color:#fff!important;box-shadow:none!important}
+  .topbar .icon svg{color:#fff!important}
+  .account-popover{position:absolute!important;top:70px!important;left:16px!important;right:16px!important;z-index:980!important;padding:16px!important;border:1px solid #e2e3e7!important;border-radius:24px!important;background:#fff!important;color:#0d0f14!important;box-shadow:0 24px 70px rgba(15,18,24,.18)!important;animation:accountIn .18s ease-out!important}
+  .account-popover header{display:grid!important;grid-template-columns:50px minmax(0,1fr)!important;gap:12px!important;align-items:center!important;padding:0 0 14px!important;border-bottom:1px solid #ececf0!important;background:transparent!important}
+  .account-popover header>span{display:grid!important;place-items:center!important;width:50px!important;height:50px!important;border-radius:16px!important;background:#111318!important;color:#fff!important;font-size:16px!important;font-weight:850!important}
+  .account-popover header b,.account-popover header small{display:block!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+  .account-popover header b{font-size:16px!important;color:#0d0f14!important}
+  .account-popover header small{margin-top:3px!important;color:#747b87!important;font-size:12px!important}
+  .account-company{padding:14px 2px!important}
+  .account-company b,.account-company span{display:block!important}
+  .account-company b{font-size:14px!important;color:#0d0f14!important}
+  .account-company span{margin-top:4px!important;color:#747b87!important;font-size:12px!important}
+  .account-popover>button{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;width:100%!important;height:48px!important;border:0!important;border-radius:15px!important;background:#111318!important;color:#fff!important;font-size:14px!important;font-weight:800!important}
+  .workspace{background:#fff!important}
+  @keyframes accountIn{from{opacity:0;transform:translateY(-7px) scale(.98)}to{opacity:1;transform:none}}
+}
+@media(max-width:390px){
+  .topbar{grid-template-columns:48px minmax(0,1fr) 42px!important;padding-left:10px!important;padding-right:10px!important;gap:8px!important}
+  .topbar .mobile-brand,.mobile-logo-wrap{width:48px!important;height:48px!important;border-radius:16px!important}
+  .mobile-logo-wrap img{width:34px!important;height:34px!important}
+  .topbar .global-search{height:48px!important;padding:0 12px!important}
+  .global-search input{height:46px!important;font-size:15px!important}
+  .topbar .icon{width:42px!important;height:42px!important}
+}
