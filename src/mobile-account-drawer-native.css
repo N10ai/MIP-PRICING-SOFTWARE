@@ -1,0 +1,95 @@
+@media (max-width:760px){
+  .account-drawer-backdrop{
+    position:fixed!important;
+    inset:0!important;
+    z-index:978!important;
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    padding:0!important;
+    border:0!important;
+    background:rgba(10,12,17,.34)!important;
+    backdrop-filter:blur(5px)!important;
+    -webkit-backdrop-filter:blur(5px)!important;
+    animation:accountBackdropIn .18s ease-out!important;
+  }
+  .account-popover{
+    position:fixed!important;
+    inset:0 auto 0 0!important;
+    z-index:979!important;
+    display:flex!important;
+    flex-direction:column!important;
+    width:min(84vw,360px)!important;
+    height:100dvh!important;
+    padding:calc(24px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom))!important;
+    border:0!important;
+    border-radius:0 34px 34px 0!important;
+    background:#0d0f14!important;
+    color:#fff!important;
+    box-shadow:24px 0 70px rgba(0,0,0,.28)!important;
+    overflow:auto!important;
+    animation:accountDrawerNativeIn .24s cubic-bezier(.22,.8,.32,1)!important;
+  }
+  .account-drawer-close{
+    position:absolute!important;
+    top:calc(14px + env(safe-area-inset-top))!important;
+    right:14px!important;
+    z-index:2!important;
+    display:grid!important;
+    place-items:center!important;
+    width:42px!important;
+    height:42px!important;
+    padding:0!important;
+    border:1px solid rgba(255,255,255,.1)!important;
+    border-radius:15px!important;
+    background:rgba(255,255,255,.08)!important;
+    color:#fff!important;
+    font:400 30px/1 system-ui,sans-serif!important;
+  }
+  .account-drawer-close span{display:block!important;transform:translateY(-1px)!important}
+  .account-popover header{
+    display:grid!important;
+    grid-template-columns:68px minmax(0,1fr)!important;
+    gap:16px!important;
+    align-items:center!important;
+    padding:70px 0 24px!important;
+    border-bottom:1px solid rgba(255,255,255,.12)!important;
+    background:transparent!important;
+  }
+  .account-popover header>span{
+    width:68px!important;
+    height:68px!important;
+    border-radius:50%!important;
+    background:#356ff0!important;
+    color:#fff!important;
+    font-size:22px!important;
+    font-weight:850!important;
+  }
+  .account-popover header b{color:#fff!important;font-size:22px!important;line-height:1.1!important}
+  .account-popover header small{margin-top:7px!important;color:#9ca5b7!important;font-size:13px!important;line-height:1.3!important}
+  .account-company{
+    position:relative!important;
+    display:block!important;
+    margin:22px 0 0!important;
+    padding:18px 46px 18px 18px!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    border-radius:20px!important;
+    background:#171a21!important;
+  }
+  .account-company:before,.account-company:after{display:none!important;content:none!important}
+  .account-company b{color:#fff!important;font-size:15px!important;line-height:1.25!important}
+  .account-company span{margin-top:5px!important;color:#929bad!important;font-size:12px!important;line-height:1.35!important}
+  .account-popover>button:not(.account-drawer-close){
+    margin-top:auto!important;
+    width:100%!important;
+    min-height:56px!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    border-radius:18px!important;
+    background:#171a21!important;
+    color:#fff!important;
+    font-size:15px!important;
+    font-weight:800!important;
+  }
+  @keyframes accountBackdropIn{from{opacity:0}to{opacity:1}}
+  @keyframes accountDrawerNativeIn{from{transform:translateX(-102%)}to{transform:translateX(0)}}
+}
