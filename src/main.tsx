@@ -48,6 +48,7 @@ import './mobile-native-v4.css'
 import './mobile-overview-v1.css'
 import './mobile-native-v5.css'
 import './mobile-global-search.css'
+import './mobile-account-v2.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
