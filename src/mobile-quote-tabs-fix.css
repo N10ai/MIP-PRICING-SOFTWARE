@@ -1,77 +1,18 @@
 @media (max-width:760px){
-  .mobile-quote-tabs{
-    position:sticky!important;
-    top:76px!important;
-    z-index:25!important;
-    display:grid!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    gap:6px!important;
-    width:calc(100% - 24px)!important;
-    margin:10px 12px 12px!important;
-    padding:6px!important;
-    overflow:visible!important;
-    border:1px solid rgba(255,255,255,.08)!important;
-    border-radius:18px!important;
-    background:rgba(18,24,34,.94)!important;
-    box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
-    backdrop-filter:blur(20px)!important;
-    -webkit-backdrop-filter:blur(20px)!important;
-  }
-  .mobile-quote-tabs button{
-    min-width:0!important;
-    width:100%!important;
-    height:42px!important;
-    padding:0 4px!important;
-    border:0!important;
-    border-radius:13px!important;
-    background:transparent!important;
-    color:#8d97a8!important;
-    font-size:11px!important;
-    font-weight:800!important;
-    letter-spacing:-.01em!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  .mobile-quote-tabs button.active{
-    background:#f8fafc!important;
-    color:#111827!important;
-    box-shadow:0 6px 18px rgba(0,0,0,.22)!important;
-  }
-  .mobile-quote-body{padding-top:0!important}
-  .mobile-section.preview-section{
-    padding:0!important;
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-    backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
-  }
-  .mobile-preview{
-    background:#fff!important;
-    color:#101828!important;
-    border:1px solid #e5e7eb!important;
-    box-shadow:0 20px 60px rgba(0,0,0,.24)!important;
-  }
-  .mobile-preview *{color:inherit}
-  .mobile-preview>header{border-color:#e5e7eb!important}
-  .mobile-preview>header small{color:#2563eb!important}
-  .mobile-preview>header>span,.mobile-preview>section small{color:#667085!important}
-  .mobile-preview>section p{color:#475467!important}
-  .mobile-preview>div span{border-color:#e5e7eb!important;color:#344054!important}
-  .mobile-preview>div span b{color:#101828!important}
-  .mobile-preview footer{border-color:#d0d5dd!important;color:#344054!important}
-  .mobile-preview footer b{color:#101828!important}
-  .mobile-cargo-list{display:grid!important;gap:10px!important}
-  .mobile-cargo{display:flex!important;align-items:flex-start!important;gap:12px!important;padding:14px!important;border:1px solid var(--pm-line)!important;border-radius:16px!important;background:var(--pm-solid)!important}
-  .mobile-cargo>svg{flex:0 0 auto!important;margin-top:2px!important;color:var(--pm-accent)!important}
-  .mobile-cargo>div{display:flex!important;min-width:0!important;flex-direction:column!important;gap:3px!important}
-  .mobile-cargo b{color:var(--pm-ink)!important;font-size:14px!important}
-  .mobile-cargo span,.mobile-cargo small{color:var(--pm-muted)!important}
-  .mobile-empty-copy{margin:0!important;padding:18px!important;text-align:center!important;color:var(--pm-muted)!important}
+*{box-sizing:border-box}html,body,#root{width:100%;min-height:100%;margin:0;overflow-x:hidden;background:#0c1016!important}body{color:#f7f9fc!important;-webkit-font-smoothing:antialiased}button,input,select,textarea{font:inherit}button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.mobile-quote-app,.mvr-shell,.pricing-workspace,.public-portal.portal-v2{background:#0c1016!important;color:#f7f9fc!important}.mobile-quote-app,.mvr-shell{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important}.mobile-quote-app{display:grid!important;grid-template-rows:auto auto auto minmax(0,1fr) auto!important}.mvr-shell{display:grid!important;grid-template-rows:auto auto auto minmax(0,1fr) auto!important}
+.mobile-quote-head,.mvr-shell>header,.pricing-head{position:relative!important;top:auto!important;z-index:40!important;display:grid!important;grid-template-columns:48px minmax(0,1fr) 48px!important;align-items:center!important;gap:12px!important;padding:calc(10px + env(safe-area-inset-top)) 16px 10px!important;background:rgba(15,20,28,.97)!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.08)!important;box-shadow:none!important}.mobile-quote-head>button,.mvr-shell>header button,.pricing-head>button{width:48px!important;height:48px!important;padding:0!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:15px!important;background:#f6f7fa!important;color:#111827!important;display:grid!important;place-items:center!important}.mobile-quote-head h1,.mvr-shell>header h1,.pricing-head h2{margin:2px 0 1px!important;color:#fff!important;font-size:20px!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.mobile-quote-head small,.mvr-shell>header small,.pricing-label,.portal-kicker{color:#6ea8ff!important}.mobile-quote-head p,.pricing-head p{margin:0!important;color:#8993a4!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.mobile-shipment-canvas{display:block!important;width:calc(100% - 32px)!important;margin:14px 16px 10px!important;padding:16px!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:22px!important;background:linear-gradient(145deg,#171e28,#121821)!important;color:#fff!important;text-align:left!important;box-shadow:0 18px 42px rgba(0,0,0,.28)!important}.shipment-mode{background:rgba(74,144,255,.15)!important;color:#75adff!important}.shipment-canvas-top,.shipment-canvas-metrics span,.shipment-canvas-expanded span{color:#8993a4!important}.mobile-shipment-canvas>strong,.shipment-canvas-metrics b,.shipment-canvas-expanded b{color:#fff!important}.shipment-canvas-expanded{border-color:rgba(255,255,255,.08)!important}
+.mobile-quote-tabs,.mobile-rfq-tabs,.mvr-shell>nav,.vendor-mobile-tabs{position:relative!important;top:auto!important;z-index:25!important;display:grid!important;width:calc(100% - 32px)!important;margin:0 16px 12px!important;padding:5px!important;gap:5px!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:16px!important;background:#151b24!important;box-shadow:0 10px 26px rgba(0,0,0,.20)!important;overflow:visible!important}.mobile-quote-tabs{grid-template-columns:repeat(5,minmax(0,1fr))!important}.mobile-rfq-tabs,.mvr-shell>nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}.mobile-quote-tabs button,.mobile-rfq-tabs button,.mvr-shell>nav button,.vendor-mobile-tabs button{min-width:0!important;width:100%!important;height:40px!important;padding:0 3px!important;border:0!important;border-radius:11px!important;background:transparent!important;color:#8f98a8!important;font-size:11px!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;box-shadow:none!important}.mobile-quote-tabs button.active,.mobile-rfq-tabs button.active,.mvr-shell>nav button.active,.vendor-mobile-tabs button.active{background:#f7f8fb!important;color:#10151d!important;box-shadow:0 5px 14px rgba(0,0,0,.24)!important}
+.mobile-quote-body,.mvr-shell>main,.pricing-grid{min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;padding:0 16px 128px!important}.mobile-section{display:grid!important;gap:12px!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}.mobile-section-title{align-items:center!important;margin:4px 0 12px!important}.mobile-section-title h2,.mvr-section-head h2,.pricing-panel-title h3{color:#fff!important}.mobile-section-title p{color:#8f98a8!important}.mobile-section-title button,.mvr-section-head button{min-height:42px!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:13px!important;background:#1b2430!important;color:#fff!important}
+.mobile-section:has(.mobile-preview){padding:0!important}.mobile-preview{width:100%!important;margin:0 auto 24px!important;padding:24px 20px!important;border:1px solid #dde2ea!important;border-radius:22px!important;background:#fff!important;color:#101827!important;box-shadow:0 22px 55px rgba(0,0,0,.30)!important}.mobile-preview *{color:inherit}.mobile-preview>header{border-color:#e4e7ec!important}.mobile-preview>header small{color:#2563eb!important}.mobile-preview>header>span,.mobile-preview>section small{color:#667085!important}.mobile-preview>section p,.mobile-preview>section h3,.mobile-preview>header h2,.mobile-preview>div span b,.mobile-preview footer b{color:#101827!important}.mobile-preview>div span{color:#1f2937!important;border-color:#e4e7ec!important}.mobile-preview footer{color:#101827!important;border-color:#d9dee7!important}
+.mobile-form,.mvr-fields{display:grid!important;grid-template-columns:1fr!important;gap:11px!important}.mobile-form label,.mobile-charge-grid label,.mvr-fields label,.mvr-charge-grid label{color:#8f98a8!important}.mobile-form input,.mobile-form select,.mobile-form textarea,.mobile-charge-grid input,.mobile-charge-grid select,.mvr-fields input,.mvr-fields select,.mvr-fields textarea,.mvr-charge-list select,.mvr-charge-grid input,.mvr-charge-grid select,.pricing-preview input,.pricing-preview textarea{width:100%!important;min-width:0!important;min-height:48px!important;border:1px solid rgba(255,255,255,.11)!important;border-radius:14px!important;background:#171e28!important;color:#fff!important;outline:none!important;font-size:16px!important}.mobile-form textarea,.mvr-fields textarea,.pricing-preview textarea{min-height:130px!important;padding-top:13px!important}
+.mobile-charge{margin:0 0 10px!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:18px!important;background:#151c25!important;box-shadow:0 10px 28px rgba(0,0,0,.18)!important}.mobile-charge.expanded{border-color:rgba(91,156,255,.55)!important;box-shadow:0 12px 32px rgba(0,0,0,.25),0 0 0 3px rgba(74,144,255,.10)!important}.mobile-charge-title input{color:#fff!important}.mobile-charge-title small{color:#8f98a8!important}.mobile-charge-grid{grid-template-columns:1fr 1fr!important}.mobile-charge-total{background:#111720!important}.mobile-charge-total span{color:#8f98a8!important}.mobile-charge-total b{color:#fff!important}
+.mobile-metrics,.mvr-metrics{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;background:transparent!important;border:0!important;box-shadow:none!important}.mobile-metrics span,.mvr-metrics span{padding:13px!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:15px!important;background:#151c25!important;color:#8f98a8!important;text-align:left!important}.mobile-metrics b,.mvr-metrics b{display:block!important;color:#fff!important}.mobile-cargo{padding:14px!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:16px!important;background:#151c25!important;color:#fff!important}
+.mvr-vendors{padding:10px 16px 12px!important;background:transparent!important;border:0!important}.mvr-vendors>button,.mvr-card,.mvr-charge-list,.pricing-summary>article,.existing-rfqs,.pricing-vendors,.pricing-preview{border:1px solid rgba(255,255,255,.09)!important;background:#131a23!important;color:#fff!important;box-shadow:0 14px 34px rgba(0,0,0,.22)!important}.mvr-vendors>button{background:#151c25!important}.mvr-vendors>button.active{border-color:#5b9cff!important;background:#182437!important;box-shadow:0 0 0 3px rgba(74,144,255,.10)!important}.mvr-charge-list article,.pricing-vendor-list>button{border-color:rgba(255,255,255,.09)!important;background:#171e28!important;color:#fff!important}.mvr-summary span,.mvr-charge-list article>footer span,.mvr-vendors small{color:#8f98a8!important}
+.pricing-overlay{background:#0c1016!important}.pricing-workspace{height:100dvh!important;max-height:100dvh!important;border-radius:0!important;grid-template-rows:auto auto minmax(0,1fr) auto!important;overflow:hidden!important}.pricing-summary,.pricing-vendors,.pricing-preview{min-width:0!important;width:100%!important}.template-builder{background:#111720!important;border-color:rgba(255,255,255,.09)!important}
+.public-portal.portal-v2{min-height:100dvh!important;background:#0c1016!important}.portal-stage{padding:22px 18px 126px!important;background:transparent!important}.portal-stage h1{color:#f7f9fc!important;font-size:clamp(38px,11vw,66px)!important;line-height:.98!important}.mode-grid button,.service-grid button,.main-service-card,.cargo-builder article,.review-grid article,.document-drop{border:1px solid rgba(255,255,255,.10)!important;background:#151c25!important;color:#fff!important;box-shadow:0 14px 34px rgba(0,0,0,.20)!important}.mode-grid button.selected,.service-grid button.selected{border-color:#4c8fff!important;background:#17243a!important}.portal-copy{color:#96a0b0!important}
+.mobile-quote-footer,.mvr-actions,.mobile-rfq-footer,.portal-actions{z-index:60!important;padding:10px 16px calc(10px + env(safe-area-inset-bottom))!important;border:0!important;border-top:1px solid rgba(255,255,255,.08)!important;background:rgba(14,19,27,.97)!important;box-shadow:0 -12px 34px rgba(0,0,0,.28)!important}.mobile-quote-footer{grid-template-columns:minmax(0,1fr) 72px 72px!important}.mobile-quote-footer span,.mobile-quote-footer small{color:#8f98a8!important}.mobile-quote-footer b{color:#fff!important}.mobile-quote-footer button,.mvr-actions .ui-button,.mobile-rfq-footer button,.portal-actions button{min-height:50px!important;border-radius:15px!important;background:#f7f8fb!important;color:#10151d!important}.mobile-quote-footer button.primary,.mobile-rfq-footer button:last-child,.portal-actions .next{background:#377ff5!important;color:#fff!important;border-color:#377ff5!important}
+.mobile-library>section,.mobile-quote-menu{background:#151c25!important;color:#fff!important;border-color:rgba(255,255,255,.10)!important}.mobile-library>section>div>button{background:#1a222d!important;color:#fff!important;border-color:rgba(255,255,255,.09)!important}
 }
-
-@media (max-width:390px){
-  .mobile-quote-tabs{gap:4px!important;padding:5px!important}
-  .mobile-quote-tabs button{font-size:10px!important;padding:0 2px!important}
-}
+@media (max-width:390px){.mobile-quote-tabs button{font-size:10px!important}.mobile-shipment-canvas,.mobile-quote-tabs,.mobile-rfq-tabs,.mvr-shell>nav{width:calc(100% - 24px)!important;margin-left:12px!important;margin-right:12px!important}.mobile-quote-body,.mvr-shell>main,.pricing-grid{padding-left:12px!important;padding-right:12px!important}}
