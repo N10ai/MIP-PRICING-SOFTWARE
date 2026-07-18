@@ -61,6 +61,7 @@ import './mobile-request-queue-compact.css'
 import './mobile-request-queue-v4.css'
 import './mobile-request-account-final.css'
 import './mobile-quote-queue-v1.css'
+import './request-decision-workspace.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
