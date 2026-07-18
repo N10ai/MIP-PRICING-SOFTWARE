@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { AppEnhancements } from './components/AppEnhancements'
 import { PremiumMobileInteractions } from './components/PremiumMobileInteractions'
+import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnhancer'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -51,6 +52,7 @@ import './mobile-global-search.css'
 import './mobile-account-v2.css'
 import './mobile-account-menu-fix.css'
 import './mobile-account-drawer.css'
+import './mobile-account-drawer-native.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -58,6 +60,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AuthGate>
         <AppEnhancements />
         <PremiumMobileInteractions />
+        <MobileAccountDrawerEnhancer />
         <App />
       </AuthGate>
     </HashRouter>
