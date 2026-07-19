@@ -63,6 +63,7 @@ import './mobile-quote-queue-v1.css'
 import './request-decision-workspace.css'
 import './mobile-rfq-composer.css'
 import './rfq-mobile-exact.css'
+import './rfq-mobile-interactions.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
