@@ -1,0 +1,24 @@
+@media (max-width:760px){
+body[data-rfq-probe="true"] .rfq-summary-overlay{visibility:hidden!important;pointer-events:none!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-summary-launcher[data-preview-ready]{min-height:156px!important;padding:18px!important;border:0!important;border-radius:22px!important;background:#101216!important;color:#fff!important;display:block!important;box-shadow:0 14px 32px rgba(10,12,17,.18)!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-mode{display:inline-flex!important;align-items:center!important;gap:8px!important;padding:8px 12px!important;border-radius:999px!important;background:#172845!important;color:#7faeff!important;font-size:13px!important;font-weight:850!important;text-transform:capitalize!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-chevron{color:#8d96aa!important;font-size:20px!important;line-height:1!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-route{display:block!important;margin:18px 0 16px!important;color:#fff!important;font-size:25px!important;line-height:1!important;font-weight:900!important;letter-spacing:-.04em!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-metrics{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-metrics span{display:block!important;min-width:0!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-metrics b{display:block!important;color:#fff!important;font-size:18px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+html body .pricing-workspace[data-mobile-rfq] .rfq-preview-metrics small{display:block!important;margin-top:5px!important;color:#9da5b5!important;font-size:10px!important}
+html body .pricing-workspace[data-mobile-rfq] .template-builder-overlay{padding:18px 14px calc(92px + env(safe-area-inset-bottom))!important;align-items:stretch!important}
+html body .pricing-workspace[data-mobile-rfq] .template-builder-overlay>.template-builder{max-height:calc(100dvh - 128px)!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto auto!important;overflow:hidden!important}
+html body .pricing-workspace[data-mobile-rfq] .template-builder-head{top:0!important;margin:-14px -14px 0!important}
+html body .pricing-workspace[data-mobile-rfq] .active-field-list{overflow:auto!important;padding:12px 0!important}
+html body .pricing-workspace[data-mobile-rfq] .template-builder-actions{position:sticky!important;bottom:0!important;margin:10px -14px -14px!important;padding:12px 14px calc(12px + env(safe-area-inset-bottom))!important;background:#fff!important;box-shadow:0 -10px 24px rgba(20,24,35,.08)!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-list article{border:1px solid #e2e5ea!important;border-radius:16px!important;background:#fff!important;overflow:hidden!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-row{position:relative!important;min-height:86px!important;padding:14px 52px 14px 14px!important;grid-template-columns:42px minmax(0,1fr)!important;gap:12px!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-row .status-badge{position:absolute!important;right:14px!important;top:14px!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-row>svg{position:absolute!important;right:18px!important;bottom:16px!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-row b{font-size:14px!important;line-height:1.2!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-row span{font-size:10px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+html body .pricing-workspace[data-mobile-rfq] .submitted-rfq-row small{font-size:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+}
