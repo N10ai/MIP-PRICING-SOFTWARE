@@ -7,6 +7,7 @@ import { PremiumMobileInteractions } from './components/PremiumMobileInteraction
 import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnhancer'
 import { MobileQueueControls } from './components/MobileQueueControls'
 import { MobileRequestNavigation } from './components/MobileRequestNavigation'
+import { RfqActionBridge } from './components/RfqActionBridge'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -75,6 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileAccountDrawerEnhancer />
         <MobileQueueControls />
         <MobileRequestNavigation />
+        <RfqActionBridge />
         <App />
       </AuthGate>
     </HashRouter>
