@@ -26,6 +26,8 @@ jobs:
         run: npm install
       - name: Build application
         run: npm run build
+      - name: Write deployment revision
+        run: echo "${GITHUB_SHA}" > dist/build-version.txt
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
