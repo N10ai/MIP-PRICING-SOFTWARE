@@ -83,6 +83,6 @@ export function RfqQuickActions(){
    </section>
   </div>}
   {rateLoading&&<div className="rfq-rate-loading">Opening vendor rates…</div>}
-  {rateRequest&&<ResponsiveVendorRateWorkspace request={rateRequest} onClose={()=>setRateRequest(null)} onChanged={()=>{}}/>}
+  {rateRequest&&<div className="rfq-rate-modal-layer"><ResponsiveVendorRateWorkspace request={rateRequest} onClose={()=>setRateRequest(null)} onChanged={()=>{}}/></div>}
  </>
 }
