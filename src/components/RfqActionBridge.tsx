@@ -1,7 +1,17 @@
 import { useEffect } from 'react'
 
-function findButton(root: ParentNode, text: string) {
-  return Array.from(root.querySelectorAll('button')).find(button => button.textContent?.toLowerCase().includes(text.toLowerCase())) as HTMLButtonElement | undefined
+function findButton(root: ParentNode, pattern: RegExp) {
+  return [...root.querySelectorAll<HTMLButtonElement>('button')].find(button => pattern.test(button.textContent || '')) || null
+}
+
+function retry(action: () => boolean, attempts = 8, delay = 100) {
+  let count = 0
+  const run = () => {
+    count += 1
+    if (action() || count >= attempts) return
+    window.setTimeout(run, delay)
+  }
+  run()
 }
 
 export function RfqActionBridge() {
@@ -10,34 +20,45 @@ export function RfqActionBridge() {
       const target = event.target as HTMLElement | null
       if (!target) return
 
-      const addVendor = target.closest('.rfq-add-vendor')
+      const addVendor = target.closest<HTMLButtonElement>('.rfq-add-vendor')
       if (addVendor) {
         event.preventDefault()
         event.stopPropagation()
-        const close = document.querySelector('.pricing-workspace .pricing-close') as HTMLButtonElement | null
-        close?.click()
-        window.setTimeout(() => {
-          window.location.hash = '/vendors'
-          window.dispatchEvent(new HashChangeEvent('hashchange'))
-        }, 80)
+        event.stopImmediatePropagation()
+
+        document.querySelector<HTMLButtonElement>('.pricing-workspace .pricing-close')?.click()
+
+        retry(() => {
+          const requestClose = document.querySelector<HTMLButtonElement>('.request-drawer .drawer-head-actions > .drawer-close:last-of-type')
+          if (!requestClose) return false
+          requestClose.click()
+          window.setTimeout(() => {
+            window.location.hash = '#/vendors'
+          }, 80)
+          return true
+        })
         return
       }
 
-      const directRate = target.closest('.open-rate-workspace, .rfq-direct-rate')
-      const footerRate = target.closest('.pricing-workspace[data-mobile-rfq="rfqs"] .mobile-rfq-footer button:last-child')
-      if (directRate || footerRate) {
-        event.preventDefault()
-        event.stopPropagation()
-        const close = document.querySelector('.pricing-workspace .pricing-close') as HTMLButtonElement | null
-        close?.click()
-        window.setTimeout(() => {
-          const requestDrawer = document.querySelector('.pricing-decision-workspace')
-          const compareRates = requestDrawer ? findButton(requestDrawer, 'compare rates') : undefined
-          const openRates = requestDrawer ? findButton(requestDrawer, 'open rates') : undefined
-          const rateButton = compareRates || openRates
-          rateButton?.click()
-        }, 120)
-      }
+      const directRate = target.closest<HTMLButtonElement>('.open-rate-workspace, .rfq-direct-rate')
+      const footerRate = target.closest<HTMLButtonElement>('.pricing-workspace[data-mobile-rfq="rfqs"] .mobile-rfq-footer button:last-child')
+      if (!directRate && !footerRate) return
+
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+
+      document.querySelector<HTMLButtonElement>('.pricing-workspace .pricing-close')?.click()
+
+      retry(() => {
+        if (document.querySelector('.mvr-shell')) return true
+        const drawer = document.querySelector('.pricing-decision-workspace')
+        if (!drawer) return false
+        const rateButton = findButton(drawer, /compare rates|open rates/i)
+        if (!rateButton) return false
+        rateButton.click()
+        return Boolean(document.querySelector('.mvr-shell'))
+      }, 12, 120)
     }
 
     document.addEventListener('click', onClick, true)
