@@ -7,7 +7,7 @@ import { PremiumMobileInteractions } from './components/PremiumMobileInteraction
 import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnhancer'
 import { MobileQueueControls } from './components/MobileQueueControls'
 import { MobileRequestNavigation } from './components/MobileRequestNavigation'
-import { RfqActionBridge } from './components/RfqActionBridge'
+import { RfqQuickActions } from './components/RfqQuickActions'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -66,6 +66,7 @@ import './mobile-rfq-composer.css'
 import './rfq-mobile-exact.css'
 import './rfq-mobile-interactions.css'
 import './rfq-mobile-final-tuning.css'
+import './rfq-quick-vendor.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -76,7 +77,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileAccountDrawerEnhancer />
         <MobileQueueControls />
         <MobileRequestNavigation />
-        <RfqActionBridge />
+        <RfqQuickActions />
         <App />
       </AuthGate>
     </HashRouter>
