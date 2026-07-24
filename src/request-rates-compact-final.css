@@ -1,24 +1,51 @@
 @media (max-width:760px){
-  /* Keep the request action menu above sticky tabs and drawer content. */
+  /* Keep the complete header/menu stack above every sticky workspace layer. */
+  .pricing-decision-workspace{
+    isolation:auto!important;
+  }
   .pricing-decision-workspace .compact-request-head{
     position:relative!important;
-    z-index:120!important;
+    z-index:2147483000!important;
     overflow:visible!important;
+    isolation:isolate!important;
+    transform:none!important;
+    filter:none!important;
+    contain:none!important;
   }
   .pricing-decision-workspace .drawer-head-actions{
     position:relative!important;
-    z-index:125!important;
+    z-index:2147483001!important;
+    overflow:visible!important;
+    isolation:isolate!important;
+    transform:none!important;
+    filter:none!important;
   }
   .pricing-decision-workspace .request-menu{
     position:absolute!important;
     top:54px!important;
     right:0!important;
-    z-index:1000!important;
+    z-index:2147483647!important;
     min-width:230px!important;
+    max-width:calc(100vw - 32px)!important;
     overflow:hidden!important;
+    pointer-events:auto!important;
+    transform:none!important;
+    isolation:isolate!important;
+  }
+  .pricing-decision-workspace .request-quick-meta{
+    position:relative!important;
+    z-index:0!important;
   }
   .pricing-decision-workspace .decision-tabs{
-    z-index:20!important;
+    position:relative!important;
+    top:auto!important;
+    z-index:0!important;
+    isolation:auto!important;
+    transform:none!important;
+  }
+  .pricing-decision-workspace .decision-body{
+    position:relative!important;
+    z-index:0!important;
   }
 
   /* Restore the compact, simple vendor-rate list. */
