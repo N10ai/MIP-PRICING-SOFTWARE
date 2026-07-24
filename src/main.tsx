@@ -70,6 +70,7 @@ import './rfq-quick-vendor.css'
 import './mobile-vendor-response-v2.css'
 import './rfq-quick-vendor-primary-fix.css'
 import './rfq-rate-decision-cards.css'
+import './request-rates-compact-final.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
