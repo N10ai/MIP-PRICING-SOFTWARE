@@ -1,0 +1,41 @@
+@media (max-width:760px){
+  .pricing-decision-workspace .rates-workspace{padding:4px 0 18px!important;overflow:visible!important}
+  .pricing-decision-workspace .rates-heading{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:end!important;gap:12px!important;margin:0 0 14px!important}
+  .pricing-decision-workspace .rates-heading h3{margin:5px 0 4px!important;font-size:24px!important;line-height:1.05!important;letter-spacing:-.035em!important;color:#101319!important}
+  .pricing-decision-workspace .rates-heading p{margin:0!important;color:#77808e!important;font-size:14px!important;line-height:1.4!important;max-width:290px!important}
+  .pricing-decision-workspace .rates-primary{align-self:end!important;min-height:46px!important;padding:0 16px!important;border:0!important;border-radius:15px!important;background:#111318!important;color:#fff!important;font-size:13px!important;font-weight:900!important;white-space:nowrap!important}
+
+  .pricing-decision-workspace .rfq-decision-list{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:0!important;padding:0!important}
+  .pricing-decision-workspace .rfq-decision-card{display:grid!important;gap:13px!important;width:100%!important;margin:0!important;padding:16px!important;box-sizing:border-box!important;border:1px solid #dfe4eb!important;border-radius:22px!important;background:#fff!important;color:#111318!important;box-shadow:0 8px 24px rgba(17,19,24,.045)!important;overflow:hidden!important}
+  .pricing-decision-workspace .rfq-decision-card.selected{border-color:#7da6ff!important;background:#f5f8ff!important;box-shadow:0 0 0 2px rgba(23,105,255,.12),0 10px 28px rgba(17,19,24,.06)!important}
+
+  .pricing-decision-workspace .rfq-decision-card>header{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important}
+  .pricing-decision-workspace .rfq-decision-card>header>div{display:grid!important;gap:4px!important;min-width:0!important}
+  .pricing-decision-workspace .rfq-decision-card>header b{display:block!important;font-size:18px!important;line-height:1.15!important;letter-spacing:-.025em!important;color:#111318!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .pricing-decision-workspace .rfq-decision-card>header small{display:block!important;font-size:11px!important;line-height:1.25!important;color:#737c8b!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .pricing-decision-workspace .rfq-decision-card>header .status-badge{flex:none!important}
+
+  .pricing-decision-workspace .rfq-rate-summary{display:grid!important;grid-template-columns:1.2fr 1fr 1fr!important;gap:8px!important;margin:0!important;padding:0!important}
+  .pricing-decision-workspace .rfq-rate-summary>span{display:grid!important;gap:4px!important;min-width:0!important;padding:11px 10px!important;border:1px solid #e5e9ef!important;border-radius:15px!important;background:#f7f9fc!important}
+  .pricing-decision-workspace .rfq-rate-summary>span:first-child{grid-row:span 2!important;background:#111318!important;border-color:#111318!important;color:#fff!important;align-content:center!important}
+  .pricing-decision-workspace .rfq-rate-summary small{display:block!important;font-size:8px!important;line-height:1!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;color:#818a99!important}
+  .pricing-decision-workspace .rfq-rate-summary>span:first-child small{color:#9cbcff!important}
+  .pricing-decision-workspace .rfq-rate-summary b{display:block!important;font-size:12px!important;line-height:1.25!important;color:#111318!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .pricing-decision-workspace .rfq-rate-summary>span:first-child b{font-size:17px!important;color:#fff!important;white-space:normal!important}
+
+  .pricing-decision-workspace .rfq-decision-card>p{margin:0!important;padding:0 2px!important;color:#737c8b!important;font-size:11px!important;line-height:1.35!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .pricing-decision-workspace .rfq-decision-card>footer{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important}
+  .pricing-decision-workspace .rfq-decision-card>footer button{min-height:46px!important;margin:0!important;padding:0 12px!important;border-radius:14px!important;border:1px solid #dfe4eb!important;background:#fff!important;color:#111318!important;font-size:12px!important;font-weight:900!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;white-space:nowrap!important}
+  .pricing-decision-workspace .rfq-decision-card>footer .select-rate{background:#111318!important;color:#fff!important;border-color:#111318!important}
+  .pricing-decision-workspace .rfq-decision-card>footer .select-rate:disabled{background:#edf0f5!important;color:#8b93a0!important;border-color:#e0e4ea!important;opacity:1!important}
+  .pricing-decision-workspace .rfq-decision-card.selected>footer .select-rate{background:#1769ff!important;color:#fff!important;border-color:#1769ff!important}
+
+  .pricing-decision-workspace .secondary-rate-action{width:100%!important;min-height:50px!important;margin:14px 0 0!important;border:1px solid #dfe4eb!important;border-radius:16px!important;background:#fff!important;color:#111318!important;font-size:13px!important;font-weight:900!important}
+}
+
+@media (max-width:430px){
+  .pricing-decision-workspace .rates-heading{grid-template-columns:1fr!important;align-items:start!important}
+  .pricing-decision-workspace .rates-primary{width:100%!important}
+  .pricing-decision-workspace .rfq-rate-summary{grid-template-columns:1fr 1fr!important}
+  .pricing-decision-workspace .rfq-rate-summary>span:first-child{grid-column:1/-1!important;grid-row:auto!important}
+}
