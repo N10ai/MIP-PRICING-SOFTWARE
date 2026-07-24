@@ -68,6 +68,7 @@ import './rfq-mobile-interactions.css'
 import './rfq-mobile-final-tuning.css'
 import './rfq-quick-vendor.css'
 import './mobile-vendor-response-v2.css'
+import './rfq-quick-vendor-primary-fix.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
