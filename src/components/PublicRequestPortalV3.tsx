@@ -1,217 +1,77 @@
 import { useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp, MapPin, Plane, Plus, Sparkles, Ship, Trash2, Truck, Warehouse } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp, Copy, MapPin, Plane, Plus, Ship, Sparkles, Trash2, Truck, Warehouse } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 type Mode = 'air' | 'ocean' | 'ground' | 'warehouse' | ''
-type Intent = 'quote' | 'booking'
-type StartMode = 'choose' | 'paste' | 'form'
+type Cargo = { id:string; commodity:string; commodityCustom:string; packaging:string; packagingCustom:string; qty:string; weight:string; weightUnit:'lb'|'kg'; length:string; width:string; height:string; dimUnit:'in'|'cm' }
+type LocationDetails = { zip:string; company:string; address:string; city:string; state:string; country:string; contact:string; phone:string; instructions:string }
+type Stop = { id:string; type:string; location:string }
+type Preferences = { targetEnabled:boolean; targetRate:string; currency:string; basis:string; priority:string; flexibility:string; preferredCarrier:string; avoidCarrier:string }
+type Draft = { mode:Mode; service:string; subtype:string; containerType:string; containerQty:string; origin:string; destination:string; readyDate:string; company:string; contactName:string; email:string; phone:string; reference:string; notes:string; extraServices:string[] }
 
-type Cargo = {
-  id: string
-  commodity: string
-  packaging: string
-  qty: string
-  weight: string
-  weightUnit: 'lb' | 'kg'
-  length: string
-  width: string
-  height: string
-  dimUnit: 'in' | 'cm'
-}
-
-type LocationDetails = {
-  zip: string
-  company: string
-  address: string
-  city: string
-  state: string
-  country: string
-  contact: string
-  phone: string
-  instructions: string
-}
-
-type Leg = {
-  id: string
-  label: string
-  from: string
-  to: string
-  mode: Mode
-}
-
-type Draft = {
-  mode: Mode
-  intent: Intent
-  service: string
-  origin: string
-  destination: string
-  readyDate: string
-  company: string
-  contactName: string
-  email: string
-  phone: string
-  reference: string
-  notes: string
-  extraServices: string[]
-}
-
-const logo = 'https://raw.githubusercontent.com/N10ai/mip-tools/main/Untitled%20design%20-%201.png'
-const modeOptions = [
-  { id: 'air' as const, label: 'Air freight', copy: 'Fast international or domestic movement', icon: Plane },
-  { id: 'ocean' as const, label: 'Ocean freight', copy: 'LCL, FCL and oversized cargo', icon: Ship },
-  { id: 'ground' as const, label: 'Ground', copy: 'Local, LTL, FTL and drayage', icon: Truck },
-  { id: 'warehouse' as const, label: 'Warehousing', copy: 'Storage, handling and fulfillment', icon: Warehouse },
+const logo='https://raw.githubusercontent.com/N10ai/mip-tools/main/Untitled%20design%20-%201.png'
+const modeOptions=[
+  {id:'air' as const,label:'Air freight',copy:'Express, standard or charter',icon:Plane},
+  {id:'ocean' as const,label:'Ocean freight',copy:'LCL, FCL, breakbulk or RoRo',icon:Ship},
+  {id:'ground' as const,label:'Ground',copy:'LTL, FTL, dedicated or drayage',icon:Truck},
+  {id:'warehouse' as const,label:'Warehousing',copy:'Storage, handling and fulfillment',icon:Warehouse},
 ]
-const services = ['Pickup', 'Delivery', 'Customs clearance', 'Cargo insurance', 'Warehousing', 'Packing / crating', 'Cross-dock', 'FTZ handling', 'Bonded transport', 'Hazmat handling', 'Temperature controlled', 'Other']
-const serviceDefaults: Record<Exclude<Mode, ''>, string> = {
-  air: 'Air freight',
-  ocean: 'Ocean freight',
-  ground: 'Ground transportation',
-  warehouse: 'Warehousing',
+const subtypeOptions:Record<Exclude<Mode,''>,string[]>={air:['Express','Standard','Charter'],ocean:['LCL','FCL','Breakbulk','RoRo'],ground:['LTL','FTL','Dedicated','Drayage'],warehouse:['Storage','Cross-dock','Fulfillment','Transloading']}
+const serviceDefaults:Record<Exclude<Mode,''>,string>={air:'Air freight',ocean:'Ocean freight',ground:'Ground transportation',warehouse:'Warehousing'}
+const commodities=['General cargo','Electronics','Furniture','Machinery','Food products','Medical','Textiles','Automotive','Retail goods','Other']
+const packages=['Pallet','Box','Carton','Crate','Drum','Piece','Container','Other']
+const locationSuggestions=['MIA — Miami International Airport','JFK — John F. Kennedy International Airport','LAX — Los Angeles International Airport','AMS — Amsterdam Airport Schiphol','UIO — Quito International Airport','MIA Port — PortMiami','USMIA — PortMiami','NLRTM — Port of Rotterdam','CNSHA — Port of Shanghai','33174 — Miami, FL','33166 — Miami, FL','10001 — New York, NY','90001 — Los Angeles, CA']
+const serviceGroups=[
+  {title:'Transportation',items:['Pickup','Delivery','Liftgate','Appointment','White glove']},
+  {title:'Customs',items:['Export customs','Import customs','Bonded transport','FTZ handling']},
+  {title:'Cargo care',items:['Cargo insurance','Packing / crating','Labeling','Inspection','Hazmat handling','Temperature controlled']},
+  {title:'Warehousing',items:['Storage','Cross-dock','Pick & pack','Transloading']},
+]
+const emptyCargo=():Cargo=>({id:crypto.randomUUID(),commodity:'General cargo',commodityCustom:'',packaging:'Pallet',packagingCustom:'',qty:'1',weight:'',weightUnit:'lb',length:'',width:'',height:'',dimUnit:'in'})
+const emptyLocation=():LocationDetails=>({zip:'',company:'',address:'',city:'',state:'',country:'US',contact:'',phone:'',instructions:''})
+const emptyDraft=():Draft=>({mode:'',service:'',subtype:'',containerType:'40 HC',containerQty:'1',origin:'',destination:'',readyDate:'',company:'',contactName:'',email:'',phone:'',reference:'',notes:'',extraServices:[]})
+const emptyPreferences=():Preferences=>({targetEnabled:false,targetRate:'',currency:'USD',basis:'Entire shipment',priority:'Best balance',flexibility:'Open to alternatives',preferredCarrier:'',avoidCarrier:''})
+
+function inferDraft(text:string){
+  const lower=text.toLowerCase()
+  const mode:Mode=/ocean|sea freight|container|\bfcl\b|\blcl\b/.test(lower)?'ocean':/truck|ground|ltl|ftl|drayage/.test(lower)?'ground':/warehouse|storage|fulfillment|cross.?dock/.test(lower)?'warehouse':/air|airport|airfreight|flight/.test(lower)?'air':''
+  const subtype=mode==='ocean'?(/\bfcl\b/.test(lower)?'FCL':/\blcl\b/.test(lower)?'LCL':''):mode==='ground'?(/\bftl\b/.test(lower)?'FTL':/\bltl\b/.test(lower)?'LTL':''):''
+  const zips=[...text.matchAll(/\b\d{5}(?:-\d{4})?\b/g)].map(x=>x[0]); const codes=[...text.matchAll(/\b[A-Z]{3}\b/g)].map(x=>x[0]).filter(x=>!['THE','AND','FOR','LBS','KGS','USD'].includes(x))
+  const pkg=text.match(/(\d+)\s*(pallets?|boxes?|cartons?|crates?|drums?|pieces?|containers?)/i); const wt=text.match(/(\d+(?:\.\d+)?)\s*(lb|lbs|pounds?|kg|kgs|kilograms?)/i); const dims=text.match(/(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)\s*(in|inch|inches|cm|centimeters?)?/i); const budget=text.match(/(?:under|budget|target|keep it at|keep it below)\s*\$?\s*([\d,]+(?:\.\d+)?)/i)
+  const cargo=emptyCargo(); if(pkg){cargo.qty=pkg[1];cargo.packaging=pkg[2].replace(/s$/i,'').replace(/^./,c=>c.toUpperCase())} if(wt){cargo.weight=wt[1];cargo.weightUnit=/^k/i.test(wt[2])?'kg':'lb'} if(dims){cargo.length=dims[1];cargo.width=dims[2];cargo.height=dims[3];cargo.dimUnit=dims[4]&&/^c/i.test(dims[4])?'cm':'in'}
+  const draft={...emptyDraft(),mode,service:mode?serviceDefaults[mode]:'',subtype,origin:zips[0]||codes[0]||'',destination:zips[1]||codes[1]||'',notes:text}
+  const preferences={...emptyPreferences(),targetEnabled:Boolean(budget),targetRate:budget?.[1]?.replace(',','')||''}
+  return {draft,cargo,preferences,found:[mode&&`Service: ${serviceDefaults[mode]}`,subtype&&`Type: ${subtype}`,draft.origin&&`Origin: ${draft.origin}`,draft.destination&&`Destination: ${draft.destination}`,pkg&&`Cargo: ${pkg[1]} ${pkg[2]}`,wt&&`Weight: ${wt[1]} ${wt[2]}`,budget&&`Target: $${budget[1]}`].filter(Boolean) as string[]}
 }
 
-const emptyCargo = (): Cargo => ({ id: crypto.randomUUID(), commodity: '', packaging: 'pallet', qty: '1', weight: '', weightUnit: 'lb', length: '', width: '', height: '', dimUnit: 'in' })
-const emptyLocation = (): LocationDetails => ({ zip: '', company: '', address: '', city: '', state: '', country: '', contact: '', phone: '', instructions: '' })
-const emptyDraft = (): Draft => ({ mode: '', intent: 'quote', service: '', origin: '', destination: '', readyDate: '', company: '', contactName: '', email: '', phone: '', reference: '', notes: '', extraServices: [] })
+export function PublicRequestPortalV3(){
+  const [startMode,setStartMode]=useState<'choose'|'paste'|'form'>('choose'); const [pasteText,setPasteText]=useState(''); const [analysis,setAnalysis]=useState<ReturnType<typeof inferDraft>|null>(null); const [step,setStep]=useState(0)
+  const [draft,setDraft]=useState<Draft>(emptyDraft()); const [cargo,setCargo]=useState<Cargo[]>([emptyCargo()]); const [pickup,setPickup]=useState<LocationDetails>(emptyLocation()); const [delivery,setDelivery]=useState<LocationDetails>(emptyLocation()); const [pickupOpen,setPickupOpen]=useState(false); const [deliveryOpen,setDeliveryOpen]=useState(false); const [stops,setStops]=useState<Stop[]>([]); const [preferences,setPreferences]=useState<Preferences>(emptyPreferences()); const [submitting,setSubmitting]=useState(false); const [message,setMessage]=useState('')
+  const patch=(value:Partial<Draft>)=>setDraft(v=>({...v,...value})); const updateCargo=(id:string,value:Partial<Cargo>)=>setCargo(rows=>rows.map(row=>row.id===id?{...row,...value}:row)); const toggleService=(s:string)=>patch({extraServices:draft.extraServices.includes(s)?draft.extraServices.filter(x=>x!==s):[...draft.extraServices,s]})
+  const totals=useMemo(()=>cargo.reduce((sum,row)=>{const qty=Number(row.qty)||0, each=Number(row.weight)||0, kg=(row.weightUnit==='lb'?each*.453592:each)*qty, f=row.dimUnit==='in'?2.54:1, cbm=(Number(row.length)||0)*f*(Number(row.width)||0)*f*(Number(row.height)||0)*f/1e6*qty;return{pieces:sum.pieces+qty,kg:sum.kg+kg,cbm:sum.cbm+cbm}},{pieces:0,kg:0,cbm:0}),[cargo])
+  const readiness=[draft.mode,draft.origin,draft.mode==='warehouse'||draft.destination,cargo.some(x=>Number(x.qty)>0),draft.email].filter(Boolean).length*20
+  const canContinue=step===0?Boolean(draft.mode&&draft.subtype):step===1?Boolean(draft.origin&&(draft.mode==='warehouse'||draft.destination)&&cargo.some(x=>Number(x.qty)>0)):step===2?Boolean(draft.email):true
+  const useAnalysis=()=>{if(!analysis)return;setDraft(analysis.draft);setCargo([analysis.cargo]);setPreferences(analysis.preferences);setStartMode('form');setStep(0)}
+  const duplicate=(row:Cargo)=>setCargo(v=>[...v,{...row,id:crypto.randomUUID()}])
+  const lookupZip=async(zip:string,setter:(v:LocationDetails)=>void,current:LocationDetails)=>{if(!/^\d{5}$/.test(zip))return;try{const r=await fetch(`https://api.zippopotam.us/us/${zip}`);if(!r.ok)return;const data=await r.json();const p=data.places?.[0];if(p)setter({...current,zip,city:p['place name']||'',state:p['state abbreviation']||'',country:'US'})}catch{/* manual entry remains available */}}
+  const submit=async()=>{setSubmitting(true);setMessage('');const serviceLegs:any[]=stops.map((s,index)=>({id:s.id,type:s.type.toLowerCase(),label:s.type,sequence:index+1,origin:index===0?draft.origin:stops[index-1]?.location||draft.origin,destination:s.location,details:{stop:true}}));if(pickup.zip||pickup.address)serviceLegs.unshift({id:crypto.randomUUID(),type:'pickup',label:'Pickup',sequence:0,origin:[pickup.company,pickup.address,pickup.city,pickup.state,pickup.zip].filter(Boolean).join(', '),destination:draft.origin,details:pickup});if(delivery.zip||delivery.address)serviceLegs.push({id:crypto.randomUUID(),type:'delivery',label:'Delivery',sequence:serviceLegs.length+1,origin:draft.destination,destination:[delivery.company,delivery.address,delivery.city,delivery.state,delivery.zip].filter(Boolean).join(', '),details:delivery});const payload={company:draft.company,contactName:draft.contactName,email:draft.email,phone:draft.phone,referenceNumber:draft.reference,mode:draft.mode,serviceType:draft.service,serviceSubtype:draft.subtype,containerType:draft.subtype==='FCL'?draft.containerType:null,containerQty:draft.subtype==='FCL'?Number(draft.containerQty)||1:null,originSearch:draft.origin,originName:draft.origin,destinationSearch:draft.destination,destinationName:draft.destination,cargoReadyDate:draft.readyDate,requestIntent:'quote',specialInstructions:draft.notes,extraServices:draft.extraServices,serviceLegs,preferences,cargo:cargo.map(row=>({commodity:row.commodity==='Other'?row.commodityCustom:row.commodity,packagingType:row.packaging==='Other'?row.packagingCustom:row.packaging,cargoType:'general',qty:Number(row.qty)||0,weight:{value:Number(row.weight)||0,unit:row.weightUnit},dimensions:{length:{value:Number(row.length)||0,unit:row.dimUnit},width:{value:Number(row.width)||0,unit:row.dimUnit},height:{value:Number(row.height)||0,unit:row.dimUnit}},stackable:true})),totals:{weight:{kg:{value:+totals.kg.toFixed(2),unit:'kg'}},volume:{cbm:{value:+totals.cbm.toFixed(3),unit:'m3'}},chargeableWeight:{kg:{value:+Math.max(totals.kg,totals.cbm*167).toFixed(2),unit:'kg'}}},includeInland:Boolean(pickup.zip||delivery.zip||stops.length),pickup,delivery};const{data,error}=await supabase.functions.invoke('submit-quote-request',{body:payload});setSubmitting(false);if(error){setMessage(error.message);return}setMessage(`SUCCESS:${data.requestNumber}`)}
+  const goDashboard=()=>{location.hash='#/'}
 
-function inferDraft(text: string) {
-  const lower = text.toLowerCase()
-  const mode: Mode = /ocean|sea freight|container|\bfcl\b|\blcl\b/.test(lower) ? 'ocean' : /truck|ground|ltl|ftl|drayage|local delivery/.test(lower) ? 'ground' : /warehouse|storage|fulfillment|pick and pack/.test(lower) ? 'warehouse' : /air|airport|airfreight|flight/.test(lower) ? 'air' : ''
-  const intent: Intent = /book|booking|confirm shipment|ready to ship/.test(lower) ? 'booking' : 'quote'
-  const zips = [...text.matchAll(/\b\d{5}(?:-\d{4})?\b/g)].map(x => x[0])
-  const codes = [...text.matchAll(/\b[A-Z]{3}\b/g)].map(x => x[0]).filter(x => !['THE', 'AND', 'FOR', 'LBS', 'KGS', 'USD'].includes(x))
-  const route = text.match(/(?:from|pickup(?: at)?)[\s:]+(.+?)(?:\s+(?:to|deliver(?:y)?(?: to)?|destination)[\s:]+)(.+?)(?:[.,\n]|$)/i)
-  const origin = zips[0] || codes[0] || route?.[1]?.trim() || ''
-  const destination = zips[1] || codes[1] || route?.[2]?.trim() || ''
-  const packageMatch = text.match(/(\d+)\s*(pallets?|boxes?|cartons?|crates?|drums?|pieces?|containers?)/i)
-  const weightMatch = text.match(/(\d+(?:\.\d+)?)\s*(lb|lbs|pounds?|kg|kgs|kilograms?)/i)
-  const dimsMatch = text.match(/(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)\s*(in|inch|inches|cm|centimeters?)?/i)
-  const extraServices = services.filter(service => {
-    const s = service.toLowerCase()
-    if (service === 'Pickup') return /pickup|collect/.test(lower)
-    if (service === 'Delivery') return /delivery|deliver/.test(lower)
-    if (service === 'Customs clearance') return /customs|clearance|broker/.test(lower)
-    if (service === 'Cargo insurance') return /insurance|insured/.test(lower)
-    if (service === 'Warehousing') return /warehouse|storage/.test(lower)
-    if (service === 'Packing / crating') return /packing|crating|crate/.test(lower)
-    if (service === 'FTZ handling') return /\bftz\b|foreign trade zone/.test(lower)
-    if (service === 'Hazmat handling') return /hazmat|dangerous goods|\bdg\b|\bun\d{4}\b/.test(lower)
-    return lower.includes(s)
-  })
-  const cargo = emptyCargo()
-  if (packageMatch) {
-    cargo.qty = packageMatch[1]
-    cargo.packaging = packageMatch[2].toLowerCase().replace(/s$/, '')
-  }
-  if (weightMatch) {
-    cargo.weight = weightMatch[1]
-    cargo.weightUnit = /^k/i.test(weightMatch[2]) ? 'kg' : 'lb'
-  }
-  if (dimsMatch) {
-    cargo.length = dimsMatch[1]
-    cargo.width = dimsMatch[2]
-    cargo.height = dimsMatch[3]
-    cargo.dimUnit = dimsMatch[4] && /^c/i.test(dimsMatch[4]) ? 'cm' : 'in'
-  }
-  return {
-    draft: { ...emptyDraft(), mode, intent, service: mode ? serviceDefaults[mode] : '', origin, destination, extraServices, notes: text },
-    cargo,
-    found: [mode && `Service: ${serviceDefaults[mode]}`, origin && `Origin: ${origin}`, destination && `Destination: ${destination}`, packageMatch && `Cargo: ${packageMatch[1]} ${packageMatch[2]}`, weightMatch && `Weight: ${weightMatch[1]} ${weightMatch[2]}`, ...extraServices.map(x => `Service: ${x}`)].filter(Boolean) as string[],
-  }
-}
+  if(message.startsWith('SUCCESS:'))return <div className="request-v3 success"><div className="request-v3-success"><span><Check/></span><small>REQUEST RECEIVED</small><h1>Thank you.</h1><p>Your reference is <b>{message.split(':')[1]}</b></p><button onClick={()=>location.reload()}>Submit another request</button><button className="text" onClick={goDashboard}>Back to dashboard</button></div></div>
+  if(startMode==='choose')return <div className="request-v3"><PortalHeader back={goDashboard} backText="Dashboard" subtitle="Freight made simple"/><main className="request-v3-start"><small>NEW QUOTE REQUEST</small><h1>How would you like to begin?</h1><p>Describe the shipment naturally or use the guided builder.</p><div className="request-v3-start-options"><button className="ai" onClick={()=>setStartMode('paste')}><span><Sparkles/></span><div><b>Describe or paste shipment details</b><small>Paste an email, WhatsApp message, or simple description.</small></div><ArrowRight/></button><button onClick={()=>setStartMode('form')}><span><Plus/></span><div><b>Fill it myself</b><small>A fast, guided shipment builder.</small></div><ArrowRight/></button></div></main></div>
+  if(startMode==='paste')return <div className="request-v3"><PortalHeader back={()=>{setStartMode('choose');setAnalysis(null)}} backText="Back" subtitle="AI-assisted request"/><main className="request-v3-paste"><small>SMART START</small><h1>Tell us about the shipment</h1><p>Include whatever you know. You will review everything before submitting.</p><textarea autoFocus value={pasteText} onChange={e=>setPasteText(e.target.value)} placeholder="Need 2 pallets picked up in Miami and flown to Quito next Tuesday. Target budget $2,500."/>{analysis&&<section className="request-v3-analysis"><header><div><small>DRAFT CREATED</small><h2>Here’s what we found</h2></div><Check/></header><div>{analysis.found.map(item=><span key={item}>{item}</span>)}</div><p>You can correct or complete everything next.</p></section>}<footer><button className="secondary" onClick={()=>setStartMode('choose')}>Cancel</button>{analysis?<button className="primary" onClick={useAnalysis}>Use these details <ArrowRight/></button>:<button className="primary" disabled={!pasteText.trim()} onClick={()=>setAnalysis(inferDraft(pasteText))}><Sparkles/> Create draft</button>}</footer></main></div>
 
-export function PublicRequestPortalV3() {
-  const [startMode, setStartMode] = useState<StartMode>('choose')
-  const [pasteText, setPasteText] = useState('')
-  const [analysis, setAnalysis] = useState<ReturnType<typeof inferDraft> | null>(null)
-  const [step, setStep] = useState(0)
-  const [draft, setDraft] = useState<Draft>(emptyDraft())
-  const [cargo, setCargo] = useState<Cargo[]>([emptyCargo()])
-  const [pickup, setPickup] = useState<LocationDetails>(emptyLocation())
-  const [delivery, setDelivery] = useState<LocationDetails>(emptyLocation())
-  const [pickupOpen, setPickupOpen] = useState(false)
-  const [deliveryOpen, setDeliveryOpen] = useState(false)
-  const [legs, setLegs] = useState<Leg[]>([])
-  const [customService, setCustomService] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [message, setMessage] = useState('')
-
-  const totals = useMemo(() => cargo.reduce((sum, row) => {
-    const qty = Number(row.qty) || 0
-    const each = Number(row.weight) || 0
-    const kg = (row.weightUnit === 'lb' ? each * .453592 : each) * qty
-    const f = row.dimUnit === 'in' ? 2.54 : 1
-    const cbm = (Number(row.length) || 0) * f * (Number(row.width) || 0) * f * (Number(row.height) || 0) * f / 1e6 * qty
-    return { pieces: sum.pieces + qty, kg: sum.kg + kg, cbm: sum.cbm + cbm }
-  }, { pieces: 0, kg: 0, cbm: 0 }), [cargo])
-
-  const patch = (value: Partial<Draft>) => setDraft(current => ({ ...current, ...value }))
-  const updateCargo = (id: string, value: Partial<Cargo>) => setCargo(rows => rows.map(row => row.id === id ? { ...row, ...value } : row))
-  const toggleService = (service: string) => patch({ extraServices: draft.extraServices.includes(service) ? draft.extraServices.filter(x => x !== service) : [...draft.extraServices, service] })
-
-  const useAnalysis = () => {
-    if (!analysis) return
-    setDraft(analysis.draft)
-    setCargo([analysis.cargo])
-    setStartMode('form')
-    setStep(0)
-  }
-
-  const goDashboard = () => { location.hash = '#/' }
-
-  const canContinue = step === 0 ? Boolean(draft.mode) : step === 1 ? Boolean(draft.origin && (draft.mode === 'warehouse' || draft.destination) && cargo.some(x => Number(x.qty) > 0)) : step === 2 ? Boolean(draft.email) : true
-
-  const submit = async () => {
-    setSubmitting(true)
-    setMessage('')
-    const serviceLegs = legs.map((leg, index) => ({ id: leg.id, type: leg.mode || 'ground', label: leg.label || `Leg ${index + 1}`, sequence: index + 1, origin: leg.from, destination: leg.to, details: { custom: true } }))
-    if (pickup.zip || pickup.address) serviceLegs.unshift({ id: crypto.randomUUID(), type: 'pickup', label: 'Pickup', sequence: 0, origin: [pickup.company, pickup.address, pickup.city, pickup.state, pickup.zip, pickup.country].filter(Boolean).join(', '), destination: draft.origin, details: pickup })
-    if (delivery.zip || delivery.address) serviceLegs.push({ id: crypto.randomUUID(), type: 'delivery', label: 'Delivery', sequence: serviceLegs.length + 1, origin: draft.destination, destination: [delivery.company, delivery.address, delivery.city, delivery.state, delivery.zip, delivery.country].filter(Boolean).join(', '), details: delivery })
-    const payload = {
-      company: draft.company,
-      contactName: draft.contactName,
-      email: draft.email,
-      phone: draft.phone,
-      referenceNumber: draft.reference,
-      mode: draft.mode,
-      serviceType: draft.service || (draft.mode ? serviceDefaults[draft.mode] : ''),
-      originSearch: draft.origin,
-      originName: draft.origin,
-      destinationSearch: draft.destination,
-      destinationName: draft.destination,
-      cargoReadyDate: draft.readyDate,
-      requestIntent: draft.intent,
-      specialInstructions: draft.notes,
-      extraServices: draft.extraServices,
-      serviceLegs,
-      cargo: cargo.map(row => ({ commodity: row.commodity, packagingType: row.packaging, cargoType: 'general', qty: Number(row.qty) || 0, weight: { value: Number(row.weight) || 0, unit: row.weightUnit }, dimensions: { length: { value: Number(row.length) || 0, unit: row.dimUnit }, width: { value: Number(row.width) || 0, unit: row.dimUnit }, height: { value: Number(row.height) || 0, unit: row.dimUnit } }, stackable: true })),
-      totals: { weight: { kg: { value: +totals.kg.toFixed(2), unit: 'kg' } }, volume: { cbm: { value: +totals.cbm.toFixed(3), unit: 'm3' } }, chargeableWeight: { kg: { value: +Math.max(totals.kg, totals.cbm * 167).toFixed(2), unit: 'kg' } } },
-      includeInland: Boolean(pickup.zip || delivery.zip || legs.length),
-      pickup,
-      delivery,
-    }
-    const { data, error } = await supabase.functions.invoke('submit-quote-request', { body: payload })
-    setSubmitting(false)
-    if (error) { setMessage(error.message); return }
-    setMessage(`SUCCESS:${data.requestNumber}`)
-  }
-
-  if (message.startsWith('SUCCESS:')) return <div className="request-v3 success"><div className="request-v3-success"><span><Check /></span><small>REQUEST RECEIVED</small><h1>Thank you.</h1><p>Your reference is <b>{message.split(':')[1]}</b></p><button onClick={() => location.reload()}>Submit another request</button><button className="text" onClick={goDashboard}>Back to dashboard</button></div></div>
-
-  if (startMode === 'choose') return <div className="request-v3"><header className="request-v3-header"><button onClick={goDashboard}><ArrowLeft /> Dashboard</button><div><img src={logo} /><span><b>MIP Cargo Express</b><small>Freight made simple</small></span></div></header><main className="request-v3-start"><small>NEW REQUEST</small><h1>How would you like to begin?</h1><p>Share what you know. You can add optional details later.</p><div className="request-v3-start-options"><button className="ai" onClick={() => setStartMode('paste')}><span><Sparkles /></span><div><b>Describe or paste shipment details</b><small>Fastest. Paste an email, message, or simple description.</small></div><ArrowRight /></button><button onClick={() => setStartMode('form')}><span><Plus /></span><div><b>Fill it myself</b><small>Answer a few short questions.</small></div><ArrowRight /></button></div></main></div>
-
-  if (startMode === 'paste') return <div className="request-v3"><header className="request-v3-header"><button onClick={() => { setStartMode('choose'); setAnalysis(null) }}><ArrowLeft /> Back</button><div><img src={logo} /><span><b>MIP Cargo Express</b><small>AI-assisted request</small></span></div></header><main className="request-v3-paste"><small>SMART START</small><h1>Tell us about the shipment</h1><p>Paste a message or describe it naturally. You will review everything before submitting.</p><textarea autoFocus value={pasteText} onChange={e => setPasteText(e.target.value)} placeholder="Example: Need air freight from 33174 to AMS. 2 pallets, 500 lb each, 48 x 40 x 50 in. Ready Friday. Include pickup and customs clearance." />{analysis && <section className="request-v3-analysis"><header><div><small>DRAFT CREATED</small><h2>Here’s what we found</h2></div><Check /></header><div>{analysis.found.length ? analysis.found.map(item => <span key={item}>{item}</span>) : <p>We could not identify enough details yet. Add the service, route, or cargo information.</p>}</div><p>You can correct or complete everything in the next screen.</p></section>}<footer><button className="secondary" onClick={() => setStartMode('choose')}>Cancel</button>{analysis ? <button className="primary" onClick={useAnalysis}>Use these details <ArrowRight /></button> : <button className="primary" disabled={!pasteText.trim()} onClick={() => setAnalysis(inferDraft(pasteText))}><Sparkles /> Create draft</button>}</footer></main></div>
-
-  return <div className="request-v3"><header className="request-v3-header"><button onClick={step ? () => setStep(step - 1) : () => setStartMode('choose')}><ArrowLeft /> {step ? 'Back' : 'Start over'}</button><div><img src={logo} /><span><b>MIP Cargo Express</b><small>Request a quote</small></span></div><button className="dashboard-link" onClick={goDashboard}>Dashboard</button></header><div className="request-v3-progress"><span style={{ width: `${((step + 1) / 4) * 100}%` }} /></div><main className="request-v3-builder"><div className="request-v3-step-label">STEP {step + 1} OF 4</div>
-    {step === 0 && <section><h1>What do you need?</h1><p>Choose the main service. Extra services come later.</p><div className="request-v3-mode-grid">{modeOptions.map(({ id, label, copy, icon: Icon }) => <button className={draft.mode === id ? 'selected' : ''} onClick={() => patch({ mode: id, service: serviceDefaults[id] })} key={id}><Icon /><span><b>{label}</b><small>{copy}</small></span>{draft.mode === id && <i><Check /></i>}</button>)}</div><div className="request-v3-intent"><span><b>What should we prepare?</b><small>You can change this later.</small></span><div><button className={draft.intent === 'quote' ? 'selected' : ''} onClick={() => patch({ intent: 'quote' })}>Quote</button><button className={draft.intent === 'booking' ? 'selected' : ''} onClick={() => patch({ intent: 'booking' })}>Booking</button></div></div></section>}
-    {step === 1 && <section><h1>Route and cargo</h1><p>ZIP codes, airport codes, ports, or cities are enough.</p><div className="request-v3-route"><label><span>Origin *</span><input value={draft.origin} onChange={e => patch({ origin: e.target.value })} placeholder="ZIP, airport, port, or city" /></label>{draft.mode !== 'warehouse' && <label><span>Destination *</span><input value={draft.destination} onChange={e => patch({ destination: e.target.value })} placeholder="ZIP, airport, port, or city" /></label>}<label><span>Ready date</span><input type="date" value={draft.readyDate} onChange={e => patch({ readyDate: e.target.value })} /></label></div><div className="request-v3-cargo-list">{cargo.map((row, index) => <article key={row.id}><header><b>Cargo {index + 1}</b>{cargo.length > 1 && <button onClick={() => setCargo(v => v.filter(x => x.id !== row.id))}><Trash2 /></button>}</header><div className="request-v3-cargo-fields"><label className="commodity"><span>What is it?</span><input value={row.commodity} onChange={e => updateCargo(row.id, { commodity: e.target.value })} placeholder="General cargo, furniture…" /></label><label><span>Qty</span><input inputMode="numeric" value={row.qty} onChange={e => updateCargo(row.id, { qty: e.target.value })} /></label><label><span>Package</span><select value={row.packaging} onChange={e => updateCargo(row.id, { packaging: e.target.value })}><option>pallet</option><option>box</option><option>carton</option><option>crate</option><option>drum</option><option>piece</option><option>container</option><option>unknown</option></select></label><label><span>Weight each</span><div><input inputMode="decimal" value={row.weight} onChange={e => updateCargo(row.id, { weight: e.target.value })} placeholder="Optional" /><select value={row.weightUnit} onChange={e => updateCargo(row.id, { weightUnit: e.target.value as 'lb' | 'kg' })}><option>lb</option><option>kg</option></select></div></label><label className="dimensions"><span>Dimensions</span><div><input value={row.length} onChange={e => updateCargo(row.id, { length: e.target.value })} placeholder="L" /><input value={row.width} onChange={e => updateCargo(row.id, { width: e.target.value })} placeholder="W" /><input value={row.height} onChange={e => updateCargo(row.id, { height: e.target.value })} placeholder="H" /><select value={row.dimUnit} onChange={e => updateCargo(row.id, { dimUnit: e.target.value as 'in' | 'cm' })}><option>in</option><option>cm</option></select></div></label></div></article>)}</div><button className="request-v3-add" onClick={() => setCargo(v => [...v, emptyCargo()])}><Plus /> Add cargo line</button></section>}
-    {step === 2 && <section><h1>Services and contact</h1><p>Add only what applies. Full addresses are optional.</p><div className="request-v3-services">{services.map(service => <button className={draft.extraServices.includes(service) ? 'selected' : ''} onClick={() => toggleService(service)} key={service}>{draft.extraServices.includes(service) ? <Check /> : <Plus />} {service}</button>)}</div>{draft.extraServices.includes('Other') && <div className="request-v3-custom-service"><input value={customService} onChange={e => setCustomService(e.target.value)} placeholder="Describe the other service" /><button disabled={!customService.trim()} onClick={() => { patch({ extraServices: [...draft.extraServices.filter(x => x !== 'Other'), customService.trim()] }); setCustomService('') }}>Add</button></div>}<div className="request-v3-optional-location"><button onClick={() => setPickupOpen(v => !v)}><span><MapPin /><b>Pickup details</b><small>{pickup.zip || 'Optional — ZIP code is enough'}</small></span>{pickupOpen ? <ChevronUp /> : <ChevronDown />}</button>{pickupOpen && <LocationForm value={pickup} onChange={setPickup} />}</div><div className="request-v3-optional-location"><button onClick={() => setDeliveryOpen(v => !v)}><span><MapPin /><b>Delivery details</b><small>{delivery.zip || 'Optional — ZIP code is enough'}</small></span>{deliveryOpen ? <ChevronUp /> : <ChevronDown />}</button>{deliveryOpen && <LocationForm value={delivery} onChange={setDelivery} />}</div><div className="request-v3-legs"><header><div><b>Shipment legs</b><small>Optional for multi-step or multimodal moves.</small></div><button onClick={() => setLegs(v => [...v, { id: crypto.randomUUID(), label: '', from: '', to: '', mode: 'ground' }])}><Plus /> Add leg</button></header>{legs.map((leg, index) => <article key={leg.id}><span>{index + 1}</span><div><input value={leg.label} onChange={e => setLegs(v => v.map(x => x.id === leg.id ? { ...x, label: e.target.value } : x))} placeholder="Leg name" /><div><input value={leg.from} onChange={e => setLegs(v => v.map(x => x.id === leg.id ? { ...x, from: e.target.value } : x))} placeholder="From" /><ArrowRight /><input value={leg.to} onChange={e => setLegs(v => v.map(x => x.id === leg.id ? { ...x, to: e.target.value } : x))} placeholder="To" /></div><select value={leg.mode} onChange={e => setLegs(v => v.map(x => x.id === leg.id ? { ...x, mode: e.target.value as Mode } : x))}><option value="ground">Ground</option><option value="air">Air</option><option value="ocean">Ocean</option><option value="warehouse">Warehouse</option></select></div><button onClick={() => setLegs(v => v.filter(x => x.id !== leg.id))}><Trash2 /></button></article>)}</div><div className="request-v3-contact"><label><span>Email *</span><input type="email" value={draft.email} onChange={e => patch({ email: e.target.value })} placeholder="you@company.com" /></label><label><span>Name</span><input value={draft.contactName} onChange={e => patch({ contactName: e.target.value })} /></label><label><span>Company</span><input value={draft.company} onChange={e => patch({ company: e.target.value })} /></label><label><span>Phone</span><input value={draft.phone} onChange={e => patch({ phone: e.target.value })} /></label><label className="full"><span>Reference / PO</span><input value={draft.reference} onChange={e => patch({ reference: e.target.value })} /></label><label className="full"><span>Anything else?</span><textarea value={draft.notes} onChange={e => patch({ notes: e.target.value })} placeholder="Special instructions, deadlines, or anything we should know" /></label></div></section>}
-    {step === 3 && <section><h1>Review your request</h1><p>Check the essentials. You can go back to make changes.</p><div className="request-v3-review"><article className="route"><small>ROUTE</small><b>{draft.origin || 'Origin'} <ArrowRight /> {draft.mode === 'warehouse' ? 'Warehouse service' : draft.destination || 'Destination'}</b><span>{draft.service || (draft.mode ? serviceDefaults[draft.mode] : 'Service')}</span></article><article><small>REQUEST</small><b>{draft.intent === 'booking' ? 'Booking request' : 'Quote request'}</b><span>{draft.readyDate || 'Flexible date'}</span></article><article><small>CARGO</small><b>{totals.pieces} pieces · {totals.kg.toFixed(1)} kg</b><span>{totals.cbm.toFixed(3)} CBM</span></article><article><small>EXTRA SERVICES</small><b>{draft.extraServices.length ? draft.extraServices.join(', ') : 'None selected'}</b><span>{legs.length ? `${legs.length} additional leg${legs.length === 1 ? '' : 's'}` : 'Direct movement'}</span></article><article><small>CONTACT</small><b>{draft.company || draft.contactName || 'Customer'}</b><span>{draft.email}</span></article></div>{message && <div className="request-v3-error">{message}</div>}</section>}
-    <footer className="request-v3-actions">{step > 0 ? <button className="secondary" onClick={() => setStep(step - 1)}><ArrowLeft /> Back</button> : <span />}{step < 3 ? <button className="primary" disabled={!canContinue} onClick={() => setStep(step + 1)}>Continue <ArrowRight /></button> : <button className="primary" disabled={submitting} onClick={submit}>{submitting ? 'Submitting…' : 'Submit request'} <Check /></button>}</footer>
+  return <div className="request-v3"><PortalHeader back={step?()=>setStep(step-1):()=>setStartMode('choose')} backText={step?'Back':'Start over'} subtitle="Request a quote" dashboard={goDashboard}/><div className="request-v3-progress"><span style={{width:`${((step+1)/4)*100}%`}}/></div><main className="request-v3-builder"><div className="request-v3-step-label">STEP {step+1} OF 4</div>
+    {step===0&&<section><h1>Choose the service</h1><p>We will show only the options that apply.</p><div className="request-v3-mode-grid">{modeOptions.map(({id,label,copy,icon:Icon})=><button className={draft.mode===id?'selected':''} onClick={()=>patch({mode:id,service:serviceDefaults[id],subtype:''})} key={id}><Icon/><span><b>{label}</b><small>{copy}</small></span>{draft.mode===id&&<i><Check/></i>}</button>)}</div>{draft.mode&&<div className="request-v3-subtypes"><small>SELECT SERVICE TYPE</small><div>{subtypeOptions[draft.mode].map(x=><button key={x} className={draft.subtype===x?'selected':''} onClick={()=>patch({subtype:x})}>{x}</button>)}</div>{draft.mode==='ocean'&&draft.subtype==='FCL'&&<div className="request-v3-container"><label><span>Container type</span><select value={draft.containerType} onChange={e=>patch({containerType:e.target.value})}><option>20 STD</option><option>40 STD</option><option>40 HC</option><option>45 HC</option><option>Reefer 20</option><option>Reefer 40 HC</option><option>Open Top</option><option>Flat Rack</option></select></label><label><span>Quantity</span><input inputMode="numeric" value={draft.containerQty} onChange={e=>patch({containerQty:e.target.value})}/></label></div>}</div>}</section>}
+    {step===1&&<section><h1>Route and cargo</h1><p>Search by ZIP, airport, port or city. Suggestions appear as you type.</p><div className="request-v3-route"><SmartLocation label="Origin *" value={draft.origin} onChange={v=>patch({origin:v})}/>{draft.mode!=='warehouse'&&<SmartLocation label="Destination *" value={draft.destination} onChange={v=>patch({destination:v})}/>}<label><span>Ready date</span><input type="date" value={draft.readyDate} onChange={e=>patch({readyDate:e.target.value})}/></label></div><div className="request-v3-cargo-list">{cargo.map((row,index)=><article key={row.id}><header><b>Cargo {index+1}</b><div><button title="Duplicate" onClick={()=>duplicate(row)}><Copy/></button>{cargo.length>1&&<button title="Delete" onClick={()=>setCargo(v=>v.filter(x=>x.id!==row.id))}><Trash2/></button>}</div></header><div className="request-v3-cargo-fields"><label><span>Commodity</span><select value={row.commodity} onChange={e=>updateCargo(row.id,{commodity:e.target.value})}>{commodities.map(x=><option key={x}>{x}</option>)}</select></label><label><span>Package type</span><select value={row.packaging} onChange={e=>updateCargo(row.id,{packaging:e.target.value})}>{packages.map(x=><option key={x}>{x}</option>)}</select></label>{row.commodity==='Other'&&<label><span>Custom commodity</span><input value={row.commodityCustom} onChange={e=>updateCargo(row.id,{commodityCustom:e.target.value})}/></label>}{row.packaging==='Other'&&<label><span>Custom package</span><input value={row.packagingCustom} onChange={e=>updateCargo(row.id,{packagingCustom:e.target.value})}/></label>}<label><span>Quantity</span><input inputMode="numeric" value={row.qty} onChange={e=>updateCargo(row.id,{qty:e.target.value})}/></label><label><span>Weight each</span><div><input inputMode="decimal" value={row.weight} onChange={e=>updateCargo(row.id,{weight:e.target.value})} placeholder="Optional"/><select value={row.weightUnit} onChange={e=>updateCargo(row.id,{weightUnit:e.target.value as 'lb'|'kg'})}><option>lb</option><option>kg</option></select></div></label><label className="dimensions"><span>Dimensions (optional)</span><div><input value={row.length} onChange={e=>updateCargo(row.id,{length:e.target.value})} placeholder="L"/><input value={row.width} onChange={e=>updateCargo(row.id,{width:e.target.value})} placeholder="W"/><input value={row.height} onChange={e=>updateCargo(row.id,{height:e.target.value})} placeholder="H"/><select value={row.dimUnit} onChange={e=>updateCargo(row.id,{dimUnit:e.target.value as 'in'|'cm'})}><option>in</option><option>cm</option></select></div></label></div></article>)}</div><button className="request-v3-add" onClick={()=>setCargo(v=>[...v,emptyCargo()])}><Plus/> Add different cargo</button></section>}
+    {step===2&&<section><h1>Complete the request</h1><p>Pickup, delivery and preferences stay compact until you need them.</p><div className="request-v3-quick-locations"><QuickLocation title="Pickup" value={pickup} setValue={setPickup} open={pickupOpen} setOpen={setPickupOpen} lookupZip={lookupZip}/><QuickLocation title="Delivery" value={delivery} setValue={setDelivery} open={deliveryOpen} setOpen={setDeliveryOpen} lookupZip={lookupZip}/></div><div className="request-v3-service-groups">{serviceGroups.map(group=><article key={group.title}><b>{group.title}</b><div>{group.items.map(s=><button key={s} className={draft.extraServices.includes(s)?'selected':''} onClick={()=>toggleService(s)}>{draft.extraServices.includes(s)?<Check/>:<Plus/>}{s}</button>)}</div></article>)}</div><div className="request-v3-journey"><header><div><b>Shipment journey</b><small>Only add intermediate stops, such as a warehouse, port or airport.</small></div><button onClick={()=>setStops(v=>[...v,{id:crypto.randomUUID(),type:'Warehouse',location:''}])}><Plus/> Add stop</button></header>{stops.map((stop,index)=><article key={stop.id}><span>{index+1}</span><select value={stop.type} onChange={e=>setStops(v=>v.map(x=>x.id===stop.id?{...x,type:e.target.value}:x))}><option>Supplier</option><option>Warehouse</option><option>Airport</option><option>Port</option><option>Rail</option><option>Customs</option><option>Customer</option><option>Other</option></select><SmartLocation label="Stop location" value={stop.location} onChange={location=>setStops(v=>v.map(x=>x.id===stop.id?{...x,location}:x))}/><button onClick={()=>setStops(v=>v.filter(x=>x.id!==stop.id))}><Trash2/></button></article>)}</div><PreferencesCard value={preferences} onChange={setPreferences}/><div className="request-v3-contact"><label><span>Email *</span><input type="email" value={draft.email} onChange={e=>patch({email:e.target.value})} placeholder="you@company.com"/></label><label><span>Name</span><input value={draft.contactName} onChange={e=>patch({contactName:e.target.value})}/></label><label><span>Company</span><input value={draft.company} onChange={e=>patch({company:e.target.value})}/></label><label><span>Phone</span><input value={draft.phone} onChange={e=>patch({phone:e.target.value})}/></label><label className="full"><span>Reference / PO</span><input value={draft.reference} onChange={e=>patch({reference:e.target.value})}/></label><label className="full"><span>Notes to pricing team</span><textarea value={draft.notes} onChange={e=>patch({notes:e.target.value})} placeholder="Deadline, fragile cargo, carrier restrictions, or anything else we should know"/></label></div></section>}
+    {step===3&&<section><h1>Review your request</h1><p>Everything below will be sent to the MIP pricing team.</p><div className="request-v3-readiness"><div><small>REQUEST READINESS</small><b>{readiness}% complete</b></div><span><i style={{width:`${readiness}%`}}/></span></div><div className="request-v3-review"><article className="route"><small>ROUTE</small><b>{draft.origin||'Origin'} <ArrowRight/> {draft.mode==='warehouse'?'Warehouse service':draft.destination||'Destination'}</b><span>{draft.service} · {draft.subtype}{draft.subtype==='FCL'?` · ${draft.containerQty} × ${draft.containerType}`:''}</span></article><article><small>CARGO</small><b>{totals.pieces} pieces · {totals.kg.toFixed(1)} kg</b><span>{totals.cbm.toFixed(3)} CBM</span></article><article><small>TARGET</small><b>{preferences.targetEnabled&&preferences.targetRate?`${preferences.currency} ${preferences.targetRate}`:'No target provided'}</b><span>{preferences.targetEnabled?`${preferences.basis} · ${preferences.flexibility}`:preferences.priority}</span></article><article><small>SERVICES</small><b>{draft.extraServices.length?draft.extraServices.join(', '):'None selected'}</b><span>{stops.length?`${stops.length} intermediate stop${stops.length===1?'':'s'}`:'Direct movement'}</span></article><article><small>CONTACT</small><b>{draft.company||draft.contactName||'Customer'}</b><span>{draft.email}</span></article></div>{message&&<div className="request-v3-error">{message}</div>}</section>}
+    <footer className="request-v3-actions">{step>0?<button className="secondary" onClick={()=>setStep(step-1)}><ArrowLeft/> Back</button>:<span/>}{step<3?<button className="primary" disabled={!canContinue} onClick={()=>setStep(step+1)}>Continue <ArrowRight/></button>:<button className="primary" disabled={submitting} onClick={submit}>{submitting?'Submitting…':'Submit quote request'} <Check/></button>}</footer>
   </main></div>
 }
 
-function LocationForm({ value, onChange }: { value: LocationDetails; onChange: (value: LocationDetails) => void }) {
-  const patch = (next: Partial<LocationDetails>) => onChange({ ...value, ...next })
-  return <div className="request-v3-location-form"><label><span>ZIP / postal code</span><input value={value.zip} onChange={e => patch({ zip: e.target.value })} placeholder="33174" /></label><label><span>Company / location</span><input value={value.company} onChange={e => patch({ company: e.target.value })} /></label><label className="full"><span>Street address</span><input value={value.address} onChange={e => patch({ address: e.target.value })} /></label><label><span>City</span><input value={value.city} onChange={e => patch({ city: e.target.value })} /></label><label><span>State / province</span><input value={value.state} onChange={e => patch({ state: e.target.value })} /></label><label><span>Country</span><input value={value.country} onChange={e => patch({ country: e.target.value })} /></label><label><span>Contact</span><input value={value.contact} onChange={e => patch({ contact: e.target.value })} /></label><label><span>Phone</span><input value={value.phone} onChange={e => patch({ phone: e.target.value })} /></label><label className="full"><span>Instructions</span><input value={value.instructions} onChange={e => patch({ instructions: e.target.value })} /></label></div>
-}
+function PortalHeader({back,backText,subtitle,dashboard}:{back:()=>void;backText:string;subtitle:string;dashboard?:()=>void}){return <header className="request-v3-header"><button onClick={back}><ArrowLeft/> {backText}</button><div><img src={logo}/><span><b>MIP Cargo Express</b><small>{subtitle}</small></span></div>{dashboard&&<button className="dashboard-link" onClick={dashboard}>Dashboard</button>}</header>}
+function SmartLocation({label,value,onChange}:{label:string;value:string;onChange:(v:string)=>void}){const matches=value.length>1?locationSuggestions.filter(x=>x.toLowerCase().includes(value.toLowerCase())).slice(0,5):[];return <label className="request-v3-smart-location"><span>{label}</span><input value={value} onChange={e=>onChange(e.target.value)} placeholder="ZIP, airport, port or city"/>{matches.length>0&&<div className="request-v3-suggestions">{matches.map(x=><button type="button" key={x} onClick={()=>onChange(x)}><MapPin/>{x}</button>)}</div>}</label>}
+function LocationForm({value,onChange}:{value:LocationDetails;onChange:(value:LocationDetails)=>void}){const patch=(next:Partial<LocationDetails>)=>onChange({...value,...next});return <div className="request-v3-location-form"><label><span>Company / location</span><input value={value.company} onChange={e=>patch({company:e.target.value})}/></label><label className="full"><span>Street address</span><input value={value.address} onChange={e=>patch({address:e.target.value})}/></label><label><span>City</span><input value={value.city} onChange={e=>patch({city:e.target.value})}/></label><label><span>State / province</span><input value={value.state} onChange={e=>patch({state:e.target.value})}/></label><label><span>Country</span><input value={value.country} onChange={e=>patch({country:e.target.value})}/></label><label><span>Contact</span><input value={value.contact} onChange={e=>patch({contact:e.target.value})}/></label><label><span>Phone</span><input value={value.phone} onChange={e=>patch({phone:e.target.value})}/></label><label className="full"><span>Instructions</span><input value={value.instructions} onChange={e=>patch({instructions:e.target.value})}/></label></div>}
+function QuickLocation({title,value,setValue,open,setOpen,lookupZip}:{title:string;value:LocationDetails;setValue:(v:LocationDetails)=>void;open:boolean;setOpen:(v:boolean)=>void;lookupZip:(zip:string,setter:(v:LocationDetails)=>void,current:LocationDetails)=>void}){return <div className="request-v3-quick-location"><header><span><MapPin/><b>{title}</b></span><button onClick={()=>setOpen(!open)}>{open?<ChevronUp/>:<ChevronDown/>}</button></header><div className="zip-row"><input inputMode="numeric" value={value.zip} onChange={e=>{const zip=e.target.value;setValue({...value,zip});lookupZip(zip,setValue,{...value,zip})}} placeholder="ZIP / postal code"/><small>{[value.city,value.state].filter(Boolean).join(', ')||'ZIP is enough'}</small></div>{open&&<LocationForm value={value} onChange={setValue}/>}</div>}
+function PreferencesCard({value,onChange}:{value:Preferences;onChange:(v:Preferences)=>void}){const patch=(x:Partial<Preferences>)=>onChange({...value,...x});return <div className="request-v3-preferences"><header><div><b>Preferences</b><small>Optional information for the pricing team</small></div></header><label className="target-toggle"><input type="checkbox" checked={value.targetEnabled} onChange={e=>patch({targetEnabled:e.target.checked})}/><span><b>I have a target rate</b><small>Keep this private for MIP’s pricing team.</small></span></label>{value.targetEnabled&&<div className="target-grid"><label><span>Target rate</span><input inputMode="decimal" value={value.targetRate} onChange={e=>patch({targetRate:e.target.value})} placeholder="2,500"/></label><label><span>Currency</span><select value={value.currency} onChange={e=>patch({currency:e.target.value})}><option>USD</option><option>EUR</option><option>GBP</option><option>CAD</option><option>MXN</option></select></label><label><span>Rate basis</span><select value={value.basis} onChange={e=>patch({basis:e.target.value})}><option>Entire shipment</option><option>Per container</option><option>Per pallet</option><option>Per kg</option><option>Per CBM</option></select></label><label><span>Flexibility</span><select value={value.flexibility} onChange={e=>patch({flexibility:e.target.value})}><option>Strict</option><option>Flexible within 10%</option><option>Flexible within 20%</option><option>Open to alternatives</option></select></label></div>}<div className="preference-grid"><label><span>What matters most?</span><select value={value.priority} onChange={e=>patch({priority:e.target.value})}><option>Best balance</option><option>Lowest cost</option><option>Fastest transit</option><option>Most reliable carrier</option><option>Minimize handling</option></select></label><label><span>Preferred carrier</span><input value={value.preferredCarrier} onChange={e=>patch({preferredCarrier:e.target.value})} placeholder="Optional"/></label><label><span>Avoid carrier</span><input value={value.avoidCarrier} onChange={e=>patch({avoidCarrier:e.target.value})} placeholder="Optional"/></label></div></div>}
