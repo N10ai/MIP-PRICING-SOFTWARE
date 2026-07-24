@@ -8,7 +8,9 @@ const vendorTypes=[['airline','Airline'],['gsa','GSA'],['air_cargo_agent','Air C
 const modes=['air','ocean','ground','warehouse','customs']
 
 type VendorForm={company:string;vendor_type:string;general_email:string;phone:string;payment_terms:string;default_currency:string;modes:string[];countries:string;preferred:boolean;notes:string}
+type VendorRecord={id:string;company:string;vendor_type:string;general_email:string|null;phone:string|null;payment_terms:string|null;default_currency:string|null;modes:string[]|null;countries:string[]|null;preferred:boolean|null;notes:string|null}
 const blank=():VendorForm=>({company:'',vendor_type:'service_provider',general_email:'',phone:'',payment_terms:'',default_currency:'USD',modes:[],countries:'',preferred:false,notes:''})
+const fromVendor=(vendor:VendorRecord):VendorForm=>({company:vendor.company||'',vendor_type:vendor.vendor_type||'service_provider',general_email:vendor.general_email||'',phone:vendor.phone||'',payment_terms:vendor.payment_terms||'',default_currency:vendor.default_currency||'USD',modes:vendor.modes||[],countries:(vendor.countries||[]).join(', '),preferred:Boolean(vendor.preferred),notes:vendor.notes||''})
 
 function buttonWithText(root:ParentNode,text:string){return Array.from(root.querySelectorAll<HTMLButtonElement>('button')).find(button=>(button.textContent||'').toLowerCase().includes(text.toLowerCase()))}
 function cleanText(value:string|null|undefined){return (value||'').replace(/\s+/g,' ').trim().toLowerCase()}
@@ -21,11 +23,24 @@ function currentRequestNumber(){
 
 export function RfqQuickActions(){
  const[vendorOpen,setVendorOpen]=useState(false)
+ const[editingId,setEditingId]=useState<string|null>(null)
  const[form,setForm]=useState<VendorForm>(blank())
  const[saving,setSaving]=useState(false)
  const[error,setError]=useState('')
  const[rateRequest,setRateRequest]=useState<RequestSummary|null>(null)
  const[rateLoading,setRateLoading]=useState(false)
+
+ useEffect(()=>{
+  const openEditor=(event:Event)=>{
+   const vendor=(event as CustomEvent<VendorRecord|null>).detail
+   setError('')
+   setEditingId(vendor?.id||null)
+   setForm(vendor?fromVendor(vendor):blank())
+   setVendorOpen(true)
+  }
+  window.addEventListener('open-premium-vendor-editor',openEditor)
+  return()=>window.removeEventListener('open-premium-vendor-editor',openEditor)
+ },[])
 
  useEffect(()=>{
   const click=async(event:MouseEvent)=>{
@@ -38,7 +53,7 @@ export function RfqQuickActions(){
    const addVendor=target.closest('.rfq-add-vendor')||(!insideQuickVendor&&button&&text==='add vendor')
    if(addVendor){
     event.preventDefault();event.stopPropagation();event.stopImmediatePropagation()
-    setError('');setForm(blank());setVendorOpen(true)
+    setError('');setEditingId(null);setForm(blank());setVendorOpen(true)
     return
    }
 
@@ -60,8 +75,9 @@ export function RfqQuickActions(){
  },[])
 
  const toggleMode=(mode:string)=>setForm(current=>({...current,modes:current.modes.includes(mode)?current.modes.filter(x=>x!==mode):[...current.modes,mode]}))
- const closeVendor=()=>{if(saving)return;setVendorOpen(false);setError('')}
+ const closeVendor=()=>{if(saving)return;setVendorOpen(false);setEditingId(null);setError('')}
  const refreshRfq=()=>{
+  window.dispatchEvent(new CustomEvent('vendor-directory-changed'))
   const close=document.querySelector<HTMLButtonElement>('.pricing-workspace .pricing-close')
   close?.click()
   window.setTimeout(()=>{
@@ -74,25 +90,25 @@ export function RfqQuickActions(){
   if(!form.company.trim()){setError('Company name is required.');return}
   setSaving(true);setError('')
   const payload={company:form.company.trim(),vendor_type:form.vendor_type,general_email:form.general_email.trim()||null,phone:form.phone.trim()||null,payment_terms:form.payment_terms||null,default_currency:form.default_currency,modes:form.modes,countries:form.countries.split(',').map(x=>x.trim()).filter(Boolean),preferred:form.preferred,status:'active',notes:form.notes.trim()||null}
-  const{error}=await supabase.from('vendors').insert(payload)
+  const result=editingId?await supabase.from('vendors').update(payload).eq('id',editingId):await supabase.from('vendors').insert(payload)
   setSaving(false)
-  if(error){setError(error.message);return}
-  setVendorOpen(false)
+  if(result.error){setError(result.error.message);return}
+  setVendorOpen(false);setEditingId(null)
   refreshRfq()
  }
 
  return <>
   {vendorOpen&&<div className="rfq-quick-vendor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)closeVendor()}}>
-   <section className="rfq-quick-vendor-sheet" role="dialog" aria-modal="true" aria-label="Add vendor">
-    <header><button type="button" onClick={closeVendor}><ChevronLeft/></button><div><small>NEW VENDOR</small><h2>Add service provider</h2><p>Save it and continue selecting vendors.</p></div><button type="button" onClick={closeVendor}><X/></button></header>
+   <section className="rfq-quick-vendor-sheet" role="dialog" aria-modal="true" aria-label={editingId?'Edit vendor':'Add vendor'}>
+    <header><button type="button" onClick={closeVendor}><ChevronLeft/></button><div><small>{editingId?'EDIT VENDOR':'NEW VENDOR'}</small><h2>{editingId?'Edit service provider':'Add service provider'}</h2><p>{editingId?'Update vendor details and continue.':'Save it and continue selecting vendors.'}</p></div><button type="button" onClick={closeVendor}><X/></button></header>
     <main>
-     <section className="quick-vendor-card primary"><div className="quick-primary-fields"><label><span>Company name *</span><div><Building2/><input autoFocus value={form.company} onChange={e=>setForm({...form,company:e.target.value})} placeholder="Vendor company"/></div></label><label><span>Vendor type</span><select value={form.vendor_type} onChange={e=>setForm({...form,vendor_type:e.target.value})}>{vendorTypes.map(([value,name])=><option value={value} key={value}>{name}</option>)}</select></label></div></section>
+     <section className="quick-vendor-card primary"><div className="quick-primary-fields"><div className="quick-field"><span>Company name *</span><div className="quick-field-control"><Building2/><input autoFocus value={form.company} onChange={e=>setForm({...form,company:e.target.value})} placeholder="Vendor company"/></div></div><div className="quick-field"><span>Vendor type</span><select value={form.vendor_type} onChange={e=>setForm({...form,vendor_type:e.target.value})}>{vendorTypes.map(([value,name])=><option value={value} key={value}>{name}</option>)}</select></div></div></section>
      <section className="quick-vendor-card"><h3>Contact</h3><div className="quick-two"><label><span>Email</span><div><Mail/><input type="email" value={form.general_email} onChange={e=>setForm({...form,general_email:e.target.value})} placeholder="pricing@vendor.com"/></div></label><label><span>Phone</span><div><Phone/><input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} placeholder="Optional"/></div></label></div></section>
      <section className="quick-vendor-card"><h3>Services</h3><div className="quick-mode-picker">{modes.map(mode=><button type="button" className={form.modes.includes(mode)?'active':''} onClick={()=>toggleMode(mode)} key={mode}>{form.modes.includes(mode)&&<Check/>}{mode}</button>)}</div><label><span>Countries / coverage</span><div><MapPin/><input value={form.countries} onChange={e=>setForm({...form,countries:e.target.value})} placeholder="United States, Ecuador, Peru"/></div></label></section>
      <section className="quick-vendor-card"><h3>Commercial</h3><div className="quick-two"><label><span>Payment terms</span><select value={form.payment_terms} onChange={e=>setForm({...form,payment_terms:e.target.value})}><option value="">Not specified</option><option>Prepaid</option><option>Due on receipt</option><option>Net 15</option><option>Net 30</option><option>Net 45</option></select></label><label><span>Currency</span><select value={form.default_currency} onChange={e=>setForm({...form,default_currency:e.target.value})}><option>USD</option><option>EUR</option><option>GBP</option><option>CAD</option></select></label></div><button type="button" className={`quick-preferred ${form.preferred?'active':''}`} onClick={()=>setForm({...form,preferred:!form.preferred})}><Star fill={form.preferred?'currentColor':'none'}/><span><b>Preferred vendor</b><small>Show this provider first in RFQ suggestions.</small></span></button><label><span>Internal notes</span><textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})} placeholder="Optional notes"/></label></section>
      {error&&<div className="quick-vendor-error">{error}</div>}
     </main>
-    <footer><button type="button" className="secondary" onClick={closeVendor}>Cancel</button><button type="button" className="primary" disabled={saving} onClick={saveVendor}><Save/>{saving?'Saving…':'Save vendor'}</button></footer>
+    <footer><button type="button" className="secondary" onClick={closeVendor}>Cancel</button><button type="button" className="primary" disabled={saving} onClick={saveVendor}><Save/>{saving?'Saving…':editingId?'Save changes':'Save vendor'}</button></footer>
    </section>
   </div>}
   {rateLoading&&<div className="rfq-rate-loading">Opening vendor rates…</div>}
