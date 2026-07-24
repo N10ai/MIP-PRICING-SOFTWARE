@@ -1,0 +1,21 @@
+@media (max-width:760px){
+ .rfq-rate-modal-layer .mvr-fast-details{padding:15px!important}
+ .rfq-rate-modal-layer .mvr-section-title p,.rfq-rate-modal-layer .mvr-section-head p{margin:4px 0 0!important;color:#7b8493!important;font-size:10px!important;line-height:1.35!important}
+ .rfq-rate-modal-layer .mvr-compact-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:11px!important}
+ .rfq-rate-modal-layer .mvr-compact-grid>label{display:grid!important;gap:6px!important;min-width:0!important}
+ .rfq-rate-modal-layer .mvr-compact-grid>label.wide{grid-column:1/-1!important}
+ .rfq-rate-modal-layer .mvr-compact-grid span{font-size:8px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important;color:#707a89!important}
+ .rfq-rate-modal-layer .mvr-compact-grid input,.rfq-rate-modal-layer .mvr-compact-grid select,.rfq-rate-modal-layer .mvr-compact-grid textarea{width:100%!important;min-height:46px!important;border:1px solid #dfe4eb!important;border-radius:14px!important;background:#f8fafc!important;color:#111318!important;padding:0 12px!important;font:inherit!important;font-size:14px!important;box-sizing:border-box!important}
+ .rfq-rate-modal-layer .mvr-compact-grid textarea{min-height:82px!important;padding-top:12px!important;resize:vertical!important}
+ .rfq-rate-modal-layer .mvr-quick-picks{display:flex!important;gap:7px!important;overflow-x:auto!important;padding:1px 0 2px!important;scrollbar-width:none!important}
+ .rfq-rate-modal-layer .mvr-quick-picks::-webkit-scrollbar{display:none!important}
+ .rfq-rate-modal-layer .mvr-quick-picks button{flex:0 0 auto!important;height:34px!important;padding:0 11px!important;border:1px solid #dfe4eb!important;border-radius:999px!important;background:#fff!important;color:#596273!important;font-size:10px!important;font-weight:800!important}
+ .rfq-rate-modal-layer .mvr-quick-picks button.active{background:#111318!important;color:#fff!important;border-color:#111318!important}
+ .rfq-rate-modal-layer .mvr-custom-charge-name{width:100%!important;height:44px!important;margin-top:9px!important;border:1px solid #dfe4eb!important;border-radius:13px!important;background:#fff!important;color:#111318!important;padding:0 12px!important;font:inherit!important;font-size:14px!important;box-sizing:border-box!important}
+ .rfq-rate-modal-layer .mvr-charge-list article>select{width:100%!important;min-height:46px!important}
+ .rfq-rate-modal-layer .mvr-response-summary-grid article b{white-space:normal!important;line-height:1.25!important}
+}
+@media (max-width:430px){
+ .rfq-rate-modal-layer .mvr-compact-grid{grid-template-columns:1fr!important}
+ .rfq-rate-modal-layer .mvr-compact-grid>label.wide{grid-column:auto!important}
+}
