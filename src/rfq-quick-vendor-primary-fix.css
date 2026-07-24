@@ -21,7 +21,7 @@
     transform:none!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields>label{
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field{
     display:grid!important;
     grid-template-columns:1fr!important;
     grid-template-rows:auto 50px!important;
@@ -42,11 +42,7 @@
     overflow:visible!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields>label+label{
-    margin:0!important;
-  }
-
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>span{
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>span{
     display:block!important;
     position:static!important;
     inset:auto!important;
@@ -64,9 +60,8 @@
     background:transparent!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>div,
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>select{
-    display:grid!important;
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>.quick-field-control,
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>select{
     position:static!important;
     inset:auto!important;
     transform:none!important;
@@ -76,28 +71,33 @@
     height:50px!important;
     min-height:50px!important;
     margin:0!important;
-    padding:0 12px!important;
     box-sizing:border-box!important;
     border:1px solid #dfe4eb!important;
     border-radius:15px!important;
     background:#f9fafc!important;
     color:#111318!important;
     box-shadow:none!important;
-    overflow:hidden!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>div{
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>.quick-field-control{
+    display:grid!important;
     grid-template-columns:38px minmax(0,1fr)!important;
     align-items:center!important;
+    padding:0 10px!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>div svg{
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>select{
+    display:block!important;
+    padding:0 14px!important;
+    appearance:auto!important;
+  }
+
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>.quick-field-control svg{
     width:17px!important;
     color:#8a93a2!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields input,
-  .rfq-quick-vendor-sheet .quick-primary-fields select{
+  .rfq-quick-vendor-sheet .quick-primary-fields input{
     width:100%!important;
     min-width:0!important;
     height:100%!important;
@@ -109,11 +109,10 @@
     color:#111318!important;
     font:inherit!important;
     font-size:15px!important;
-    appearance:auto!important;
   }
 
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>div:focus-within,
-  .rfq-quick-vendor-sheet .quick-primary-fields>label>select:focus{
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>.quick-field-control:focus-within,
+  .rfq-quick-vendor-sheet .quick-primary-fields>.quick-field>select:focus{
     border-color:#7da6ff!important;
     background:#fff!important;
     box-shadow:0 0 0 4px rgba(23,105,255,.1)!important;
