@@ -47,6 +47,45 @@ export function DesktopCommercialEnhancements() {
   }, [location.pathname])
 
   useEffect(() => {
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.sidebar nav a'))
+    const timers = new Map<HTMLAnchorElement, number>()
+
+    const enter = (event: Event) => {
+      const link = event.currentTarget as HTMLAnchorElement
+      const previous = timers.get(link)
+      if (previous) window.clearTimeout(previous)
+      link.classList.remove('rail-label-expired')
+      const timer = window.setTimeout(() => link.classList.add('rail-label-expired'), 2000)
+      timers.set(link, timer)
+    }
+
+    const leave = (event: Event) => {
+      const link = event.currentTarget as HTMLAnchorElement
+      const timer = timers.get(link)
+      if (timer) window.clearTimeout(timer)
+      timers.delete(link)
+      link.classList.remove('rail-label-expired')
+    }
+
+    links.forEach(link => {
+      link.addEventListener('mouseenter', enter)
+      link.addEventListener('mouseleave', leave)
+      link.addEventListener('focus', enter)
+      link.addEventListener('blur', leave)
+    })
+
+    return () => {
+      links.forEach(link => {
+        link.removeEventListener('mouseenter', enter)
+        link.removeEventListener('mouseleave', leave)
+        link.removeEventListener('focus', enter)
+        link.removeEventListener('blur', leave)
+      })
+      timers.forEach(timer => window.clearTimeout(timer))
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
     if (location.pathname !== '/customers') return
     Promise.all([
       supabase.from('quote_requests').select('id,customer_company,contact_name,contact_email,origin_code,destination_code,status,submitted_at').order('submitted_at', { ascending: false }).limit(300),
