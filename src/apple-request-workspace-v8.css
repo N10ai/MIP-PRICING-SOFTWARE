@@ -1,0 +1,194 @@
+@media (min-width: 901px) {
+  .request-workspace-open .premium-workspace-landing,
+  .request-workspace-open .desktop-only-premium-landing,
+  .request-workspace-open .legacy-workspace-fallback {
+    display: none !important;
+  }
+
+  .request-workspace-open .workspace {
+    position: relative !important;
+    overflow: auto !important;
+    background: #f7f8fa !important;
+  }
+
+  .apple-request-workspace {
+    min-height: calc(100vh - 72px);
+    padding: 34px clamp(28px,4vw,58px) 72px;
+    background:
+      radial-gradient(circle at 80% 0%, rgba(23,105,255,.05), transparent 28%),
+      #f7f8fa;
+    color: #111318;
+  }
+
+  .apple-request-head {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 48px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .apple-request-mode {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    background: #1769ff;
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(23,105,255,.18);
+  }
+
+  .apple-request-title { min-width: 0; }
+  .apple-request-title small { color:#8b929c; font-size:9px; font-weight:850; letter-spacing:.11em; }
+  .apple-request-title h1 { margin:5px 0 6px; font-size:clamp(28px,3vw,42px); line-height:1.05; letter-spacing:-.055em; }
+  .apple-request-title p { margin:0; color:#727983; font-size:12px; }
+
+  .apple-request-status {
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: #edf3ff;
+    color: #1769ff;
+    font-size: 9px;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .apple-request-commandbar {
+    max-width:1180px;
+    margin:24px auto 0;
+    padding-bottom:20px;
+    border-bottom:1px solid #e2e5e9;
+    display:flex;
+    justify-content:flex-end;
+    gap:9px;
+  }
+
+  .apple-request-commandbar button,
+  .apple-section-heading button {
+    min-height:40px;
+    padding:0 14px;
+    border:1px solid #dfe3e8;
+    border-radius:12px;
+    background:#fff;
+    color:#24282e;
+    font:inherit;
+    font-size:11px;
+    font-weight:800;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+  }
+
+  .apple-request-commandbar .primary {
+    background:#111318;
+    color:#fff;
+    border-color:#111318;
+    box-shadow:0 8px 20px rgba(17,19,24,.12);
+  }
+
+  .apple-request-document {
+    max-width:1180px;
+    margin:26px auto 0;
+    display:grid;
+    gap:18px;
+  }
+
+  .apple-request-section {
+    padding:26px;
+    border:1px solid #e4e7eb;
+    border-radius:22px;
+    background:rgba(255,255,255,.96);
+    box-shadow:0 10px 32px rgba(17,24,39,.045);
+  }
+
+  .apple-section-label {
+    color:#9299a3;
+    font-size:9px;
+    font-weight:850;
+    letter-spacing:.14em;
+  }
+
+  .apple-fact-grid {
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    border-top:1px solid #e7e9ed;
+    border-bottom:1px solid #e7e9ed;
+  }
+
+  .apple-fact-grid article {
+    min-width:0;
+    min-height:132px;
+    padding:22px 18px;
+    display:grid;
+    align-content:center;
+    gap:6px;
+  }
+
+  .apple-fact-grid article + article { border-left:1px solid #e7e9ed; }
+  .apple-fact-grid svg { color:#1769ff; }
+  .apple-fact-grid span { color:#9299a3; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+  .apple-fact-grid b { overflow:hidden; text-overflow:ellipsis; color:#17191d; font-size:13px; }
+  .apple-fact-grid small { overflow:hidden; text-overflow:ellipsis; color:#7f8791; font-size:10px; }
+
+  .apple-section-heading { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+  .apple-section-heading h2 { margin:5px 0 0; font-size:24px; letter-spacing:-.04em; }
+
+  .apple-pricing-strip {
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    border-top:1px solid #e7e9ed;
+    border-bottom:1px solid #e7e9ed;
+  }
+
+  .apple-pricing-strip article {
+    min-height:112px;
+    padding:20px;
+    display:grid;
+    align-content:center;
+    gap:5px;
+  }
+  .apple-pricing-strip article + article { border-left:1px solid #e7e9ed; }
+  .apple-pricing-strip svg { color:#1769ff; }
+  .apple-pricing-strip strong { font-size:25px; letter-spacing:-.04em; }
+  .apple-pricing-strip span { color:#89919b; font-size:10px; }
+
+  .apple-cargo-list { margin-top:16px; display:grid; gap:0; }
+  .apple-cargo-list article { min-height:58px; padding:12px 2px; border-bottom:1px solid #eceef1; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+  .apple-cargo-list article:last-child { border-bottom:0; }
+  .apple-cargo-list b,.apple-cargo-list span { display:block; }
+  .apple-cargo-list b { font-size:12px; }
+  .apple-cargo-list span,.apple-cargo-list small { margin-top:4px; color:#838b95; font-size:10px; }
+
+  .apple-request-notes { margin:16px 0 0; padding:16px; border-radius:14px; background:#f7f8fa; color:#59616c; font-size:12px; line-height:1.6; }
+  .apple-activity-list { margin-top:14px; display:grid; }
+  .apple-activity-list article { min-height:58px; padding:12px 0; border-bottom:1px solid #eceef1; display:grid; grid-template-columns:8px minmax(0,1fr) auto; align-items:start; gap:12px; }
+  .apple-activity-list article > span { width:8px; height:8px; margin-top:4px; border-radius:50%; background:#1769ff; }
+  .apple-activity-list b { font-size:11px; }
+  .apple-activity-list p { margin:4px 0 0; color:#858d97; font-size:10px; }
+  .apple-activity-list time { color:#9aa1aa; font-size:9px; }
+
+  .apple-request-loading,
+  .apple-request-empty { min-height:60vh; display:grid; place-content:center; text-align:center; }
+  .apple-request-loading { gap:10px; }
+  .apple-request-loading span { width:320px; height:18px; border-radius:9px; background:linear-gradient(90deg,#eceff3,#f7f8fa,#eceff3); background-size:200% 100%; animation:appleRequestPulse 1.2s linear infinite; }
+  .apple-request-loading span:nth-child(2){width:220px}.apple-request-loading span:nth-child(3){width:400px}
+
+  @keyframes appleRequestPulse { to { background-position:-200% 0; } }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .apple-request-workspace { padding-inline:24px; }
+  .apple-fact-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .apple-fact-grid article:nth-child(3) { border-left:0; border-top:1px solid #e7e9ed; }
+  .apple-fact-grid article:nth-child(4) { border-top:1px solid #e7e9ed; }
+}
+
+@media (max-width: 900px) {
+  .apple-request-workspace { display:none !important; }
+}
