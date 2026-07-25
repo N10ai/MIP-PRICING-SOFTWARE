@@ -1,0 +1,172 @@
+@media (min-width: 901px) {
+  /* One permanent navigation model everywhere: compact, readable, never expanding. */
+  .sidebar,
+  .sidebar:hover,
+  .sidebar:focus-within,
+  .workspace-v3 .sidebar,
+  .workspace-v3 .sidebar:hover,
+  .workspace-v3 .sidebar:focus-within {
+    width: 72px !important;
+    padding: 10px 7px !important;
+    overflow: visible !important;
+    transition: none !important;
+  }
+
+  .sidebar .brand,
+  .sidebar:hover .brand,
+  .sidebar:focus-within .brand {
+    min-height: 58px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+
+  .sidebar .brand img {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+  }
+
+  .sidebar .brand > div,
+  .sidebar:hover .brand > div,
+  .sidebar:focus-within .brand > div,
+  .sidebar footer {
+    display: none !important;
+  }
+
+  .sidebar nav,
+  .sidebar:hover nav,
+  .sidebar:focus-within nav {
+    gap: 7px !important;
+  }
+
+  .sidebar nav a,
+  .sidebar:hover nav a,
+  .sidebar:focus-within nav a,
+  .workspace-v3 .sidebar nav a,
+  .workspace-v3 .sidebar:hover nav a,
+  .workspace-v3 .sidebar:focus-within nav a {
+    position: relative !important;
+    width: 58px !important;
+    min-height: 64px !important;
+    padding: 8px 3px !important;
+    border-radius: 14px !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 6px !important;
+    overflow: visible !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+
+  .sidebar nav a svg,
+  .workspace-v3 .sidebar nav a svg {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+  }
+
+  .sidebar nav a span,
+  .sidebar:hover nav a span,
+  .sidebar:focus-within nav a span,
+  .workspace-v3 .sidebar nav a span,
+  .workspace-v3 .sidebar:hover nav a span,
+  .workspace-v3 .sidebar:focus-within nav a span {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 54px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    font-size: 9px !important;
+    font-weight: 720 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .sidebar nav a span::before,
+  .workspace-v3 .sidebar nav a span::before {
+    display: none !important;
+  }
+
+  .sidebar nav a.active::before,
+  .workspace-v3 .sidebar nav a.active::before {
+    left: -7px !important;
+    top: 17px !important;
+    height: 30px !important;
+  }
+
+  /* Stable desktop grid with the fixed rail. */
+  .app-bg:not(.workspace-v3) {
+    grid-template-columns: 88px minmax(0, 1fr) !important;
+  }
+
+  .app-bg:not(.workspace-v3) .topbar,
+  .app-bg:not(.workspace-v3) .workspace {
+    grid-column: 2 !important;
+  }
+
+  .app-bg.workspace-v3 {
+    grid-template-columns: 88px var(--queue-width, 312px) minmax(0, 1fr) !important;
+  }
+
+  .workspace-v3 .desktop-context-queue {
+    grid-column: 2 !important;
+  }
+
+  .workspace-v3 .topbar,
+  .workspace-v3 .workspace {
+    grid-column: 3 !important;
+    min-width: 0 !important;
+  }
+
+  /* When queue is closed, remove its column entirely and let workspace occupy it. */
+  .app-bg.workspace-v3.queue-collapsed {
+    grid-template-columns: 88px minmax(0, 1fr) !important;
+  }
+
+  .workspace-v3.queue-collapsed .desktop-context-queue {
+    display: none !important;
+  }
+
+  .workspace-v3.queue-collapsed .topbar,
+  .workspace-v3.queue-collapsed .workspace {
+    grid-column: 2 !important;
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  .workspace-v3 .queue-reopen-button {
+    left: 96px !important;
+  }
+
+  /* Keep the empty workspace centered in the real available area. */
+  .workspace-v3.queue-collapsed .premium-workspace-landing,
+  .workspace-v3.queue-collapsed .desktop-only-premium-landing {
+    width: min(920px, calc(100% - 64px)) !important;
+    margin-inline: auto !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .app-bg.workspace-v3 {
+    grid-template-columns: 88px var(--queue-width, 288px) minmax(0, 1fr) !important;
+  }
+
+  .app-bg.workspace-v3.queue-collapsed {
+    grid-template-columns: 88px minmax(0, 1fr) !important;
+  }
+}
