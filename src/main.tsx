@@ -74,6 +74,7 @@ import './rfq-rate-decision-cards.css'
 import './request-rates-compact-final.css'
 import './desktop-workspace-v1.css'
 import './desktop-workspace-v3.css'
+import './premium-workspace-v4.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
