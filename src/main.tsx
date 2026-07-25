@@ -84,6 +84,7 @@ import './apple-request-workspace-v8.css'
 import './quote-apple-workspace-v10.css'
 import './apple-quote-workspace-v10.css'
 import './mobile-quote-apple-v2.css'
+import './mobile-quote-apple-v12.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
