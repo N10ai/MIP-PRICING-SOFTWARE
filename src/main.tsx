@@ -9,7 +9,6 @@ import { MobileQueueControls } from './components/MobileQueueControls'
 import { MobileRequestNavigation } from './components/MobileRequestNavigation'
 import { RfqQuickActions } from './components/RfqQuickActions'
 import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
-import { DesktopRequestWorkspaceBridge } from './components/DesktopRequestWorkspaceBridge'
 import { DesktopCommercialEnhancements } from './components/DesktopCommercialEnhancements'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
@@ -80,7 +79,7 @@ import './premium-workspace-v4.css'
 import './desktop-rail-tooltips-v5.css'
 import './desktop-layout-stability-v6.css'
 import './desktop-commercial-polish-v7.css'
-import './desktop-polish-v8.css'
+import './desktop-final-fixes-v8.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -93,7 +92,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileRequestNavigation />
         <RfqQuickActions />
         <DesktopWorkspaceQueue />
-        <DesktopRequestWorkspaceBridge />
         <DesktopCommercialEnhancements />
         <App />
       </AuthGate>
