@@ -7,6 +7,7 @@ import { PremiumMobileInteractions } from './components/PremiumMobileInteraction
 import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnhancer'
 import { MobileQueueControls } from './components/MobileQueueControls'
 import { MobileRequestNavigation } from './components/MobileRequestNavigation'
+import { MobileQuoteSwipeEnhancer } from './components/MobileQuoteSwipeEnhancer'
 import { RfqQuickActions } from './components/RfqQuickActions'
 import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
 import { DesktopCommercialEnhancements } from './components/DesktopCommercialEnhancements'
@@ -95,6 +96,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileAccountDrawerEnhancer />
         <MobileQueueControls />
         <MobileRequestNavigation />
+        <MobileQuoteSwipeEnhancer />
         <RfqQuickActions />
         <DesktopWorkspaceQueue />
         <DesktopCommercialEnhancements />
