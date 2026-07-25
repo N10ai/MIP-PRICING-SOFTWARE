@@ -1,6 +1,6 @@
 import {useEffect,useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
-import {QuotesPage} from './QuoteWorkspace'
+import {AppleQuoteDesktopWorkspace} from './AppleQuoteDesktopWorkspace'
 import {MobileQuoteWorkspace} from './MobileQuoteWorkspace'
 
 export function ResponsiveQuoteWorkspace(){
@@ -9,5 +9,5 @@ export function ResponsiveQuoteWorkspace(){
  useEffect(()=>{const query=matchMedia('(max-width:760px)');const change=()=>setMobile(query.matches);query.addEventListener('change',change);return()=>query.removeEventListener('change',change)},[])
  const quoteId=params.get('quote')
  if(mobile&&quoteId)return <MobileQuoteWorkspace quoteId={quoteId} onClose={()=>setParams({})}/>
- return <QuotesPage/>
+ return <AppleQuoteDesktopWorkspace/>
 }
