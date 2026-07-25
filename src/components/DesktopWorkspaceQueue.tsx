@@ -46,6 +46,9 @@ export function DesktopWorkspaceQueue() {
   const [quotes, setQuotes] = useState<QueueQuote[]>([])
 
   const section = location.pathname === '/requests' ? 'requests' : location.pathname === '/quotes' ? 'quotes' : null
+  const params = new URLSearchParams(location.search)
+  const selectedRequestId = params.get('request')
+  const selectedQuoteId = params.get('quote')
 
   useEffect(() => {
     const app = document.querySelector<HTMLElement>('.app-bg')
@@ -62,7 +65,7 @@ export function DesktopWorkspaceQueue() {
     }
   }, [host, section, collapsed])
 
-  useEffect(() => {
+  const load = () => {
     if (!section) return
     Promise.all([
       supabase.from('quote_requests').select('id,request_number,customer_company,contact_name,origin_code,origin_name,destination_code,destination_name,mode,status,submitted_at,archived_at').order('submitted_at', { ascending: false }).limit(120),
@@ -71,6 +74,13 @@ export function DesktopWorkspaceQueue() {
       setRequests((requestResult.data || []) as QueueRequest[])
       setQuotes((quoteResult.data || []) as QueueQuote[])
     })
+  }
+
+  useEffect(load, [section])
+  useEffect(() => {
+    const refresh = () => load()
+    window.addEventListener('desktop-request-changed', refresh)
+    return () => window.removeEventListener('desktop-request-changed', refresh)
   }, [section])
 
   useEffect(() => {
@@ -117,13 +127,6 @@ export function DesktopWorkspaceQueue() {
     return [['all', 'All', quotes.length], ...values.map(value => [value, value[0].toUpperCase() + value.slice(1), quotes.filter(item => item.status === value).length])] as Array<[string, string, number]>
   }, [quotes])
 
-  const openRequest = (item: QueueRequest) => {
-    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.request-queue-item'))
-    const target = buttons.find(button => button.textContent?.includes(item.request_number || ''))
-    if (target) target.click()
-    else navigate(`/quotes?request=${item.id}`)
-  }
-
   if (!host || !section) return null
 
   const list = section === 'requests' ? visibleRequests : visibleQuotes
@@ -138,15 +141,15 @@ export function DesktopWorkspaceQueue() {
         </header>
         <div className="desktop-context-queue__tools">
           <label className="desktop-queue-search"><Search size={15} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder={`Search ${section}`} /></label>
-          <div className="desktop-queue-filters">{filters.map(([value, label, count]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label} {count}</button>)}</div>
+          <div className="desktop-queue-filters">{filters.map(([value, label, count]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}><span>{label}</span><b>{count}</b></button>)}</div>
         </div>
         <div className="desktop-context-queue__meta"><span>{list.length} records</span><span>Newest first</span></div>
         <div className="desktop-context-queue__list">
-          {section === 'requests' ? visibleRequests.map(item => <button className="desktop-queue-item" key={item.id} onClick={() => openRequest(item)}>
+          {section === 'requests' ? visibleRequests.map(item => <button className={`desktop-queue-item ${selectedRequestId === item.id ? 'is-selected' : ''}`} key={item.id} onClick={() => navigate(`/requests?request=${item.id}`)}>
             <span className="desktop-queue-item__icon"><Ship size={16} /></span>
             <span className="desktop-queue-item__body"><b>{customerName(item)}</b><span>{routeName(item)}</span><small>{item.request_number || 'Request'} · {item.mode || 'Freight'}</small></span>
             <span className="desktop-queue-item__status">{String(item.status || 'new').replaceAll('_', ' ')}</span>
-          </button>) : visibleQuotes.map(item => <button className="desktop-queue-item" key={item.id} onClick={() => navigate(`/quotes?quote=${item.id}`)}>
+          </button>) : visibleQuotes.map(item => <button className={`desktop-queue-item ${selectedQuoteId === item.id ? 'is-selected' : ''}`} key={item.id} onClick={() => navigate(`/quotes?quote=${item.id}`)}>
             <span className="desktop-queue-item__icon"><FileText size={16} /></span>
             <span className="desktop-queue-item__body"><b>{item.customer_name || 'Customer'}</b><span>{item.quote_data?.route || 'Route not set'}</span><small>{item.quote_number || 'Draft quote'}</small></span>
             <span className="desktop-queue-item__status">{item.status || 'draft'}</span>
