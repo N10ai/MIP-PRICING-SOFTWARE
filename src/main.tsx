@@ -80,6 +80,7 @@ import './desktop-rail-tooltips-v5.css'
 import './desktop-layout-stability-v6.css'
 import './desktop-commercial-polish-v7.css'
 import './desktop-final-fixes-v8.css'
+import './apple-request-workspace-v8.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
