@@ -1,0 +1,178 @@
+@media (min-width: 901px) {
+  /* The action beside notifications must always be visible. */
+  .topbar > div:last-of-type {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .topbar > div:last-of-type > a {
+    display: inline-flex !important;
+    text-decoration: none !important;
+  }
+
+  .topbar > div:last-of-type > a .ds-button,
+  .topbar > div:last-of-type > a button {
+    min-width: 84px !important;
+    min-height: 40px !important;
+    padding: 0 15px !important;
+    border: 1px solid #111318 !important;
+    border-radius: 12px !important;
+    background: #111318 !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: 0 8px 20px rgba(17,19,24,.12) !important;
+  }
+
+  .topbar > div:last-of-type > a .ds-button svg,
+  .topbar > div:last-of-type > a button svg {
+    color: #fff !important;
+    stroke: currentColor !important;
+  }
+
+  /* Timed rail labels: the JS adds this class after two seconds. */
+  .sidebar nav a.rail-label-expired span,
+  .workspace-v3 .sidebar nav a.rail-label-expired span,
+  .sidebar nav a.rail-label-expired:hover span,
+  .workspace-v3 .sidebar nav a.rail-label-expired:hover span {
+    opacity: 0 !important;
+    transform: translate(-5px,-50%) scale(.97) !important;
+  }
+
+  /* Final vendor workspace — no marketing banner, same language as the rest of the OS. */
+  .vendor-workspace-page {
+    width: min(1240px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 34px 0 52px;
+  }
+
+  .vendor-workspace-header {
+    min-height: 86px !important;
+    margin: 0 0 18px !important;
+    padding: 0 2px 18px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #e7e9ed !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #111318 !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 24px !important;
+  }
+
+  .vendor-workspace-header::before,
+  .vendor-workspace-header::after {
+    display: none !important;
+  }
+
+  .vendor-workspace-header .eyebrow {
+    margin: 0 0 6px !important;
+    color: #8b929c !important;
+    font-size: 9px !important;
+    font-weight: 850 !important;
+    letter-spacing: .14em !important;
+  }
+
+  .vendor-workspace-header h1 {
+    margin: 0 !important;
+    color: #111318 !important;
+    font-size: 36px !important;
+    line-height: 1 !important;
+    letter-spacing: -.055em !important;
+  }
+
+  .vendor-workspace-header p:last-child {
+    margin: 10px 0 0 !important;
+    color: #747b86 !important;
+    font-size: 13px !important;
+  }
+
+  .vendor-workspace-header .ds-button,
+  .vendor-workspace-header button {
+    min-height: 42px !important;
+    padding: 0 15px !important;
+    border-radius: 12px !important;
+    border: 1px solid #111318 !important;
+    background: #111318 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .vendor-directory-card {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #e6e9ed !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    box-shadow: 0 12px 34px rgba(17,24,39,.045) !important;
+    overflow: hidden !important;
+  }
+
+  .vendor-directory-card .vendor-toolbar {
+    padding: 14px !important;
+    border-bottom: 1px solid #eceef1 !important;
+    background: #fff !important;
+  }
+
+  .vendor-directory-card .vendor-toolbar label {
+    height: 42px !important;
+    border-radius: 12px !important;
+    background: #f8f9fb !important;
+  }
+
+  .vendor-directory-card .vendor-toolbar select {
+    height: 42px !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+  }
+
+  .vendor-directory-card .vendor-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+    gap: 12px !important;
+    padding: 14px !important;
+  }
+
+  .vendor-directory-card .vendor-card {
+    min-height: 214px !important;
+    padding: 15px !important;
+    border: 1px solid #e8eaee !important;
+    border-radius: 16px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .vendor-directory-card .vendor-card:hover {
+    transform: translateY(-1px) !important;
+    border-color: #d9e3f5 !important;
+    box-shadow: 0 10px 24px rgba(17,24,39,.055) !important;
+  }
+
+  .vendor-directory-card .vendor-logo {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    background: #edf3ff !important;
+    color: #1769ff !important;
+  }
+
+  .vendor-directory-card .vendor-card h3 {
+    margin-top: 14px !important;
+    font-size: 15px !important;
+  }
+
+  .vendor-directory-card .vendor-edit-button {
+    min-height: 36px !important;
+    border-radius: 10px !important;
+    background: #f7f9fc !important;
+    color: #1769ff !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .vendor-directory-card .vendor-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  }
+}
