@@ -8,6 +8,7 @@ import { MobileAccountDrawerEnhancer } from './components/MobileAccountDrawerEnh
 import { MobileQueueControls } from './components/MobileQueueControls'
 import { MobileRequestNavigation } from './components/MobileRequestNavigation'
 import { RfqQuickActions } from './components/RfqQuickActions'
+import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
 import { AuthGate } from './components/AuthGate'
 import './design-system/tokens.css'
 import './design-system/components.css'
@@ -84,6 +85,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileQueueControls />
         <MobileRequestNavigation />
         <RfqQuickActions />
+        <DesktopWorkspaceQueue />
         <App />
       </AuthGate>
     </HashRouter>
