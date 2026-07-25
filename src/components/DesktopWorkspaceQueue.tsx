@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { AppleRequestWorkspace } from './AppleRequestWorkspace'
 
 type QueueRequest = {
   id: string
@@ -39,6 +40,7 @@ export function DesktopWorkspaceQueue() {
   const location = useLocation()
   const navigate = useNavigate()
   const [host, setHost] = useState<HTMLElement | null>(null)
+  const [workspaceHost, setWorkspaceHost] = useState<HTMLElement | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
@@ -47,12 +49,13 @@ export function DesktopWorkspaceQueue() {
 
   const section = location.pathname === '/requests' ? 'requests' : location.pathname === '/quotes' ? 'quotes' : null
   const params = new URLSearchParams(location.search)
-  const selectedRequestId = params.get('request')
-  const selectedQuoteId = params.get('quote')
+  const selectedRequestId = section === 'requests' ? params.get('request') : null
+  const selectedQuoteId = section === 'quotes' ? params.get('quote') : null
 
   useEffect(() => {
     const app = document.querySelector<HTMLElement>('.app-bg')
     setHost(app)
+    setWorkspaceHost(document.querySelector<HTMLElement>('.workspace'))
   }, [location.pathname])
 
   useEffect(() => {
@@ -60,10 +63,11 @@ export function DesktopWorkspaceQueue() {
     host.classList.toggle('workspace-v3', Boolean(section))
     host.classList.toggle('no-context-queue', !section)
     host.classList.toggle('queue-collapsed', Boolean(section && collapsed))
+    host.classList.toggle('request-workspace-open', Boolean(selectedRequestId))
     return () => {
-      host.classList.remove('workspace-v3', 'no-context-queue', 'queue-collapsed')
+      host.classList.remove('workspace-v3', 'no-context-queue', 'queue-collapsed', 'request-workspace-open')
     }
-  }, [host, section, collapsed])
+  }, [host, section, collapsed, selectedRequestId])
 
   const load = () => {
     if (!section) return
@@ -132,32 +136,35 @@ export function DesktopWorkspaceQueue() {
   const list = section === 'requests' ? visibleRequests : visibleQuotes
   const filters = section === 'requests' ? requestFilters : quoteFilters
 
-  return createPortal(<>
-    <aside className="desktop-context-queue" aria-label={`${section} queue`}>
-      <div className="desktop-context-queue__inner">
-        <header className="desktop-context-queue__header">
-          <div className="desktop-context-queue__title"><small>COMMERCIAL</small><b>{section === 'requests' ? 'Requests' : 'Quotes'}</b></div>
-          <button className="queue-collapse-button" onClick={() => setCollapsed(true)} aria-label="Hide queue" title="Hide queue (⌘B)"><PanelLeftClose size={17} /></button>
-        </header>
-        <div className="desktop-context-queue__tools">
-          <label className="desktop-queue-search"><Search size={15} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder={`Search ${section}`} /></label>
-          <div className="desktop-queue-filters">{filters.map(([value, label, count]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}><span>{label}</span><b>{count}</b></button>)}</div>
+  return <>
+    {createPortal(<>
+      <aside className="desktop-context-queue" aria-label={`${section} queue`}>
+        <div className="desktop-context-queue__inner">
+          <header className="desktop-context-queue__header">
+            <div className="desktop-context-queue__title"><small>COMMERCIAL</small><b>{section === 'requests' ? 'Requests' : 'Quotes'}</b></div>
+            <button className="queue-collapse-button" onClick={() => setCollapsed(true)} aria-label="Hide queue" title="Hide queue (⌘B)"><PanelLeftClose size={17} /></button>
+          </header>
+          <div className="desktop-context-queue__tools">
+            <label className="desktop-queue-search"><Search size={15} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder={`Search ${section}`} /></label>
+            <div className="desktop-queue-filters">{filters.map(([value, label, count]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}><span>{label}</span><b>{count}</b></button>)}</div>
+          </div>
+          <div className="desktop-context-queue__meta"><span>{list.length} records</span><span>Newest first</span></div>
+          <div className="desktop-context-queue__list">
+            {section === 'requests' ? visibleRequests.map(item => <button className={`desktop-queue-item ${selectedRequestId === item.id ? 'is-selected' : ''}`} key={item.id} onClick={() => navigate(`/requests?request=${item.id}`)}>
+              <span className="desktop-queue-item__icon"><Ship size={16} /></span>
+              <span className="desktop-queue-item__body"><b>{customerName(item)}</b><span>{routeName(item)}</span><small>{item.request_number || 'Request'} · {item.mode || 'Freight'}</small></span>
+              <span className="desktop-queue-item__status">{String(item.status || 'new').replaceAll('_', ' ')}</span>
+            </button>) : visibleQuotes.map(item => <button className={`desktop-queue-item ${selectedQuoteId === item.id ? 'is-selected' : ''}`} key={item.id} onClick={() => navigate(`/quotes?quote=${item.id}`)}>
+              <span className="desktop-queue-item__icon"><FileText size={16} /></span>
+              <span className="desktop-queue-item__body"><b>{item.customer_name || 'Customer'}</b><span>{item.quote_data?.route || 'Route not set'}</span><small>{item.quote_number || 'Draft quote'}</small></span>
+              <span className="desktop-queue-item__status">{item.status || 'draft'}</span>
+            </button>)}
+            {!list.length && <div className="desktop-queue-empty">No matching records.</div>}
+          </div>
         </div>
-        <div className="desktop-context-queue__meta"><span>{list.length} records</span><span>Newest first</span></div>
-        <div className="desktop-context-queue__list">
-          {section === 'requests' ? visibleRequests.map(item => <button className={`desktop-queue-item ${selectedRequestId === item.id ? 'is-selected' : ''}`} key={item.id} onClick={() => navigate(`/requests?request=${item.id}`)}>
-            <span className="desktop-queue-item__icon"><Ship size={16} /></span>
-            <span className="desktop-queue-item__body"><b>{customerName(item)}</b><span>{routeName(item)}</span><small>{item.request_number || 'Request'} · {item.mode || 'Freight'}</small></span>
-            <span className="desktop-queue-item__status">{String(item.status || 'new').replaceAll('_', ' ')}</span>
-          </button>) : visibleQuotes.map(item => <button className={`desktop-queue-item ${selectedQuoteId === item.id ? 'is-selected' : ''}`} key={item.id} onClick={() => navigate(`/quotes?quote=${item.id}`)}>
-            <span className="desktop-queue-item__icon"><FileText size={16} /></span>
-            <span className="desktop-queue-item__body"><b>{item.customer_name || 'Customer'}</b><span>{item.quote_data?.route || 'Route not set'}</span><small>{item.quote_number || 'Draft quote'}</small></span>
-            <span className="desktop-queue-item__status">{item.status || 'draft'}</span>
-          </button>)}
-          {!list.length && <div className="desktop-queue-empty">No matching records.</div>}
-        </div>
-      </div>
-    </aside>
-    {collapsed && <button className="queue-reopen-button" onClick={() => setCollapsed(false)} aria-label="Show queue" title="Show queue (⌘B)"><PanelLeftOpen size={17} /></button>}
-  </>, host)
+      </aside>
+      {collapsed && <button className="queue-reopen-button" onClick={() => setCollapsed(false)} aria-label="Show queue" title="Show queue (⌘B)"><PanelLeftOpen size={17} /></button>}
+    </>, host)}
+    {workspaceHost && selectedRequestId && createPortal(<AppleRequestWorkspace requestId={selectedRequestId}/>, workspaceHost)}
+  </>
 }
