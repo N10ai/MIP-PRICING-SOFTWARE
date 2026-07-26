@@ -34,46 +34,6 @@ async function imageData(url: string) {
   }
 }
 
-type IconKind = 'plane' | 'truck' | 'document' | 'box' | 'clock' | 'calendar'
-
-function drawIcon(doc: jsPDF, kind: IconKind, cx: number, cy: number, blue: [number, number, number]) {
-  doc.setDrawColor(...blue)
-  doc.setLineWidth(1)
-  doc.circle(cx, cy, 11)
-  doc.setLineWidth(1.15)
-
-  if (kind === 'plane') {
-    doc.line(cx - 6, cy + 4, cx + 6, cy - 4)
-    doc.line(cx - 1, cy - 1, cx - 5, cy - 5)
-    doc.line(cx + 1, cy + 1, cx + 5, cy + 5)
-    doc.line(cx - 4, cy + 3, cx - 6, cy + 1)
-  } else if (kind === 'truck') {
-    doc.rect(cx - 6, cy - 4, 8, 7)
-    doc.rect(cx + 2, cy - 2, 4, 5)
-    doc.circle(cx - 3, cy + 5, 1.4)
-    doc.circle(cx + 4, cy + 5, 1.4)
-  } else if (kind === 'document') {
-    doc.rect(cx - 5, cy - 7, 10, 14)
-    doc.line(cx - 2, cy - 2, cx + 3, cy - 2)
-    doc.line(cx - 2, cy + 1, cx + 3, cy + 1)
-    doc.line(cx - 2, cy + 4, cx + 2, cy + 4)
-  } else if (kind === 'box') {
-    doc.rect(cx - 5, cy - 5, 10, 10)
-    doc.line(cx - 5, cy - 5, cx, cy - 1)
-    doc.line(cx + 5, cy - 5, cx, cy - 1)
-    doc.line(cx, cy - 1, cx, cy + 5)
-  } else if (kind === 'clock') {
-    doc.circle(cx, cy, 6)
-    doc.line(cx, cy, cx, cy - 4)
-    doc.line(cx, cy, cx + 3, cy + 2)
-  } else if (kind === 'calendar') {
-    doc.rect(cx - 6, cy - 5, 12, 10)
-    doc.line(cx - 6, cy - 1, cx + 6, cy - 1)
-    doc.line(cx - 3, cy - 7, cx - 3, cy - 3)
-    doc.line(cx + 3, cy - 7, cx + 3, cy - 3)
-  }
-}
-
 async function buildPdf(app: HTMLElement) {
   const preview = app.querySelector<HTMLElement>('.professional-quote-document')
   if (!preview) throw new Error('Quote preview is not available yet.')
@@ -140,15 +100,23 @@ async function buildPdf(app: HTMLElement) {
 
   doc.setFillColor(...navy)
   doc.rect(0, 0, pageWidth, 104, 'F')
-  if (logo) doc.addImage(logo, 'PNG', margin, 18, 58, 58, undefined, 'FAST')
 
-  const titleX = logo ? margin + 76 : margin
+  const logoCx = margin + 30
+  const logoCy = 52
+  doc.setFillColor(255, 255, 255)
+  doc.circle(logoCx, logoCy, 29, 'F')
+  doc.setDrawColor(216, 224, 236)
+  doc.setLineWidth(0.8)
+  doc.circle(logoCx, logoCy, 29)
+  if (logo) doc.addImage(logo, 'PNG', logoCx - 23, logoCy - 18, 46, 36, undefined, 'FAST')
+
+  const titleX = margin + 78
   doc.setDrawColor(...blue)
   doc.setLineWidth(1.2)
   doc.line(titleX - 14, 24, titleX - 14, 76)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(255, 255, 255)
-  doc.setFontSize(25)
+  doc.setFontSize(22)
   doc.text('QUOTE', titleX, 49)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
@@ -192,21 +160,19 @@ async function buildPdf(app: HTMLElement) {
   doc.setFontSize(17)
   doc.setTextColor(...navy)
   doc.text(route, rightX, y + 24)
-  const serviceIcons: IconKind[] = ['plane', 'truck', 'document', 'box']
   serviceItems.slice(0, 4).forEach((item, index) => {
     const column = index % 2
     const row = Math.floor(index / 2)
     const x = rightX + column * 126
     const itemY = y + 55 + row * 40
-    drawIcon(doc, serviceIcons[index], x + 11, itemY, blue)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x + 31, itemY - 5)
+    doc.text(item.label.toUpperCase(), x, itemY - 5)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(...navy)
-    doc.text(doc.splitTextToSize(item.value, 89), x + 31, itemY + 8)
+    doc.text(doc.splitTextToSize(item.value, 110), x, itemY + 8)
   })
 
   y = 246
@@ -269,16 +235,14 @@ async function buildPdf(app: HTMLElement) {
       doc.setDrawColor(...line)
       doc.line(x - 12, y + 10, x - 12, y + 46)
     }
-    const kind: IconKind = index === 0 ? 'plane' : index === 1 ? 'clock' : 'calendar'
-    drawIcon(doc, kind, x + 11, y + 27, blue)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x + 31, y + 21)
+    doc.text(item.label.toUpperCase(), x, y + 21)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(...navy)
-    doc.text(doc.splitTextToSize(item.value, 130), x + 31, y + 37)
+    doc.text(doc.splitTextToSize(item.value, 150), x, y + 37)
   })
 
   y += 68
