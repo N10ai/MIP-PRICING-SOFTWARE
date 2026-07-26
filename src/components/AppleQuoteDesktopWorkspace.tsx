@@ -64,7 +64,7 @@ export function AppleQuoteDesktopWorkspace() {
     })
   }, [quotes, query, filter])
 
-  return <div className="apple-quote-shell">
+  return <div className={`apple-quote-shell ${selectedId ? 'quote-editor-selected' : ''}`}>
     <aside className="apple-quote-rail">
       <img src={logo} alt="MIP" />
       <nav>{nav.map(([to, label, Icon]) => <NavLink key={to} to={to} end={to === '/'} aria-label={label} title={label}><Icon size={19} /><span>{label}</span></NavLink>)}</nav>
