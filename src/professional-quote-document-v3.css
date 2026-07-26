@@ -1,0 +1,57 @@
+@media(max-width:760px){
+  .preview-section{background:#eef1f5!important;padding:18px 10px 40px!important;overflow:auto}
+  .mobile-preview{width:816px;max-width:none!important;min-height:1056px;margin:0 auto!important;padding:54px 58px 48px!important;border-radius:4px!important;background:#fff!important;box-shadow:0 20px 60px rgba(15,23,42,.16)!important;transform-origin:top center;transform:scale(.39);margin-bottom:-640px!important}
+}
+.mobile-preview{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#172033;background:#fff}
+.mobile-preview .proposal-header{display:grid;grid-template-columns:1.35fr .65fr;gap:38px;align-items:start;padding-bottom:24px;border-bottom:2px solid #172033}
+.mobile-preview .proposal-brand small,.mobile-preview .proposal-meta small,.mobile-preview .proposal-section-title,.mobile-preview .proposal-kicker{display:block;font-size:9px;letter-spacing:.16em;font-weight:800;text-transform:uppercase;color:#667085}
+.mobile-preview .proposal-brand h2{margin:6px 0 8px;font-size:34px;line-height:1;letter-spacing:-.04em;font-weight:800;color:#111827}
+.mobile-preview .proposal-brand p{margin:0;font-size:11px;line-height:1.5;color:#667085}
+.mobile-preview .proposal-meta{text-align:right}
+.mobile-preview .proposal-meta strong{display:block;margin-top:5px;font-size:18px;letter-spacing:-.02em;color:#111827}
+.mobile-preview .proposal-status{display:inline-flex;margin-bottom:14px;padding:5px 9px;border-radius:999px;background:#edf3ff;color:#1f4fbf;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.mobile-preview .proposal-meta-grid{display:grid;gap:8px;margin-top:14px}
+.mobile-preview .proposal-meta-grid span{display:flex;justify-content:space-between;gap:14px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:10px;color:#667085}
+.mobile-preview .proposal-meta-grid b{color:#111827;font-weight:700}
+.mobile-preview .proposal-customer-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:26px 0;border-bottom:1px solid #dfe3e8}
+.mobile-preview .proposal-block h3{margin:7px 0 5px;font-size:20px;letter-spacing:-.03em;color:#111827}
+.mobile-preview .proposal-block p{margin:2px 0;font-size:11px;line-height:1.55;color:#4b5563}
+.mobile-preview .proposal-reference{margin-top:12px;padding-top:10px;border-top:1px solid #eceff3}
+.mobile-preview .proposal-route{font-size:18px!important;font-weight:800;color:#111827!important;letter-spacing:-.03em}
+.mobile-preview .proposal-service-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px;margin-top:14px}
+.mobile-preview .proposal-service-grid span,.mobile-preview .proposal-commercial-grid span{display:block}
+.mobile-preview .proposal-service-grid small,.mobile-preview .proposal-commercial-grid small,.mobile-preview .proposal-cargo-grid small{display:block;font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:#8a94a3}
+.mobile-preview .proposal-service-grid b,.mobile-preview .proposal-commercial-grid b,.mobile-preview .proposal-cargo-grid b{display:block;margin-top:4px;font-size:11px;color:#172033}
+.mobile-preview .proposal-section{padding:24px 0;border-bottom:1px solid #dfe3e8}
+.mobile-preview .proposal-cargo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:14px;border:1px solid #dfe3e8}
+.mobile-preview .proposal-cargo-grid span{padding:14px 15px;border-right:1px solid #dfe3e8}
+.mobile-preview .proposal-cargo-grid span:last-child{border-right:0}
+.mobile-preview .proposal-cargo-grid b{font-size:16px;letter-spacing:-.02em}
+.mobile-preview .proposal-pricing-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:10px}
+.mobile-preview .proposal-pricing-table thead th{padding:10px 8px;border-top:1px solid #9aa4b2;border-bottom:1px solid #9aa4b2;text-align:left;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#667085}
+.mobile-preview .proposal-pricing-table thead th:nth-child(n+3),.mobile-preview .proposal-pricing-table tbody td:nth-child(n+3){text-align:right}
+.mobile-preview .proposal-pricing-table tbody td{padding:12px 8px;border-bottom:1px solid #e7eaf0;color:#253041}
+.mobile-preview .proposal-pricing-table tbody td:first-child{font-weight:700;color:#111827}
+.mobile-preview .proposal-total-wrap{display:flex;justify-content:flex-end;margin-top:18px}
+.mobile-preview .proposal-total-box{width:285px;padding:18px 20px;background:#f6f8fb;border:1px solid #dfe3e8}
+.mobile-preview .proposal-total-box span{display:flex;justify-content:space-between;gap:20px;font-size:10px;color:#667085}
+.mobile-preview .proposal-total-box strong{display:block;margin-top:10px;padding-top:12px;border-top:2px solid #172033;font-size:25px;letter-spacing:-.04em;text-align:right;color:#111827}
+.mobile-preview .proposal-total-box em{display:block;margin-top:4px;text-align:right;font-style:normal;font-size:9px;font-weight:800;letter-spacing:.1em;color:#667085}
+.mobile-preview .proposal-commercial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.mobile-preview .proposal-commercial-grid span{padding:12px 13px;background:#f7f8fa;border:1px solid #e3e6eb}
+.mobile-preview .proposal-copy{margin:12px 0 0;white-space:pre-wrap;font-size:10px;line-height:1.55;color:#4b5563}
+.mobile-preview .proposal-footer{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:end;padding-top:24px}
+.mobile-preview .proposal-footer b{display:block;font-size:11px;color:#111827}
+.mobile-preview .proposal-footer p{margin:5px 0 0;font-size:9px;line-height:1.5;color:#667085}
+.mobile-preview .proposal-footer-right{text-align:right;font-size:9px;color:#667085}
+.mobile-preview .proposal-footer-right strong{display:block;margin-bottom:5px;font-size:10px;color:#172033}
+@media print{
+  @page{size:letter;margin:.42in}
+  html,body{background:#fff!important}
+  body *{visibility:hidden!important}
+  .mobile-preview,.mobile-preview *{visibility:visible!important}
+  .mobile-preview{position:absolute!important;inset:0 auto auto 0!important;width:100%!important;min-height:auto!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;background:#fff!important}
+  .mobile-preview .proposal-header{padding-bottom:18pt}.mobile-preview .proposal-brand h2{font-size:28pt}.mobile-preview .proposal-section{padding:15pt 0}.mobile-preview .proposal-customer-grid{padding:17pt 0}
+  .mobile-preview .proposal-pricing-table{font-size:8.5pt}.mobile-preview .proposal-pricing-table thead th{font-size:7pt}.mobile-preview .proposal-pricing-table tbody tr{break-inside:avoid}
+  .mobile-preview .proposal-total-box{break-inside:avoid}.mobile-preview .proposal-footer{break-inside:avoid}
+}
