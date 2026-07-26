@@ -95,6 +95,7 @@ import './desktop-quote-redesign-v2.css'
 import './desktop-quote-focus-v3.css'
 import './quote-workspace-v4.css'
 import './quote-workspace-v5.css'
+import './quote-workspace-v6.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
