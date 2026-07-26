@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
+const LOGO_URL = 'https://static.wixstatic.com/media/b572e1_fbf841487b044ed39fc0bcfaeb17f41d~mv2.png/v1/fill/w_246,h_164,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/IMG_2032.png'
+
 const text = (root: ParentNode, selector: string, fallback = '') =>
   root.querySelector<HTMLElement>(selector)?.textContent?.trim() || fallback
 
@@ -16,7 +18,63 @@ const pdfSafe = (value = '') => value
   .replace(/\s+/g, ' ')
   .trim()
 
-function buildPdf(app: HTMLElement) {
+async function imageData(url: string) {
+  try {
+    const response = await fetch(url, { mode: 'cors' })
+    if (!response.ok) return null
+    const blob = await response.blob()
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result))
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+  } catch {
+    return null
+  }
+}
+
+type IconKind = 'plane' | 'truck' | 'document' | 'box' | 'clock' | 'calendar'
+
+function drawIcon(doc: jsPDF, kind: IconKind, cx: number, cy: number, blue: [number, number, number]) {
+  doc.setDrawColor(...blue)
+  doc.setLineWidth(1)
+  doc.circle(cx, cy, 11)
+  doc.setLineWidth(1.15)
+
+  if (kind === 'plane') {
+    doc.line(cx - 6, cy + 4, cx + 6, cy - 4)
+    doc.line(cx - 1, cy - 1, cx - 5, cy - 5)
+    doc.line(cx + 1, cy + 1, cx + 5, cy + 5)
+    doc.line(cx - 4, cy + 3, cx - 6, cy + 1)
+  } else if (kind === 'truck') {
+    doc.rect(cx - 6, cy - 4, 8, 7)
+    doc.rect(cx + 2, cy - 2, 4, 5)
+    doc.circle(cx - 3, cy + 5, 1.4)
+    doc.circle(cx + 4, cy + 5, 1.4)
+  } else if (kind === 'document') {
+    doc.rect(cx - 5, cy - 7, 10, 14)
+    doc.line(cx - 2, cy - 2, cx + 3, cy - 2)
+    doc.line(cx - 2, cy + 1, cx + 3, cy + 1)
+    doc.line(cx - 2, cy + 4, cx + 2, cy + 4)
+  } else if (kind === 'box') {
+    doc.rect(cx - 5, cy - 5, 10, 10)
+    doc.line(cx - 5, cy - 5, cx, cy - 1)
+    doc.line(cx + 5, cy - 5, cx, cy - 1)
+    doc.line(cx, cy - 1, cx, cy + 5)
+  } else if (kind === 'clock') {
+    doc.circle(cx, cy, 6)
+    doc.line(cx, cy, cx, cy - 4)
+    doc.line(cx, cy, cx + 3, cy + 2)
+  } else if (kind === 'calendar') {
+    doc.rect(cx - 6, cy - 5, 12, 10)
+    doc.line(cx - 6, cy - 1, cx + 6, cy - 1)
+    doc.line(cx - 3, cy - 7, cx - 3, cy - 3)
+    doc.line(cx + 3, cy - 7, cx + 3, cy - 3)
+  }
+}
+
+async function buildPdf(app: HTMLElement) {
   const preview = app.querySelector<HTMLElement>('.professional-quote-document')
   if (!preview) throw new Error('Quote preview is not available yet.')
 
@@ -42,40 +100,35 @@ function buildPdf(app: HTMLElement) {
     label: pdfSafe(text(item, 'small')),
     value: pdfSafe(text(item, 'b', 'To be confirmed')),
   }))
-
   const rows = Array.from(preview.querySelectorAll<HTMLTableRowElement>('.proposal-pricing-table tbody tr')).map(row => {
     const cells = Array.from(row.querySelectorAll<HTMLElement>('td')).map(cell => pdfSafe(cell.textContent?.trim() || ''))
     return [cells[0] || '', cells[1] || '', cells[2] || '', cells[3] || '', cells[4] || '']
   })
-
   const total = pdfSafe(text(preview, '.proposal-total-box strong', `${currency} 0.00`))
   const copyBlocks = Array.from(preview.querySelectorAll<HTMLElement>('.proposal-copy')).map(node => pdfSafe(node.textContent?.trim() || '')).filter(Boolean)
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter', compress: true })
   const pageWidth = doc.internal.pageSize.getWidth()
   const pageHeight = doc.internal.pageSize.getHeight()
-  const margin = 42
+  const margin = 46
   const blue: [number, number, number] = [47, 106, 229]
   const navy: [number, number, number] = [17, 24, 39]
-  const gray: [number, number, number] = [101, 112, 133]
-  const line: [number, number, number] = [221, 226, 234]
-  const soft: [number, number, number] = [247, 249, 252]
+  const gray: [number, number, number] = [103, 112, 128]
+  const line: [number, number, number] = [220, 224, 230]
+  const soft: [number, number, number] = [247, 248, 250]
+  const logo = await imageData(LOGO_URL)
 
   const footer = () => {
     const page = doc.getCurrentPageInfo().pageNumber
-    doc.setDrawColor(...blue)
-    doc.setLineWidth(0.8)
-    doc.line(0, pageHeight - 54, pageWidth, pageHeight - 54)
+    doc.setDrawColor(...line)
+    doc.line(margin, pageHeight - 42, pageWidth - margin, pageHeight - 42)
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(8.5)
-    doc.setTextColor(...blue)
-    doc.text('MIP Cargo Express', margin, pageHeight - 31)
+    doc.setFontSize(8)
+    doc.setTextColor(...navy)
+    doc.text('MIP Cargo Express', margin, pageHeight - 25)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(7.5)
     doc.setTextColor(...gray)
-    doc.text('Managed, Integrated & Precise', margin, pageHeight - 18)
-    doc.text('sales@mipcargo.com  |  www.mipcargo.com', pageWidth / 2, pageHeight - 25, { align: 'center' })
-    doc.text(`${quoteNumber}  |  Page ${page}`, pageWidth - margin, pageHeight - 25, { align: 'right' })
+    doc.text(`${quoteNumber}  -  Page ${page}`, pageWidth - margin, pageHeight - 25, { align: 'right' })
   }
 
   const sectionTitle = (label: string, y: number, x = margin) => {
@@ -85,189 +138,162 @@ function buildPdf(app: HTMLElement) {
     doc.text(pdfSafe(label).toUpperCase(), x, y)
   }
 
-  doc.setFillColor(255, 255, 255)
-  doc.rect(0, 0, pageWidth, pageHeight, 'F')
-  doc.setFillColor(...blue)
-  doc.rect(0, 0, pageWidth, 4, 'F')
-
-  // Subtle professional logo treatment.
-  doc.setDrawColor(202, 211, 224)
-  doc.setLineWidth(1)
-  doc.circle(margin + 27, 55, 25)
-  doc.setFillColor(235, 247, 255)
-  doc.circle(margin + 27, 55, 20, 'F')
-  doc.setFillColor(45, 169, 232)
-  doc.roundedRect(margin + 16, 46, 22, 16, 3, 3, 'F')
   doc.setFillColor(...navy)
-  doc.rect(margin + 12, 60, 30, 3, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setTextColor(...navy)
-  doc.setFontSize(13)
-  doc.text('MIP', margin + 27, 58, { align: 'center' })
+  doc.rect(0, 0, pageWidth, 104, 'F')
+  if (logo) doc.addImage(logo, 'PNG', margin, 18, 58, 58, undefined, 'FAST')
 
-  doc.setDrawColor(...line)
-  doc.line(margin + 62, 28, margin + 62, 82)
+  const titleX = logo ? margin + 76 : margin
+  doc.setDrawColor(...blue)
+  doc.setLineWidth(1.2)
+  doc.line(titleX - 14, 24, titleX - 14, 76)
   doc.setFont('helvetica', 'bold')
-  doc.setTextColor(...navy)
+  doc.setTextColor(255, 255, 255)
   doc.setFontSize(25)
-  doc.text('QUOTE', margin + 78, 47)
+  doc.text('QUOTE', titleX, 49)
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8.7)
-  doc.setTextColor(...gray)
-  doc.text('Responsive freight solutions with transparent pricing and dedicated support.', margin + 78, 66)
+  doc.setFontSize(8.5)
+  doc.setTextColor(200, 208, 222)
+  doc.text('MIP Cargo Express', titleX, 67)
 
-  const metaX = pageWidth - 214
+  const metaX = pageWidth - 206
   const metaValueX = pageWidth - margin
-  const metaRows = [
+  ;[
     ['Quote Number', quoteNumber],
     ['Status', status.toUpperCase()],
     ['Issued', issued],
     ['Valid Until', validity],
     ['Currency', currency],
-  ]
-  metaRows.forEach((item, index) => {
-    const rowY = 28 + index * 14
+  ].forEach((item, index) => {
+    const rowY = 25 + index * 14
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(8)
-    doc.setTextColor(...navy)
+    doc.setTextColor(220, 225, 235)
     doc.text(item[0], metaX, rowY)
     doc.setFont('helvetica', 'bold')
-    doc.setTextColor(index < 2 ? blue[0] : navy[0], index < 2 ? blue[1] : navy[1], index < 2 ? blue[2] : navy[2])
+    doc.setTextColor(index < 2 ? blue[0] : 255, index < 2 ? blue[1] : 255, index < 2 ? blue[2] : 255)
     doc.text(item[1], metaValueX, rowY, { align: 'right' })
   })
 
-  doc.setDrawColor(...line)
-  doc.line(margin, 98, pageWidth - margin, 98)
-
-  let y = 126
-  const rightX = 286
+  let y = 132
+  const rightX = 306
   sectionTitle('Prepared for', y, margin)
   sectionTitle('Shipment summary', y, rightX)
-
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(15)
+  doc.setFontSize(16)
   doc.setTextColor(...navy)
-  doc.text(customer, margin, y + 22)
+  doc.text(customer, margin, y + 23)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(...gray)
-  if (customerEmail) doc.text(customerEmail, margin, y + 39)
-  if (customerReference) {
-    doc.setDrawColor(...line)
-    doc.line(margin, y + 56, 232, y + 56)
-    sectionTitle('Customer reference', y + 78, margin)
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(11)
-    doc.setTextColor(...navy)
-    doc.text(customerReference, margin, y + 98)
-  }
+  if (customerEmail) doc.text(customerEmail, margin, y + 40)
+  if (customerReference) doc.text(`Reference: ${customerReference}`, margin, y + 57)
 
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(18)
+  doc.setFontSize(17)
   doc.setTextColor(...navy)
-  doc.text(route, rightX, y + 27)
+  doc.text(route, rightX, y + 24)
+  const serviceIcons: IconKind[] = ['plane', 'truck', 'document', 'box']
   serviceItems.slice(0, 4).forEach((item, index) => {
     const column = index % 2
     const row = Math.floor(index / 2)
-    const x = rightX + column * 128
+    const x = rightX + column * 126
     const itemY = y + 55 + row * 40
-    doc.setDrawColor(156, 188, 255)
-    doc.circle(x + 12, itemY - 4, 11)
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(7.5)
-    doc.setTextColor(...blue)
-    doc.text(String(index + 1), x + 12, itemY - 1.5, { align: 'center' })
+    drawIcon(doc, serviceIcons[index], x + 11, itemY, blue)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x + 30, itemY - 6)
+    doc.text(item.label.toUpperCase(), x + 31, itemY - 5)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(...navy)
-    doc.text(doc.splitTextToSize(item.value, 91), x + 30, itemY + 7)
+    doc.text(doc.splitTextToSize(item.value, 89), x + 31, itemY + 8)
   })
 
-  y = 264
+  y = 246
+  doc.setDrawColor(...line)
+  doc.line(margin, y - 12, pageWidth - margin, y - 12)
   sectionTitle('Cargo summary', y)
   const boxWidth = (pageWidth - margin * 2) / Math.max(cargoItems.length, 1)
   cargoItems.forEach((item, index) => {
     const x = margin + index * boxWidth
     doc.setFillColor(...soft)
     doc.setDrawColor(...line)
-    doc.roundedRect(x, y + 12, boxWidth, 60, 3, 3, 'FD')
+    doc.rect(x, y + 14, boxWidth, 54, 'FD')
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x + 12, y + 35)
+    doc.text(item.label.toUpperCase(), x + 10, y + 31)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(12)
     doc.setTextColor(...navy)
-    doc.text(item.value, x + 12, y + 55)
+    doc.text(item.value, x + 10, y + 51)
   })
 
-  sectionTitle('Freight charges', y + 96)
+  sectionTitle('Freight charges', y + 92)
   autoTable(doc, {
-    startY: y + 108,
+    startY: y + 105,
     head: [['Description', 'Basis', 'Qty', 'Unit rate', `Amount (${currency})`]],
     body: rows.length ? rows : [['No charges added', '', '', '', '']],
-    margin: { left: margin, right: margin, bottom: 72 },
+    margin: { left: margin, right: margin, bottom: 62 },
     theme: 'plain',
     styles: { font: 'helvetica', fontSize: 8.5, textColor: navy, cellPadding: 7, lineColor: line, lineWidth: { bottom: 0.45 } },
-    headStyles: { fontStyle: 'bold', fontSize: 7.5, textColor: navy, fillColor: soft, lineColor: line, lineWidth: { top: 0.7, bottom: 0.7 } },
-    columnStyles: { 0: { cellWidth: 188 }, 1: { cellWidth: 88 }, 2: { halign: 'right', cellWidth: 52 }, 3: { halign: 'right', cellWidth: 78 }, 4: { halign: 'right', cellWidth: 92, fontStyle: 'bold' } },
+    headStyles: { fontStyle: 'bold', fontSize: 7.5, textColor: gray, fillColor: soft, lineColor: line, lineWidth: { top: 0.8, bottom: 0.8 } },
+    columnStyles: { 0: { cellWidth: 190 }, 1: { cellWidth: 85 }, 2: { halign: 'right', cellWidth: 55 }, 3: { halign: 'right', cellWidth: 82 }, 4: { halign: 'right', cellWidth: 90, fontStyle: 'bold' } },
     didDrawPage: footer,
   })
 
-  const tableEnd = (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || y + 164
-  y = tableEnd + 20
-  if (y > pageHeight - 210) {
+  const tableEnd = (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || y + 160
+  y = tableEnd + 25
+  if (y > pageHeight - 200) {
     doc.addPage()
-    y = 52
+    y = 58
   }
 
   doc.setFillColor(...soft)
-  doc.setDrawColor(...line)
-  doc.roundedRect(pageWidth - margin - 220, y, 220, 74, 5, 5, 'FD')
-  doc.setFont('helvetica', 'bold')
+  doc.roundedRect(pageWidth - margin - 214, y, 214, 72, 4, 4, 'F')
+  doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
-  doc.setTextColor(...blue)
-  doc.text('TOTAL FREIGHT CHARGES', pageWidth - margin - 204, y + 22)
-  doc.text(currency, pageWidth - margin - 16, y + 22, { align: 'right' })
-  doc.setDrawColor(...blue)
-  doc.line(pageWidth - margin - 204, y + 31, pageWidth - margin - 16, y + 31)
-  doc.setFontSize(22)
+  doc.setTextColor(...gray)
+  doc.text('TOTAL FREIGHT CHARGES', pageWidth - margin - 198, y + 21)
+  doc.setFont('helvetica', 'bold')
   doc.setTextColor(...navy)
-  doc.text(total, pageWidth - margin - 16, y + 59, { align: 'right' })
+  doc.text(currency, pageWidth - margin - 16, y + 21, { align: 'right' })
+  doc.setFontSize(22)
+  doc.text(total, pageWidth - margin - 16, y + 52, { align: 'right' })
 
-  y += 102
+  y += 98
   sectionTitle('Commercial details', y)
   commercialItems.forEach((item, index) => {
     const x = margin + index * 172
-    doc.setDrawColor(...line)
-    if (index > 0) doc.line(x - 12, y + 10, x - 12, y + 48)
+    if (index > 0) {
+      doc.setDrawColor(...line)
+      doc.line(x - 12, y + 10, x - 12, y + 46)
+    }
+    const kind: IconKind = index === 0 ? 'plane' : index === 1 ? 'clock' : 'calendar'
+    drawIcon(doc, kind, x + 11, y + 27, blue)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x, y + 18)
+    doc.text(item.label.toUpperCase(), x + 31, y + 21)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(...navy)
-    doc.text(doc.splitTextToSize(item.value, 150), x, y + 34)
+    doc.text(doc.splitTextToSize(item.value, 130), x + 31, y + 37)
   })
 
   y += 68
   copyBlocks.forEach((block, index) => {
     const title = index === 0 ? 'Notes' : 'Terms & conditions'
     const lines = doc.splitTextToSize(block, pageWidth - margin * 2)
-    const needed = 29 + lines.length * 11
-    if (y + needed > pageHeight - 70) {
+    const needed = 30 + lines.length * 11
+    if (y + needed > pageHeight - 62) {
       footer()
       doc.addPage()
-      y = 52
+      y = 58
     }
     sectionTitle(title, y)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(8.4)
+    doc.setFontSize(8.5)
     doc.setTextColor(...gray)
     doc.text(lines, margin, y + 18)
     y += needed
@@ -277,9 +303,7 @@ function buildPdf(app: HTMLElement) {
   const filename = `${quoteNumber.replace(/[^a-z0-9_-]+/gi, '-') || 'quote'}.pdf`
   const blob = doc.output('blob')
   const url = URL.createObjectURL(blob)
-
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-  if (isIOS) {
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
     window.open(url, '_blank', 'noopener,noreferrer')
     window.setTimeout(() => URL.revokeObjectURL(url), 60000)
   } else {
@@ -296,35 +320,26 @@ function buildPdf(app: HTMLElement) {
 export function MobileQuotePdfEnhancer() {
   useEffect(() => {
     const handler = (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      const button = target.closest<HTMLButtonElement>('.mobile-quote-menu button')
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.mobile-quote-menu button')
       if (!button || !/create pdf/i.test(button.textContent || '')) return
       const app = button.closest<HTMLElement>('.mobile-quote-app')
       if (!app) return
-
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-
       const original = button.textContent || 'Create PDF'
       button.disabled = true
       button.textContent = 'Generating PDF...'
-      window.setTimeout(() => {
-        try {
-          buildPdf(app)
-        } catch (error) {
-          console.error(error)
-          window.alert(error instanceof Error ? error.message : 'Unable to generate PDF.')
-        } finally {
-          button.disabled = false
-          button.textContent = original
-        }
-      }, 0)
+      void buildPdf(app).catch(error => {
+        console.error(error)
+        window.alert(error instanceof Error ? error.message : 'Unable to generate PDF.')
+      }).finally(() => {
+        button.disabled = false
+        button.textContent = original
+      })
     }
-
     document.addEventListener('click', handler, true)
     return () => document.removeEventListener('click', handler, true)
   }, [])
-
   return null
 }
