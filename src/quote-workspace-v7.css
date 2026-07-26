@@ -1,0 +1,35 @@
+@media (min-width:761px){
+  .qw5-shell .qw5-charges{position:relative!important;display:flex!important;flex-direction:column!important;min-height:0!important}
+  .qw5-shell .qw4-charge-table{display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important;border-radius:16px!important;background:rgba(255,255,255,.98)!important;box-shadow:inset 0 0 0 1px rgba(17,24,39,.06)!important}
+  .qw5-shell .qw4-charge-scroll{max-height:clamp(260px,42vh,520px)!important;min-height:220px!important;overflow-y:auto!important;overflow-x:hidden!important;scroll-behavior:smooth!important;scrollbar-gutter:stable both-edges!important;overscroll-behavior-y:contain!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;outline:none!important;background:linear-gradient(#fff 30%,rgba(255,255,255,0)) top/100% 24px no-repeat,linear-gradient(rgba(255,255,255,0),#fff 70%) bottom/100% 24px no-repeat,#fff!important}
+  .qw5-shell .qw4-charge-scroll:focus-visible{box-shadow:inset 0 0 0 2px rgba(0,113,227,.22)!important}
+  .qw5-shell .qw4-charge-scroll::-webkit-scrollbar{width:14px!important}
+  .qw5-shell .qw4-charge-scroll::-webkit-scrollbar-track{background:transparent!important}
+  .qw5-shell .qw4-charge-scroll::-webkit-scrollbar-thumb{background:rgba(60,60,67,.28)!important;border:4px solid transparent!important;background-clip:padding-box!important;border-radius:999px!important}
+  .qw5-shell .qw4-charge-scroll::-webkit-scrollbar-thumb:hover{background:rgba(60,60,67,.45)!important;border:4px solid transparent!important;background-clip:padding-box!important}
+  .qw5-shell .qw4-charge-row{transition:background .14s ease,box-shadow .14s ease!important}
+  .qw5-shell .qw4-charge-row:hover{background:#f8fbff!important;box-shadow:inset 3px 0 0 #0a84ff!important}
+  .qw5-shell .qw4-charge-row:focus-within{position:relative;z-index:1;background:#fff!important;box-shadow:inset 3px 0 0 #0a84ff,0 5px 18px rgba(0,113,227,.09)!important}
+  .qw5-shell .qw4-charge-row input,.qw5-shell .qw4-charge-row select{transition:background .14s ease,border-color .14s ease,box-shadow .14s ease!important}
+  .qw5-shell .qw4-charge-row input:hover,.qw5-shell .qw4-charge-row select:hover{background:#fff!important;border-color:#d3d9e2!important}
+  .qw5-shell .qw4-charge-row input:focus,.qw5-shell .qw4-charge-row select:focus{background:#fff!important;border-color:#7bb0f4!important;box-shadow:0 0 0 3px rgba(10,132,255,.13)!important;outline:none!important}
+
+  .qw7-focus-button{background:#eef5ff!important;border-color:#b8d3fb!important;color:#1267d6!important}
+  .qw7-focus-button span{font-size:15px;line-height:1}.qw7-focus-button b{font:inherit}
+  .qw7-scroll-tools{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;color:#7a8494;font-size:10px;font-weight:700;letter-spacing:.03em}
+  .qw7-scroll-tools button{width:28px;height:28px;border:1px solid #dbe1e9;border-radius:50%;background:#fff;color:#31578c;display:grid;place-items:center;font-size:13px;box-shadow:0 3px 9px rgba(15,23,42,.05);transition:.14s ease}
+  .qw7-scroll-tools button:hover{transform:translateY(-1px);border-color:#a9c8f4;background:#f4f8ff}
+
+  .qw5-shell.qw7-charge-focus .qw4-workflow{display:none!important}
+  .qw5-shell.qw7-charge-focus .qw4-layout{padding-top:12px!important}
+  .qw5-shell.qw7-charge-focus .qw4-main{overflow:hidden!important;display:flex!important;flex-direction:column!important;padding-bottom:0!important}
+  .qw5-shell.qw7-charge-focus .qw4-main>.qw4-summary-line,
+  .qw5-shell.qw7-charge-focus .qw4-main>.qw4-services-panel,
+  .qw5-shell.qw7-charge-focus .qw4-main>.qw4-panel:not(.qw5-charges),
+  .qw5-shell.qw7-charge-focus .qw4-main>.qw4-message{display:none!important}
+  .qw5-shell.qw7-charge-focus .qw5-charges{flex:1!important;height:100%!important;min-height:0!important;border-radius:22px!important;box-shadow:0 18px 50px rgba(15,23,42,.1)!important}
+  .qw5-shell.qw7-charge-focus .qw4-charge-table{flex:1!important;min-height:0!important}
+  .qw5-shell.qw7-charge-focus .qw4-charge-scroll{flex:1!important;max-height:none!important;min-height:0!important}
+  .qw5-shell.qw7-charge-focus .qw4-section-head{position:sticky!important;top:0!important;z-index:8!important;margin:-16px -16px 12px!important;padding:16px!important;background:rgba(255,255,255,.94)!important;backdrop-filter:blur(18px)!important;border-bottom:1px solid rgba(17,24,39,.07)!important}
+  .qw5-shell.qw7-charge-focus .qw7-scroll-tools{padding-bottom:2px!important}
+}
