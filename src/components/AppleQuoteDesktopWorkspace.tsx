@@ -2,7 +2,7 @@ import { Building2, FileText, Home, Search, Ship, Users } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { QuoteWorkspaceV4 } from './QuoteWorkspaceV4'
+import { QuoteWorkspaceV5 } from './QuoteWorkspaceV5'
 
 type QuoteItem = {
   id: string
@@ -83,6 +83,6 @@ export function AppleQuoteDesktopWorkspace() {
       </button>)}</div>
     </aside>
 
-    <main className="apple-quote-editor">{selectedId ? <QuoteWorkspaceV4 /> : <div className="quote-v4-landing"><FileText size={30}/><h2>Select a quote</h2><p>Choose a quote from the queue to review or edit it.</p></div>}</main>
+    <main className="apple-quote-editor">{selectedId ? <QuoteWorkspaceV5 /> : <div className="quote-v4-landing"><FileText size={30}/><h2>Select a quote</h2><p>Choose a quote from the queue to review or edit it.</p></div>}</main>
   </div>
 }
