@@ -1,0 +1,80 @@
+@media (min-width:761px){
+  .apple-quote-shell.quote-editor-selected{grid-template-columns:72px 0 minmax(0,1fr)!important}
+  .apple-quote-shell.quote-editor-selected .apple-quote-queue{width:0!important;min-width:0!important;opacity:0!important;pointer-events:none!important;overflow:hidden!important;border-right:0!important;transform:translateX(-18px)!important}
+  .apple-quote-shell.quote-editor-selected .apple-quote-editor{grid-column:3!important}
+
+  .quote-v3,.quote-v3 *{box-sizing:border-box!important}
+  .quote-v3{color:#15171a!important}
+  .quote-v3 .quote-workspace{background:#f2f3f5!important}
+  .quote-v3 .quote-workspace>header{height:72px!important;min-height:72px!important;padding:10px 18px!important;background:rgba(250,250,252,.96)!important;border-bottom:1px solid rgba(60,60,67,.12)!important;box-shadow:0 1px 0 rgba(255,255,255,.8) inset!important}
+  .quote-v3 .quote-workspace>header>button{background:#fff!important;color:#1d1d1f!important;border:1px solid rgba(60,60,67,.14)!important;box-shadow:0 1px 2px rgba(0,0,0,.04)!important}
+  .quote-v3 .quote-workspace>header h2{color:#111114!important;font-size:22px!important}
+  .quote-v3 .quote-workspace>header p,.quote-v3 .quote-workspace>header small{color:#6e6e73!important}
+  .quote-v3 .quote-action-bar button{color:#1d1d1f!important;background:#fff!important;border:1px solid rgba(60,60,67,.14)!important}
+  .quote-v3 .quote-action-bar button:last-child{background:#0a84ff!important;color:#fff!important;border-color:#0a84ff!important}
+
+  .quote-v3 .quote-layout{grid-template-columns:minmax(0,1fr)!important;gap:12px!important;padding:12px 14px 18px!important;overflow:auto!important;align-content:start!important}
+  .quote-v3 .quote-preview{order:-1!important;overflow:visible!important;display:block!important}
+  .quote-v3 .quote-builder{overflow:visible!important;padding:0!important;gap:12px!important}
+
+  .quote-v3 .margin-panel{position:relative!important;top:auto!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;padding:14px!important;gap:10px!important;border-radius:20px!important;background:rgba(255,255,255,.96)!important;border:1px solid rgba(60,60,67,.12)!important;box-shadow:0 8px 28px rgba(0,0,0,.045)!important}
+  .quote-v3 .margin-panel:before{margin:0 0 2px!important;color:#6e6e73!important}
+  .quote-v3 .margin-panel>div{min-height:70px!important;padding:12px 14px!important;background:#f5f5f7!important;border:1px solid transparent!important;border-radius:15px!important}
+  .quote-v3 .margin-panel>div:nth-child(2){background:#1d1d1f!important;color:#fff!important}
+  .quote-v3 .margin-panel span{color:#6e6e73!important;font-size:9px!important}
+  .quote-v3 .margin-panel b{color:#111114!important;font-size:19px!important}
+  .quote-v3 .margin-panel>div:nth-child(2) b{color:#fff!important}
+  .quote-v3 .margin-panel .warning{background:#fff4f2!important;border-color:#ffd4cc!important}
+
+  .quote-v3 .quote-paper{display:grid!important;grid-template-columns:1.1fr 1.4fr 1fr!important;gap:10px!important;margin-top:10px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;min-height:0!important}
+  .quote-v3 .quote-brand,.quote-v3 .quote-paper-head,.quote-v3 .quote-lines,.quote-v3 .quote-total,.quote-v3 .quote-paper>p,.quote-v3 .quote-paper>footer{display:none!important}
+  .quote-v3 .quote-customer,.quote-v3 .quote-preview-info,.quote-v3 .quote-cargo-summary{margin:0!important;padding:14px 16px!important;border:1px solid rgba(60,60,67,.11)!important;border-radius:16px!important;background:#fff!important;box-shadow:0 4px 18px rgba(0,0,0,.025)!important}
+  .quote-v3 .quote-customer span,.quote-v3 .quote-preview-info span,.quote-v3 .quote-cargo-summary span{color:#77777c!important}
+  .quote-v3 .quote-customer b,.quote-v3 .quote-preview-info b,.quote-v3 .quote-cargo-summary b,.quote-v3 .quote-preview-info h3,.quote-v3 .quote-cargo-summary h3{color:#17171a!important}
+  .quote-v3 .quote-preview-info:nth-of-type(2){display:none!important}
+  .quote-v3 .quote-cargo-summary>div{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:6px!important}
+  .quote-v3 .quote-cargo-summary span{padding:8px!important;background:#f6f6f8!important;border-radius:10px!important}
+
+  .quote-v3 .quote-card{padding:16px!important;border-radius:20px!important;border:1px solid rgba(60,60,67,.12)!important;background:rgba(255,255,255,.98)!important;box-shadow:0 8px 28px rgba(0,0,0,.035)!important}
+  .quote-v3 .quote-editor-info{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px!important}
+  .quote-v3 .quote-editor-info label:nth-child(1),.quote-v3 .quote-editor-info label:nth-child(2){grid-column:span 2!important}
+  .quote-v3 label span{color:#6e6e73!important;font-size:9px!important}
+  .quote-v3 input,.quote-v3 select,.quote-v3 textarea{color:#1d1d1f!important;background:#f7f7f9!important;border:1px solid rgba(60,60,67,.14)!important;-webkit-text-fill-color:#1d1d1f!important}
+  .quote-v3 input::placeholder,.quote-v3 textarea::placeholder{color:#9a9aa0!important;-webkit-text-fill-color:#9a9aa0!important}
+  .quote-v3 input,.quote-v3 select{height:40px!important}
+  .quote-v3 select option{color:#1d1d1f!important;background:#fff!important}
+  .quote-v3 .quote-mode-badge{background:#e9f3ff!important;color:#0066cc!important}
+  .quote-v3 .quote-template-badge{background:#f2f2f7!important;color:#515154!important}
+
+  .quote-v3 .transfer-metrics{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .quote-v3 .transfer-metrics article{background:#f5f5f7!important;border:0!important;border-radius:14px!important}
+  .quote-v3 .transfer-metrics article span{color:#77777c!important}
+  .quote-v3 .transfer-metrics article b{color:#17171a!important}
+  .quote-v3 .mini-cargo span{color:#424247!important;background:#f7f7f9!important;border-color:rgba(60,60,67,.1)!important}
+
+  .quote-v3 .quote-section-head h3{color:#17171a!important;font-size:21px!important}
+  .quote-v3 .quote-section-head>div>span,.quote-v3 .preset-strip>span{color:#6e6e73!important}
+  .quote-v3 .quote-section-head button,.quote-v3 .preset-strip button{color:#1d1d1f!important;background:#fff!important;border:1px solid rgba(60,60,67,.14)!important}
+  .quote-v3 .preset-strip button.active{background:#0a84ff!important;color:#fff!important;border-color:#0a84ff!important}
+  .quote-v3 .preset-strip{overflow-x:auto!important;scrollbar-width:none!important}
+
+  .quote-v3 .charge-table.commercial{overflow:hidden!important;border-radius:14px!important;border:1px solid rgba(60,60,67,.12)!important}
+  .quote-v3 .charge-head,.quote-v3 .charge-row{min-width:0!important;width:100%!important;grid-template-columns:minmax(150px,1.6fr) minmax(82px,.8fr) minmax(48px,.45fr) minmax(68px,.65fr) minmax(60px,.55fr) minmax(68px,.65fr) minmax(72px,.68fr) minmax(72px,.68fr) 34px!important}
+  .quote-v3 .charge-head span:nth-child(7),.quote-v3 .charge-row>*:nth-child(7){display:none!important}
+  .quote-v3 .charge-head span{color:#6e6e73!important;background:#f5f5f7!important;padding:9px 6px!important;font-size:8px!important;white-space:normal!important;line-height:1.15!important}
+  .quote-v3 .charge-row>*{min-width:0!important;min-height:42px!important;color:#1d1d1f!important;background:#fff!important;-webkit-text-fill-color:#1d1d1f!important;padding-left:7px!important;padding-right:7px!important;font-size:12px!important}
+  .quote-v3 .charge-row output{color:#17171a!important;-webkit-text-fill-color:#17171a!important;padding:0 7px!important;font-size:12px!important}
+  .quote-v3 .charge-row button{color:#c9342f!important;-webkit-text-fill-color:#c9342f!important}
+
+  .quote-v3 .quote-details{grid-template-columns:1fr 1fr!important}
+  .quote-v3 .quote-details>div{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+  .quote-v3 .quote-message{color:#1d1d1f!important;background:#eaf4ff!important}
+}
+
+@media (min-width:761px) and (max-width:1050px){
+  .quote-v3 .quote-editor-info{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .quote-v3 .quote-paper{grid-template-columns:1fr 1fr!important}
+  .quote-v3 .quote-cargo-summary{grid-column:1/-1!important}
+  .quote-v3 .quote-details>div{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .quote-v3 .charge-head,.quote-v3 .charge-row{grid-template-columns:minmax(135px,1.5fr) minmax(76px,.75fr) 46px 64px 56px 64px 68px 68px 32px!important}
+}
