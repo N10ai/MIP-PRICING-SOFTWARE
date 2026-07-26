@@ -89,6 +89,7 @@ import './mobile-quote-apple-v2.css'
 import './mobile-quote-apple-v12.css'
 import './professional-quote-document-v3.css'
 import './mobile-quote-summary-v2.css'
+import './desktop-quote-redesign-v1.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
