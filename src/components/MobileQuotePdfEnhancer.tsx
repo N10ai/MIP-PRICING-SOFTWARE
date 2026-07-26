@@ -20,7 +20,7 @@ function buildPdf(app: HTMLElement) {
   const preview = app.querySelector<HTMLElement>('.professional-quote-document')
   if (!preview) throw new Error('Quote preview is not available yet.')
 
-  const quoteNumber = pdfSafe(text(preview, '.proposal-meta strong', 'Freight quotation'))
+  const quoteNumber = pdfSafe(text(preview, '.proposal-meta strong', 'Quote'))
   const customer = pdfSafe(text(preview, '.proposal-customer-grid .proposal-block:first-child h3', 'Customer'))
   const customerEmail = pdfSafe(text(preview, '.proposal-customer-grid .proposal-block:first-child > p'))
   const customerReference = pdfSafe(text(preview, '.proposal-reference p'))
@@ -54,23 +54,28 @@ function buildPdf(app: HTMLElement) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter', compress: true })
   const pageWidth = doc.internal.pageSize.getWidth()
   const pageHeight = doc.internal.pageSize.getHeight()
-  const margin = 46
-  const blue: [number, number, number] = [48, 102, 225]
+  const margin = 42
+  const blue: [number, number, number] = [47, 106, 229]
   const navy: [number, number, number] = [17, 24, 39]
-  const gray: [number, number, number] = [103, 112, 128]
-  const line: [number, number, number] = [220, 224, 230]
+  const gray: [number, number, number] = [101, 112, 133]
+  const line: [number, number, number] = [221, 226, 234]
+  const soft: [number, number, number] = [247, 249, 252]
 
   const footer = () => {
     const page = doc.getCurrentPageInfo().pageNumber
-    doc.setDrawColor(...line)
-    doc.line(margin, pageHeight - 42, pageWidth - margin, pageHeight - 42)
+    doc.setDrawColor(...blue)
+    doc.setLineWidth(0.8)
+    doc.line(0, pageHeight - 54, pageWidth, pageHeight - 54)
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(8)
-    doc.setTextColor(...navy)
-    doc.text('MIP Cargo Express', margin, pageHeight - 25)
+    doc.setFontSize(8.5)
+    doc.setTextColor(...blue)
+    doc.text('MIP Cargo Express', margin, pageHeight - 31)
     doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
     doc.setTextColor(...gray)
-    doc.text(`${quoteNumber} - Page ${page}`, pageWidth - margin, pageHeight - 25, { align: 'right' })
+    doc.text('Managed, Integrated & Precise', margin, pageHeight - 18)
+    doc.text('sales@mipcargo.com  |  www.mipcargo.com', pageWidth / 2, pageHeight - 25, { align: 'center' })
+    doc.text(`${quoteNumber}  |  Page ${page}`, pageWidth - margin, pageHeight - 25, { align: 'right' })
   }
 
   const sectionTitle = (label: string, y: number, x = margin) => {
@@ -80,129 +85,166 @@ function buildPdf(app: HTMLElement) {
     doc.text(pdfSafe(label).toUpperCase(), x, y)
   }
 
-  doc.setFillColor(...navy)
-  doc.rect(0, 0, pageWidth, 116, 'F')
-
-  // Vector MIP logo: crisp at every zoom level and independent of image loading.
+  doc.setFillColor(255, 255, 255)
+  doc.rect(0, 0, pageWidth, pageHeight, 'F')
   doc.setFillColor(...blue)
-  doc.roundedRect(margin, 24, 28, 28, 5, 5, 'F')
-  doc.setFont('helvetica', 'bold')
-  doc.setTextColor(255, 255, 255)
-  doc.setFontSize(13)
-  doc.text('M', margin + 14, 43, { align: 'center' })
-  doc.setFontSize(10)
-  doc.text('MIP CARGO EXPRESS', margin + 38, 35)
-  doc.setFontSize(27)
-  doc.text('Freight quotation', margin, 76)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.setTextColor(205, 213, 226)
-  doc.text('Responsive freight solutions with transparent pricing and dedicated support.', margin, 96)
+  doc.rect(0, 0, pageWidth, 4, 'F')
 
+  // Subtle professional logo treatment.
+  doc.setDrawColor(202, 211, 224)
+  doc.setLineWidth(1)
+  doc.circle(margin + 27, 55, 25)
+  doc.setFillColor(235, 247, 255)
+  doc.circle(margin + 27, 55, 20, 'F')
+  doc.setFillColor(45, 169, 232)
+  doc.roundedRect(margin + 16, 46, 22, 16, 3, 3, 'F')
+  doc.setFillColor(...navy)
+  doc.rect(margin + 12, 60, 30, 3, 'F')
   doc.setFont('helvetica', 'bold')
-  doc.setTextColor(255, 255, 255)
-  doc.setFontSize(9)
-  doc.text(status.toUpperCase(), pageWidth - margin, 34, { align: 'right' })
-  doc.setFontSize(8)
-  doc.setTextColor(163, 190, 255)
-  doc.text('QUOTE NUMBER', pageWidth - margin, 55, { align: 'right' })
-  doc.setFontSize(15)
-  doc.setTextColor(255, 255, 255)
-  doc.text(quoteNumber, pageWidth - margin, 76, { align: 'right' })
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(205, 213, 226)
-  doc.text(`Issued ${issued} - Valid ${validity} - ${currency}`, pageWidth - margin, 94, { align: 'right' })
-
-  let y = 146
-  sectionTitle('Prepared for', y, margin)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(16)
   doc.setTextColor(...navy)
-  doc.text(customer, margin, y + 23)
+  doc.setFontSize(13)
+  doc.text('MIP', margin + 27, 58, { align: 'center' })
+
+  doc.setDrawColor(...line)
+  doc.line(margin + 62, 28, margin + 62, 82)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...navy)
+  doc.setFontSize(25)
+  doc.text('QUOTE', margin + 78, 47)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8.7)
+  doc.setTextColor(...gray)
+  doc.text('Responsive freight solutions with transparent pricing and dedicated support.', margin + 78, 66)
+
+  const metaX = pageWidth - 214
+  const metaValueX = pageWidth - margin
+  const metaRows = [
+    ['Quote Number', quoteNumber],
+    ['Status', status.toUpperCase()],
+    ['Issued', issued],
+    ['Valid Until', validity],
+    ['Currency', currency],
+  ]
+  metaRows.forEach((item, index) => {
+    const rowY = 28 + index * 14
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(...navy)
+    doc.text(item[0], metaX, rowY)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(index < 2 ? blue[0] : navy[0], index < 2 ? blue[1] : navy[1], index < 2 ? blue[2] : navy[2])
+    doc.text(item[1], metaValueX, rowY, { align: 'right' })
+  })
+
+  doc.setDrawColor(...line)
+  doc.line(margin, 98, pageWidth - margin, 98)
+
+  let y = 126
+  const rightX = 286
+  sectionTitle('Prepared for', y, margin)
+  sectionTitle('Shipment summary', y, rightX)
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(15)
+  doc.setTextColor(...navy)
+  doc.text(customer, margin, y + 22)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(...gray)
   if (customerEmail) doc.text(customerEmail, margin, y + 39)
-  if (customerReference) doc.text(`Reference: ${customerReference}`, margin, y + 55)
+  if (customerReference) {
+    doc.setDrawColor(...line)
+    doc.line(margin, y + 56, 232, y + 56)
+    sectionTitle('Customer reference', y + 78, margin)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(...navy)
+    doc.text(customerReference, margin, y + 98)
+  }
 
-  const rightX = 326
-  sectionTitle('Shipment summary', y, rightX)
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(15)
+  doc.setFontSize(18)
   doc.setTextColor(...navy)
-  doc.text(route, rightX, y + 23)
+  doc.text(route, rightX, y + 27)
   serviceItems.slice(0, 4).forEach((item, index) => {
     const column = index % 2
     const row = Math.floor(index / 2)
-    const x = rightX + column * 118
-    const itemY = y + 47 + row * 31
+    const x = rightX + column * 128
+    const itemY = y + 55 + row * 40
+    doc.setDrawColor(156, 188, 255)
+    doc.circle(x + 12, itemY - 4, 11)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(7.5)
+    doc.setTextColor(...blue)
+    doc.text(String(index + 1), x + 12, itemY - 1.5, { align: 'center' })
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x, itemY)
+    doc.text(item.label.toUpperCase(), x + 30, itemY - 6)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(...navy)
-    doc.text(doc.splitTextToSize(item.value, 104), x, itemY + 12)
+    doc.text(doc.splitTextToSize(item.value, 91), x + 30, itemY + 7)
   })
 
-  y = 244
-  doc.setDrawColor(...line)
-  doc.line(margin, y - 12, pageWidth - margin, y - 12)
+  y = 264
   sectionTitle('Cargo summary', y)
   const boxWidth = (pageWidth - margin * 2) / Math.max(cargoItems.length, 1)
   cargoItems.forEach((item, index) => {
     const x = margin + index * boxWidth
+    doc.setFillColor(...soft)
     doc.setDrawColor(...line)
-    doc.rect(x, y + 14, boxWidth, 54)
+    doc.roundedRect(x, y + 12, boxWidth, 60, 3, 3, 'FD')
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text(item.label.toUpperCase(), x + 10, y + 31)
+    doc.text(item.label.toUpperCase(), x + 12, y + 35)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(12)
     doc.setTextColor(...navy)
-    doc.text(item.value, x + 10, y + 51)
+    doc.text(item.value, x + 12, y + 55)
   })
 
-  sectionTitle('Freight charges', y + 92)
+  sectionTitle('Freight charges', y + 96)
   autoTable(doc, {
-    startY: y + 105,
-    head: [['Description', 'Basis', 'Qty', 'Unit rate', 'Amount']],
+    startY: y + 108,
+    head: [['Description', 'Basis', 'Qty', 'Unit rate', `Amount (${currency})`]],
     body: rows.length ? rows : [['No charges added', '', '', '', '']],
-    margin: { left: margin, right: margin, bottom: 62 },
+    margin: { left: margin, right: margin, bottom: 72 },
     theme: 'plain',
     styles: { font: 'helvetica', fontSize: 8.5, textColor: navy, cellPadding: 7, lineColor: line, lineWidth: { bottom: 0.45 } },
-    headStyles: { fontStyle: 'bold', fontSize: 7.5, textColor: gray, fillColor: [247, 248, 250], lineColor: line, lineWidth: { top: 0.8, bottom: 0.8 } },
-    columnStyles: { 0: { cellWidth: 190 }, 1: { cellWidth: 85 }, 2: { halign: 'right', cellWidth: 55 }, 3: { halign: 'right', cellWidth: 82 }, 4: { halign: 'right', cellWidth: 90, fontStyle: 'bold' } },
+    headStyles: { fontStyle: 'bold', fontSize: 7.5, textColor: navy, fillColor: soft, lineColor: line, lineWidth: { top: 0.7, bottom: 0.7 } },
+    columnStyles: { 0: { cellWidth: 188 }, 1: { cellWidth: 88 }, 2: { halign: 'right', cellWidth: 52 }, 3: { halign: 'right', cellWidth: 78 }, 4: { halign: 'right', cellWidth: 92, fontStyle: 'bold' } },
     didDrawPage: footer,
   })
 
-  const tableEnd = (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || y + 160
-  y = tableEnd + 25
-  if (y > pageHeight - 200) {
+  const tableEnd = (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || y + 164
+  y = tableEnd + 20
+  if (y > pageHeight - 210) {
     doc.addPage()
-    y = 58
+    y = 52
   }
 
-  doc.setFillColor(247, 248, 250)
-  doc.roundedRect(pageWidth - margin - 214, y, 214, 72, 4, 4, 'F')
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(...gray)
-  doc.text('TOTAL FREIGHT CHARGES', pageWidth - margin - 198, y + 21)
+  doc.setFillColor(...soft)
+  doc.setDrawColor(...line)
+  doc.roundedRect(pageWidth - margin - 220, y, 220, 74, 5, 5, 'FD')
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(8)
-  doc.setTextColor(...navy)
-  doc.text(currency, pageWidth - margin - 16, y + 21, { align: 'right' })
+  doc.setTextColor(...blue)
+  doc.text('TOTAL FREIGHT CHARGES', pageWidth - margin - 204, y + 22)
+  doc.text(currency, pageWidth - margin - 16, y + 22, { align: 'right' })
+  doc.setDrawColor(...blue)
+  doc.line(pageWidth - margin - 204, y + 31, pageWidth - margin - 16, y + 31)
   doc.setFontSize(22)
-  doc.text(total, pageWidth - margin - 16, y + 52, { align: 'right' })
+  doc.setTextColor(...navy)
+  doc.text(total, pageWidth - margin - 16, y + 59, { align: 'right' })
 
-  y += 98
+  y += 102
   sectionTitle('Commercial details', y)
   commercialItems.forEach((item, index) => {
     const x = margin + index * 172
+    doc.setDrawColor(...line)
+    if (index > 0) doc.line(x - 12, y + 10, x - 12, y + 48)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...gray)
@@ -210,29 +252,29 @@ function buildPdf(app: HTMLElement) {
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(...navy)
-    doc.text(doc.splitTextToSize(item.value, 154), x, y + 33)
+    doc.text(doc.splitTextToSize(item.value, 150), x, y + 34)
   })
 
-  y += 69
+  y += 68
   copyBlocks.forEach((block, index) => {
     const title = index === 0 ? 'Notes' : 'Terms & conditions'
     const lines = doc.splitTextToSize(block, pageWidth - margin * 2)
-    const needed = 30 + lines.length * 11
-    if (y + needed > pageHeight - 62) {
+    const needed = 29 + lines.length * 11
+    if (y + needed > pageHeight - 70) {
       footer()
       doc.addPage()
-      y = 58
+      y = 52
     }
     sectionTitle(title, y)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(8.5)
+    doc.setFontSize(8.4)
     doc.setTextColor(...gray)
     doc.text(lines, margin, y + 18)
     y += needed
   })
 
   footer()
-  const filename = `${quoteNumber.replace(/[^a-z0-9_-]+/gi, '-') || 'freight-quotation'}.pdf`
+  const filename = `${quoteNumber.replace(/[^a-z0-9_-]+/gi, '-') || 'quote'}.pdf`
   const blob = doc.output('blob')
   const url = URL.createObjectURL(blob)
 
