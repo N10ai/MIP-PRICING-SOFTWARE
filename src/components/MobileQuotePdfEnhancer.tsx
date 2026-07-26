@@ -5,42 +5,51 @@ import autoTable from 'jspdf-autotable'
 const text = (root: ParentNode, selector: string, fallback = '') =>
   root.querySelector<HTMLElement>(selector)?.textContent?.trim() || fallback
 
-const cleanMoney = (value: string) => value.replace(/[^0-9.,-]/g, '')
+const pdfSafe = (value = '') => value
+  .replace(/[→➜➝➞⟶]/g, ' to ')
+  .replace(/[•·]/g, ' - ')
+  .replace(/[“”]/g, '"')
+  .replace(/[‘’]/g, "'")
+  .replace(/[–—]/g, '-')
+  .replace(/…/g, '...')
+  .replace(/[^\x20-\x7E\n]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim()
 
 function buildPdf(app: HTMLElement) {
   const preview = app.querySelector<HTMLElement>('.professional-quote-document')
   if (!preview) throw new Error('Quote preview is not available yet.')
 
-  const quoteNumber = text(preview, '.proposal-meta strong', 'Freight quotation')
-  const customer = text(preview, '.proposal-customer-grid .proposal-block:first-child h3', 'Customer')
-  const customerEmail = text(preview, '.proposal-customer-grid .proposal-block:first-child > p')
-  const customerReference = text(preview, '.proposal-reference p')
-  const route = text(preview, '.proposal-route', 'Origin → Destination')
-  const currency = text(preview, '.proposal-meta-grid span:nth-child(3) b', 'USD')
-  const status = text(preview, '.proposal-status', 'Draft')
-  const issued = text(preview, '.proposal-meta-grid span:nth-child(1) b', 'To be confirmed')
-  const validity = text(preview, '.proposal-meta-grid span:nth-child(2) b', 'To be confirmed')
+  const quoteNumber = pdfSafe(text(preview, '.proposal-meta strong', 'Freight quotation'))
+  const customer = pdfSafe(text(preview, '.proposal-customer-grid .proposal-block:first-child h3', 'Customer'))
+  const customerEmail = pdfSafe(text(preview, '.proposal-customer-grid .proposal-block:first-child > p'))
+  const customerReference = pdfSafe(text(preview, '.proposal-reference p'))
+  const route = pdfSafe(text(preview, '.proposal-route', 'Origin to Destination'))
+  const currency = pdfSafe(text(preview, '.proposal-meta-grid span:nth-child(3) b', 'USD'))
+  const status = pdfSafe(text(preview, '.proposal-status', 'Draft'))
+  const issued = pdfSafe(text(preview, '.proposal-meta-grid span:nth-child(1) b', 'To be confirmed'))
+  const validity = pdfSafe(text(preview, '.proposal-meta-grid span:nth-child(2) b', 'To be confirmed'))
 
   const serviceItems = Array.from(preview.querySelectorAll<HTMLElement>('.proposal-service-grid span')).map(item => ({
-    label: text(item, 'small'),
-    value: text(item, 'b', 'To be confirmed'),
+    label: pdfSafe(text(item, 'small')),
+    value: pdfSafe(text(item, 'b', 'To be confirmed')),
   }))
   const cargoItems = Array.from(preview.querySelectorAll<HTMLElement>('.proposal-cargo-grid span')).map(item => ({
-    label: text(item, 'small'),
-    value: text(item, 'b'),
+    label: pdfSafe(text(item, 'small')),
+    value: pdfSafe(text(item, 'b')),
   }))
   const commercialItems = Array.from(preview.querySelectorAll<HTMLElement>('.proposal-commercial-grid span')).map(item => ({
-    label: text(item, 'small'),
-    value: text(item, 'b', 'To be confirmed'),
+    label: pdfSafe(text(item, 'small')),
+    value: pdfSafe(text(item, 'b', 'To be confirmed')),
   }))
 
   const rows = Array.from(preview.querySelectorAll<HTMLTableRowElement>('.proposal-pricing-table tbody tr')).map(row => {
-    const cells = Array.from(row.querySelectorAll<HTMLElement>('td')).map(cell => cell.textContent?.trim() || '')
+    const cells = Array.from(row.querySelectorAll<HTMLElement>('td')).map(cell => pdfSafe(cell.textContent?.trim() || ''))
     return [cells[0] || '', cells[1] || '', cells[2] || '', cells[3] || '', cells[4] || '']
   })
 
-  const total = text(preview, '.proposal-total-box strong', `${currency} 0.00`)
-  const copyBlocks = Array.from(preview.querySelectorAll<HTMLElement>('.proposal-copy')).map(node => node.textContent?.trim() || '').filter(Boolean)
+  const total = pdfSafe(text(preview, '.proposal-total-box strong', `${currency} 0.00`))
+  const copyBlocks = Array.from(preview.querySelectorAll<HTMLElement>('.proposal-copy')).map(node => pdfSafe(node.textContent?.trim() || '')).filter(Boolean)
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter', compress: true })
   const pageWidth = doc.internal.pageSize.getWidth()
@@ -61,28 +70,34 @@ function buildPdf(app: HTMLElement) {
     doc.text('MIP Cargo Express', margin, pageHeight - 25)
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(...gray)
-    doc.text(`${quoteNumber}  ·  Page ${page}`, pageWidth - margin, pageHeight - 25, { align: 'right' })
+    doc.text(`${quoteNumber} - Page ${page}`, pageWidth - margin, pageHeight - 25, { align: 'right' })
   }
 
-  const sectionTitle = (label: string, y: number) => {
+  const sectionTitle = (label: string, y: number, x = margin) => {
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(8)
     doc.setTextColor(...blue)
-    doc.text(label.toUpperCase(), margin, y)
+    doc.text(pdfSafe(label).toUpperCase(), x, y)
   }
 
   doc.setFillColor(...navy)
   doc.rect(0, 0, pageWidth, 116, 'F')
+
+  // Vector MIP logo: crisp at every zoom level and independent of image loading.
+  doc.setFillColor(...blue)
+  doc.roundedRect(margin, 24, 28, 28, 5, 5, 'F')
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(255, 255, 255)
+  doc.setFontSize(13)
+  doc.text('M', margin + 14, 43, { align: 'center' })
   doc.setFontSize(10)
-  doc.text('MIP CARGO EXPRESS', margin, 39)
+  doc.text('MIP CARGO EXPRESS', margin + 38, 35)
   doc.setFontSize(27)
-  doc.text('Freight quotation', margin, 72)
+  doc.text('Freight quotation', margin, 76)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(205, 213, 226)
-  doc.text('Responsive freight solutions with transparent pricing and dedicated support.', margin, 92)
+  doc.text('Responsive freight solutions with transparent pricing and dedicated support.', margin, 96)
 
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(255, 255, 255)
@@ -97,10 +112,10 @@ function buildPdf(app: HTMLElement) {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(205, 213, 226)
-  doc.text(`Issued ${issued}  ·  Valid ${validity}  ·  ${currency}`, pageWidth - margin, 94, { align: 'right' })
+  doc.text(`Issued ${issued} - Valid ${validity} - ${currency}`, pageWidth - margin, 94, { align: 'right' })
 
   let y = 146
-  sectionTitle('Prepared for', y)
+  sectionTitle('Prepared for', y, margin)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(...navy)
@@ -112,7 +127,7 @@ function buildPdf(app: HTMLElement) {
   if (customerReference) doc.text(`Reference: ${customerReference}`, margin, y + 55)
 
   const rightX = 326
-  sectionTitle('Shipment summary', y)
+  sectionTitle('Shipment summary', y, rightX)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(15)
   doc.setTextColor(...navy)
@@ -251,7 +266,7 @@ export function MobileQuotePdfEnhancer() {
 
       const original = button.textContent || 'Create PDF'
       button.disabled = true
-      button.textContent = 'Generating PDF…'
+      button.textContent = 'Generating PDF...'
       window.setTimeout(() => {
         try {
           buildPdf(app)
