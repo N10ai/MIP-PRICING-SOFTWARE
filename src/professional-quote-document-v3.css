@@ -1,6 +1,33 @@
 @media(max-width:760px){
-  .preview-section{background:#eef1f5!important;padding:18px 10px 40px!important;overflow:auto}
-  .mobile-preview{width:816px;max-width:none!important;min-height:1056px;margin:0 auto!important;padding:54px 58px 48px!important;border-radius:4px!important;background:#fff!important;box-shadow:0 20px 60px rgba(15,23,42,.16)!important;transform-origin:top center;transform:scale(.39);margin-bottom:-640px!important}
+  .preview-section{background:#f4f2ed!important;padding:14px 16px 34px!important;overflow:auto}
+  .mobile-preview{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;transform:none!important}
+  .mobile-preview .proposal-header,.mobile-preview .proposal-customer-grid,.mobile-preview .proposal-section,.mobile-preview .proposal-footer{background:#fff;border:1px solid #e8e4dc;border-radius:24px;padding:20px!important;margin-bottom:14px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+  .mobile-preview .proposal-header{display:block!important;border-bottom:1px solid #e8e4dc!important}
+  .mobile-preview .proposal-brand p{display:none}
+  .mobile-preview .proposal-brand h2{font-size:25px!important;margin:4px 0 0!important}
+  .mobile-preview .proposal-meta{text-align:left!important;margin-top:16px}
+  .mobile-preview .proposal-meta strong{font-size:22px!important}
+  .mobile-preview .proposal-meta-grid{grid-template-columns:repeat(3,1fr)!important;gap:10px!important}
+  .mobile-preview .proposal-meta-grid span{display:block!important;padding-top:8px!important}
+  .mobile-preview .proposal-meta-grid b{display:block;margin-top:4px;font-size:13px}
+  .mobile-preview .proposal-customer-grid{display:block!important;border-bottom:1px solid #e8e4dc!important}
+  .mobile-preview .proposal-customer-grid .proposal-block+ .proposal-block{margin-top:18px;padding-top:18px;border-top:1px solid #ece8e1}
+  .mobile-preview .proposal-block h3{font-size:22px!important}
+  .mobile-preview .proposal-route{font-size:25px!important}
+  .mobile-preview .proposal-service-grid{grid-template-columns:repeat(2,1fr)!important}
+  .mobile-preview .proposal-cargo-grid{grid-template-columns:repeat(2,1fr)!important;border-radius:16px;overflow:hidden}
+  .mobile-preview .proposal-cargo-grid span{border-right:1px solid #dfe3e8;border-bottom:1px solid #dfe3e8}
+  .mobile-preview .proposal-cargo-grid span:nth-child(2n){border-right:0}
+  .mobile-preview .proposal-cargo-grid span:nth-last-child(-n+2){border-bottom:0}
+  .mobile-preview .proposal-pricing-table{font-size:13px!important}
+  .mobile-preview .proposal-pricing-table thead th:nth-child(2),.mobile-preview .proposal-pricing-table tbody td:nth-child(2),.mobile-preview .proposal-pricing-table thead th:nth-child(3),.mobile-preview .proposal-pricing-table tbody td:nth-child(3),.mobile-preview .proposal-pricing-table thead th:nth-child(4),.mobile-preview .proposal-pricing-table tbody td:nth-child(4){display:none}
+  .mobile-preview .proposal-pricing-table thead th,.mobile-preview .proposal-pricing-table tbody td{padding:13px 4px!important}
+  .mobile-preview .proposal-total-wrap{display:block!important}
+  .mobile-preview .proposal-total-box{width:auto!important;border-radius:18px;padding:18px!important}
+  .mobile-preview .proposal-total-box strong{font-size:31px!important}
+  .mobile-preview .proposal-commercial-grid{grid-template-columns:1fr!important}
+  .mobile-preview .proposal-footer{display:block!important}
+  .mobile-preview .proposal-footer-right{text-align:left!important;margin-top:14px}
 }
 .mobile-preview{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#172033;background:#fff}
 .mobile-preview .proposal-header{display:grid;grid-template-columns:1.35fr .65fr;gap:38px;align-items:start;padding-bottom:24px;border-bottom:2px solid #172033}
