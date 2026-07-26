@@ -2,7 +2,7 @@ import { Building2, FileText, Home, Search, Ship, Users } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { QuotesPage } from './QuoteWorkspace'
+import { QuoteWorkspaceV4 } from './QuoteWorkspaceV4'
 
 type QuoteItem = {
   id: string
@@ -33,6 +33,7 @@ export function AppleQuoteDesktopWorkspace() {
   const [quotes, setQuotes] = useState<QuoteItem[]>([])
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
+  const [queuePinned, setQueuePinned] = useState(false)
 
   useEffect(() => {
     supabase
@@ -64,14 +65,14 @@ export function AppleQuoteDesktopWorkspace() {
     })
   }, [quotes, query, filter])
 
-  return <div className={`apple-quote-shell ${selectedId ? 'quote-editor-selected' : ''}`}>
+  return <div className={`apple-quote-shell quote-v4-shell ${selectedId ? 'quote-editor-selected' : ''} ${queuePinned ? 'quote-queue-pinned' : ''}`}>
     <aside className="apple-quote-rail">
       <img src={logo} alt="MIP" />
       <nav>{nav.map(([to, label, Icon]) => <NavLink key={to} to={to} end={to === '/'} aria-label={label} title={label}><Icon size={19} /><span>{label}</span></NavLink>)}</nav>
     </aside>
 
     <aside className="apple-quote-queue">
-      <header><div><small>COMMERCIAL</small><h1>Quotes</h1></div><b>{quotes.length}</b></header>
+      <header><div><small>COMMERCIAL</small><h1>Quotes</h1></div><button className="quote-queue-pin" onClick={() => setQueuePinned(value => !value)} title={queuePinned ? 'Unpin queue' : 'Pin queue'}>{queuePinned ? 'Unpin' : 'Pin'}</button></header>
       <label className="apple-quote-search"><Search size={16} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search quotes" /></label>
       <div className="apple-quote-filters">{filters.map(([value, label, count]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}><span>{label}</span><b>{count}</b></button>)}</div>
       <div className="apple-quote-meta"><span>{visible.length} records</span><span>Newest first</span></div>
@@ -82,6 +83,6 @@ export function AppleQuoteDesktopWorkspace() {
       </button>)}</div>
     </aside>
 
-    <main className="apple-quote-editor"><QuotesPage /></main>
+    <main className="apple-quote-editor">{selectedId ? <QuoteWorkspaceV4 /> : <div className="quote-v4-landing"><FileText size={30}/><h2>Select a quote</h2><p>Choose a quote from the queue to review or edit it.</p></div>}</main>
   </div>
 }
