@@ -42,18 +42,25 @@ Deno.serve(async (req) => {
 
     const { data: rfqs, error } = await admin
       .from('vendor_rfqs')
-      .select('id,rfq_number,status,sent_to,subject,message_body,quote_request_id,gmail_message_id')
+      .select('id,rfq_number,status,sent_to,subject,message_body,quote_request_id,thread_reference,response_data')
       .in('id', rfq_ids)
     if (error) throw error
 
-    const results = []
+    const foundIds = new Set((rfqs || []).map(rfq => rfq.id))
+    const results: Array<Record<string, unknown>> = rfq_ids
+      .filter(id => !foundIds.has(id))
+      .map(id => ({ id, status: 'failed', error: 'RFQ was not found' }))
+
     for (const rfq of rfqs || []) {
       const destination = mode === 'test' ? testRecipient : rfq.sent_to
       if (!destination) {
         results.push({ id: rfq.id, status: 'failed', error: 'Vendor email is missing' })
         continue
       }
-      if (rfq.gmail_message_id) {
+
+      const existingMeta = (rfq.response_data && typeof rfq.response_data === 'object') ? rfq.response_data : {}
+      const existingResendId = (existingMeta as Record<string, unknown>).resend_email_id
+      if (existingResendId || rfq.thread_reference) {
         results.push({ id: rfq.id, status: 'skipped', reason: 'Already sent' })
         continue
       }
@@ -77,29 +84,40 @@ Deno.serve(async (req) => {
           reply_to: mode === 'production' ? (Deno.env.get('RESEND_REPLY_TO') || undefined) : undefined,
         }),
       })
-      const payload = await response.json()
+
+      let payload: Record<string, unknown> = {}
+      try {
+        payload = await response.json()
+      } catch {
+        payload = {}
+      }
+
       if (!response.ok) {
-        results.push({ id: rfq.id, status: 'failed', error: payload?.message || 'Resend rejected the email' })
+        results.push({ id: rfq.id, status: 'failed', error: String(payload.message || `Resend rejected the email (${response.status})`) })
         continue
       }
 
       const sentAt = new Date().toISOString()
-      await admin.from('vendor_rfqs').update({
+      const resendEmailId = String(payload.id || '')
+      const updatePayload = {
         status: 'sent',
-        gmail_message_id: payload.id,
+        thread_reference: resendEmailId || rfq.thread_reference || null,
         sent_at: sentAt,
-      }).eq('id', rfq.id)
+        response_data: {
+          ...existingMeta,
+          resend_email_id: resendEmailId || null,
+          resend_mode: mode,
+          delivered_to: destination,
+          intended_recipient: rfq.sent_to,
+          sent_at: sentAt,
+        },
+      }
 
-      await admin.from('rfq_email_messages').insert({
-        vendor_rfq_id: rfq.id,
-        gmail_message_id: payload.id,
-        direction: 'outbound',
-        from_email: fromEmail,
-        to_emails: [destination],
-        subject,
-        body_text: body,
-        sent_at: sentAt,
-      })
+      const { error: updateError } = await admin.from('vendor_rfqs').update(updatePayload).eq('id', rfq.id)
+      if (updateError) {
+        results.push({ id: rfq.id, status: 'failed', error: `Email was accepted by Resend but the RFQ status could not be updated: ${updateError.message}` })
+        continue
+      }
 
       await admin.from('commercial_activities').insert({
         quote_request_id: rfq.quote_request_id,
@@ -109,10 +127,10 @@ Deno.serve(async (req) => {
           ? `Test RFQ delivered to ${destination}; intended vendor: ${rfq.sent_to || 'not provided'}.`
           : `RFQ emailed to ${destination}.`,
         actor_name: user.email || 'Pricing Team',
-        metadata: { vendor_rfq_id: rfq.id, resend_email_id: payload.id, mode, intended_recipient: rfq.sent_to },
+        metadata: { vendor_rfq_id: rfq.id, resend_email_id: resendEmailId || null, mode, intended_recipient: rfq.sent_to },
       })
 
-      results.push({ id: rfq.id, status: 'sent', resend_email_id: payload.id, delivered_to: destination, intended_recipient: rfq.sent_to, mode })
+      results.push({ id: rfq.id, status: 'sent', resend_email_id: resendEmailId || null, delivered_to: destination, intended_recipient: rfq.sent_to, mode })
     }
 
     return json({ mode, results })
