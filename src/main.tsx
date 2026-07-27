@@ -99,6 +99,7 @@ import './quote-workspace-v6.css'
 import './quote-workspace-v7.css'
 import './quotes-page-v2.css'
 import './quote-workspace-v8.css'
+import './quote-workspace-v9.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
