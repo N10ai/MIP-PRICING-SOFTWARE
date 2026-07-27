@@ -16,6 +16,20 @@ export async function getResendConnectionStatus() {
 
 export async function sendRfqEmails(rfqIds: string[]) {
   const { data, error } = await supabase.functions.invoke('send-rfq-resend', { body: { rfq_ids: rfqIds } })
-  if (error) throw error
+  if (error) {
+    let message = error.message || 'Unable to call the RFQ email service'
+    try {
+      const context = (error as { context?: Response }).context
+      if (context && typeof context.json === 'function') {
+        const payload = await context.json() as { error?: string; message?: string }
+        message = payload.error || payload.message || message
+      }
+    } catch {
+      // Keep the original Supabase Functions error when the response body is unavailable.
+    }
+    throw new Error(message)
+  }
+  if (!data) throw new Error('The RFQ email service returned no response')
+  if ((data as { error?: string }).error) throw new Error((data as { error: string }).error)
   return data
 }
