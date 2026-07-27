@@ -1,0 +1,99 @@
+@media (min-width:761px){
+  /* The rail owns its column; the workspace must never render beneath it. */
+  .quotes-app-shell{
+    width:100%!important;
+    height:100dvh!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:72px minmax(0,1fr)!important;
+    grid-template-areas:"rail workspace"!important;
+    overflow:hidden!important;
+    background:#eef1f5!important;
+  }
+  .quotes-app-shell>.apple-quote-rail{
+    grid-area:rail!important;
+    position:relative!important;
+    inset:auto!important;
+    width:72px!important;
+    min-width:72px!important;
+    max-width:72px!important;
+    height:100dvh!important;
+    margin:0!important;
+    transform:none!important;
+    z-index:60!important;
+    box-sizing:border-box!important;
+  }
+  .quotes-app-shell>.quotes-app-main{
+    grid-area:workspace!important;
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    transform:none!important;
+    overflow:auto!important;
+    overscroll-behavior:contain!important;
+    background:#eef1f5!important;
+  }
+  .quotes-app-main>.qw5-shell{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    min-height:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Toolbar respects the actual workspace width. */
+  .quotes-app-main .qw4-topbar{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    grid-template-columns:auto minmax(170px,1fr) auto!important;
+  }
+  .quotes-app-main .qw4-topbar>div:nth-child(2){min-width:0!important}
+  .quotes-app-main .qw4-topbar h1,
+  .quotes-app-main .qw4-topbar p{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+  .quotes-app-main .qw4-actions{min-width:0!important;max-width:100%!important;flex-wrap:nowrap!important}
+
+  /* Content is measured from the workspace, never from the viewport. */
+  .quotes-app-main .qw4-layout{
+    width:100%!important;
+    max-width:1280px!important;
+    margin:0 auto!important;
+    box-sizing:border-box!important;
+    grid-template-columns:minmax(0,1fr) minmax(238px,286px)!important;
+    padding-left:20px!important;
+    padding-right:20px!important;
+  }
+  .quotes-app-main .qw4-main,
+  .quotes-app-main .qw4-panel,
+  .quotes-app-main .qw4-summary-line,
+  .quotes-app-main .qw4-charge-table{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+
+  /* Charge columns compress within the available center column. */
+  .quotes-app-main .qw4-charge-head,
+  .quotes-app-main .qw4-charge-row{
+    width:100%!important;
+    min-width:0!important;
+    grid-template-columns:minmax(150px,1.55fr) minmax(96px,.75fr) minmax(58px,.45fr) minmax(76px,.62fr) minmax(76px,.62fr) minmax(94px,.78fr) 34px!important;
+  }
+  .quotes-app-main .qw4-charge-row input,
+  .quotes-app-main .qw4-charge-row select{width:calc(100% - 8px)!important;min-width:0!important}
+
+  /* iPad and compact desktop: inspector moves below instead of clipping. */
+  @media (max-width:1050px){
+    .quotes-app-main .qw4-topbar{height:auto!important;min-height:76px!important;padding:10px 14px!important;grid-template-columns:auto minmax(0,1fr)!important;row-gap:8px!important}
+    .quotes-app-main .qw4-actions{grid-column:1/-1!important;justify-self:stretch!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important}
+    .quotes-app-main .qw4-actions button{justify-content:center!important;padding:0 8px!important}
+    .quotes-app-main .qw4-workflow{top:96px!important;gap:14px!important;padding:0 10px!important}
+    .quotes-app-main .qw4-layout{grid-template-columns:minmax(0,1fr)!important;max-width:920px!important;padding:16px!important}
+    .quotes-app-main .qw4-inspector{position:relative!important;top:auto!important;display:grid!important;grid-template-columns:1.3fr 1fr!important;align-items:start!important}
+    .quotes-app-main .qw4-inspector>.qw4-total{grid-row:span 2!important}
+    .quotes-app-main .qw4-inspector>button{align-self:end!important}
+    .quotes-app-main .qw4-charge-head,
+    .quotes-app-main .qw4-charge-row{grid-template-columns:minmax(145px,1.45fr) minmax(92px,.8fr) 62px 78px 78px 98px 32px!important}
+  }
+}
