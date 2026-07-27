@@ -10,7 +10,6 @@ import { MobileRequestNavigation } from './components/MobileRequestNavigation'
 import { MobileQuoteSwipeEnhancer } from './components/MobileQuoteSwipeEnhancer'
 import { MobileQuotePdfEnhancer } from './components/MobileQuotePdfEnhancer'
 import { DesktopQuoteFocusEnhancer } from './components/DesktopQuoteFocusEnhancer'
-import { QuoteChargeScrollEnhancer } from './components/QuoteChargeScrollEnhancer'
 import { RfqQuickActions } from './components/RfqQuickActions'
 import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
 import { DesktopCommercialEnhancements } from './components/DesktopCommercialEnhancements'
@@ -99,6 +98,7 @@ import './quote-workspace-v5.css'
 import './quote-workspace-v6.css'
 import './quote-workspace-v7.css'
 import './quotes-page-v2.css'
+import './quote-workspace-v8.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -112,7 +112,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileQuoteSwipeEnhancer />
         <MobileQuotePdfEnhancer />
         <DesktopQuoteFocusEnhancer />
-        <QuoteChargeScrollEnhancer />
         <RfqQuickActions />
         <DesktopWorkspaceQueue />
         <DesktopCommercialEnhancements />
