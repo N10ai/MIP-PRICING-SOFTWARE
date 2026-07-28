@@ -30,8 +30,10 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('RESEND_API_KEY')
     if (!apiKey) return json({ error: 'RESEND_API_KEY is not configured' }, 500)
 
-    const mode = (Deno.env.get('RESEND_MODE') || 'test') === 'production' ? 'production' : 'test'
     const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'MIP Pricing OS <onboarding@resend.dev>'
+    const configuredMode = (Deno.env.get('RESEND_MODE') || 'test') === 'production' ? 'production' : 'test'
+    const resendSandboxSender = fromEmail.toLowerCase().includes('onboarding@resend.dev')
+    const mode = resendSandboxSender ? 'test' : configuredMode
     const testRecipient = Deno.env.get('RESEND_TEST_RECIPIENT') || user.email
     if (mode === 'test' && !testRecipient) return json({ error: 'RESEND_TEST_RECIPIENT is required in test mode' }, 500)
 
