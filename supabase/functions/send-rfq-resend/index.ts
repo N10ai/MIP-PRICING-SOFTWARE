@@ -52,7 +52,6 @@ Deno.serve(async (req) => {
 
     for (const rfq of rfqs || []) {
       const destination = testRecipient
-
       const existingMeta = (rfq.response_data && typeof rfq.response_data === 'object') ? rfq.response_data : {}
       const existingResendId = (existingMeta as Record<string, unknown>).resend_email_id
       if (existingResendId || rfq.thread_reference) {
@@ -71,20 +70,11 @@ Deno.serve(async (req) => {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          from: fromEmail,
-          to: [destination],
-          subject,
-          text: body,
-        }),
+        body: JSON.stringify({ from: fromEmail, to: [destination], subject, text: body }),
       })
 
       let payload: Record<string, unknown> = {}
-      try {
-        payload = await response.json()
-      } catch {
-        payload = {}
-      }
+      try { payload = await response.json() } catch { payload = {} }
 
       if (!response.ok) {
         results.push({ id: rfq.id, status: 'failed', error: String(payload.message || `Resend rejected the email (${response.status})`) })
@@ -113,8 +103,28 @@ Deno.serve(async (req) => {
         continue
       }
 
+      const { error: messageError } = await admin.from('rfq_conversation_messages').insert({
+        vendor_rfq_id: rfq.id,
+        direction: 'outbound',
+        sender_email: user.email || 'Pricing Team',
+        recipient_email: destination,
+        subject,
+        body_text: body,
+        provider_message_id: resendEmailId || null,
+        provider_thread_id: resendEmailId || null,
+        status: 'sent',
+        sent_at: sentAt,
+        metadata: {
+          intended_recipient: rfq.sent_to,
+          resend_mode: mode,
+          delivered_to: destination,
+          source: 'send-rfq-resend',
+        },
+      })
+
       await admin.from('commercial_activities').insert({
         quote_request_id: rfq.quote_request_id,
+        vendor_rfq_id: rfq.id,
         activity_type: 'vendor_rfq_sent',
         title: `${rfq.rfq_number} sent in test mode`,
         description: `Test RFQ delivered to ${destination}; intended vendor: ${rfq.sent_to || 'not provided'}.`,
@@ -122,14 +132,24 @@ Deno.serve(async (req) => {
         metadata: { vendor_rfq_id: rfq.id, resend_email_id: resendEmailId || null, mode, intended_recipient: rfq.sent_to },
       })
 
-      results.push({ id: rfq.id, status: 'sent', resend_email_id: resendEmailId || null, delivered_to: destination, intended_recipient: rfq.sent_to, mode })
+      results.push({
+        id: rfq.id,
+        status: 'sent',
+        resend_email_id: resendEmailId || null,
+        delivered_to: destination,
+        intended_recipient: rfq.sent_to,
+        mode,
+        conversation_logged: !messageError,
+        conversation_error: messageError?.message || null,
+      })
     }
 
     const failedCount = results.filter(result => result.status === 'failed').length
     const sentCount = results.filter(result => result.status === 'sent').length
+    const skippedCount = results.filter(result => result.status === 'skipped').length
 
-    if (sentCount === 0 && failedCount > 0) {
-      return json({ mode, results, error: 'All RFQ email attempts failed' }, 500)
+    if (failedCount > 0 && sentCount === 0 && skippedCount === 0) {
+      return json({ mode, results, error: 'All RFQ sends failed' }, 500)
     }
 
     return json({ mode, results })
