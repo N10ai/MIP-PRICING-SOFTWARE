@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
     if (!apiKey) return json({ error: 'RESEND_API_KEY is not configured' }, 500)
 
     const fromEmail = 'MIP Pricing OS <onboarding@resend.dev>'
+    const inboundDomain = 'whidelaede.resend.app'
     const mode = 'test'
     const testRecipient = 'infon10miami@gmail.com'
 
@@ -52,6 +53,7 @@ Deno.serve(async (req) => {
 
     for (const rfq of rfqs || []) {
       const destination = testRecipient
+      const replyTo = `rfq-${rfq.rfq_number.toLowerCase()}@${inboundDomain}`
       const existingMeta = (rfq.response_data && typeof rfq.response_data === 'object') ? rfq.response_data : {}
       const existingResendId = (existingMeta as Record<string, unknown>).resend_email_id
       if (existingResendId || rfq.thread_reference) {
@@ -70,7 +72,7 @@ Deno.serve(async (req) => {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ from: fromEmail, to: [destination], subject, text: body }),
+        body: JSON.stringify({ from: fromEmail, to: [destination], reply_to: replyTo, subject, text: body }),
       })
 
       let payload: Record<string, unknown> = {}
@@ -93,6 +95,7 @@ Deno.serve(async (req) => {
           resend_mode: mode,
           delivered_to: destination,
           intended_recipient: rfq.sent_to,
+          reply_to: replyTo,
           sent_at: sentAt,
         },
       }
@@ -118,6 +121,7 @@ Deno.serve(async (req) => {
           intended_recipient: rfq.sent_to,
           resend_mode: mode,
           delivered_to: destination,
+          reply_to: replyTo,
           source: 'send-rfq-resend',
         },
       })
@@ -127,9 +131,9 @@ Deno.serve(async (req) => {
         vendor_rfq_id: rfq.id,
         activity_type: 'vendor_rfq_sent',
         title: `${rfq.rfq_number} sent in test mode`,
-        description: `Test RFQ delivered to ${destination}; intended vendor: ${rfq.sent_to || 'not provided'}.`,
+        description: `Test RFQ delivered to ${destination}; intended vendor: ${rfq.sent_to || 'not provided'}. Replies route to ${replyTo}.`,
         actor_name: user.email || 'Pricing Team',
-        metadata: { vendor_rfq_id: rfq.id, resend_email_id: resendEmailId || null, mode, intended_recipient: rfq.sent_to },
+        metadata: { vendor_rfq_id: rfq.id, resend_email_id: resendEmailId || null, mode, intended_recipient: rfq.sent_to, reply_to: replyTo },
       })
 
       results.push({
@@ -138,6 +142,7 @@ Deno.serve(async (req) => {
         resend_email_id: resendEmailId || null,
         delivered_to: destination,
         intended_recipient: rfq.sent_to,
+        reply_to: replyTo,
         mode,
         conversation_logged: !messageError,
         conversation_error: messageError?.message || null,
