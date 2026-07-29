@@ -30,12 +30,9 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('RESEND_API_KEY')
     if (!apiKey) return json({ error: 'RESEND_API_KEY is not configured' }, 500)
 
-    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'MIP Pricing OS <onboarding@resend.dev>'
-    const configuredMode = (Deno.env.get('RESEND_MODE') || 'test') === 'production' ? 'production' : 'test'
-    const resendSandboxSender = fromEmail.toLowerCase().includes('onboarding@resend.dev')
-    const mode = resendSandboxSender ? 'test' : configuredMode
-    const testRecipient = Deno.env.get('RESEND_TEST_RECIPIENT') || user.email
-    if (mode === 'test' && !testRecipient) return json({ error: 'RESEND_TEST_RECIPIENT is required in test mode' }, 500)
+    const fromEmail = 'MIP Pricing OS <onboarding@resend.dev>'
+    const mode = 'test'
+    const testRecipient = 'infon10miami@gmail.com'
 
     const admin = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -54,11 +51,7 @@ Deno.serve(async (req) => {
       .map(id => ({ id, status: 'failed', error: 'RFQ was not found' }))
 
     for (const rfq of rfqs || []) {
-      const destination = mode === 'test' ? testRecipient : rfq.sent_to
-      if (!destination) {
-        results.push({ id: rfq.id, status: 'failed', error: 'Vendor email is missing' })
-        continue
-      }
+      const destination = testRecipient
 
       const existingMeta = (rfq.response_data && typeof rfq.response_data === 'object') ? rfq.response_data : {}
       const existingResendId = (existingMeta as Record<string, unknown>).resend_email_id
@@ -69,8 +62,8 @@ Deno.serve(async (req) => {
 
       const subjectBase = String(rfq.subject || `Rate request | ${rfq.rfq_number}`)
       const taggedSubject = subjectBase.includes(rfq.rfq_number) ? subjectBase : `${subjectBase} | ${rfq.rfq_number}`
-      const subject = mode === 'test' ? `[TEST for ${rfq.sent_to || 'vendor'}] ${taggedSubject}` : taggedSubject
-      const body = `${rfq.message_body || ''}\n\nReference: ${rfq.rfq_number}${mode === 'test' ? `\n\nTEST MODE: This message would be sent to ${rfq.sent_to || 'the selected vendor'}.` : ''}`.trim()
+      const subject = `[TEST for ${rfq.sent_to || 'vendor'}] ${taggedSubject}`
+      const body = `${rfq.message_body || ''}\n\nReference: ${rfq.rfq_number}\n\nTEST MODE: This message would be sent to ${rfq.sent_to || 'the selected vendor'}.`.trim()
 
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -83,7 +76,6 @@ Deno.serve(async (req) => {
           to: [destination],
           subject,
           text: body,
-          reply_to: mode === 'production' ? (Deno.env.get('RESEND_REPLY_TO') || undefined) : undefined,
         }),
       })
 
@@ -124,15 +116,20 @@ Deno.serve(async (req) => {
       await admin.from('commercial_activities').insert({
         quote_request_id: rfq.quote_request_id,
         activity_type: 'vendor_rfq_sent',
-        title: `${rfq.rfq_number} sent${mode === 'test' ? ' in test mode' : ''}`,
-        description: mode === 'test'
-          ? `Test RFQ delivered to ${destination}; intended vendor: ${rfq.sent_to || 'not provided'}.`
-          : `RFQ emailed to ${destination}.`,
+        title: `${rfq.rfq_number} sent in test mode`,
+        description: `Test RFQ delivered to ${destination}; intended vendor: ${rfq.sent_to || 'not provided'}.`,
         actor_name: user.email || 'Pricing Team',
         metadata: { vendor_rfq_id: rfq.id, resend_email_id: resendEmailId || null, mode, intended_recipient: rfq.sent_to },
       })
 
       results.push({ id: rfq.id, status: 'sent', resend_email_id: resendEmailId || null, delivered_to: destination, intended_recipient: rfq.sent_to, mode })
+    }
+
+    const failedCount = results.filter(result => result.status === 'failed').length
+    const sentCount = results.filter(result => result.status === 'sent').length
+
+    if (sentCount === 0 && failedCount > 0) {
+      return json({ mode, results, error: 'All RFQ email attempts failed' }, 500)
     }
 
     return json({ mode, results })
