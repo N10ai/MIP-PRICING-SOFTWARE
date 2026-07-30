@@ -192,6 +192,9 @@ Before completion verify:
 - White/black/blue identity is preserved.
 - No random accent color was introduced.
 - Desktop, tablet, and mobile states remain usable.
-- Loading, empty, error, disabled, and focus states exist where needed.
+- Keyboard navigation follows a logical order and visible focus is never obscured.
+- Loading, empty, error, and disabled states exist where applicable.
+- No viewport has unintended horizontal overflow; dense content has a deliberate responsive fallback.
 - Existing design tokens or shared components were reused.
 - The interface reduces rather than adds workflow friction.
+- For a perceptible change in the runnable application, capture a screenshot or comparable visual evidence when the environment supports it. Documentation-only, backend-only, and invisible changes do not require visual evidence.

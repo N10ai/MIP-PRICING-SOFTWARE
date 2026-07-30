@@ -22,14 +22,16 @@
 
 ## Migrations
 Every schema change must:
-1. Be implemented in a new migration.
+1. Be implemented in a new, forward-only migration.
 2. Be safe for existing data.
 3. Include defaults or backfills when introducing required columns.
 4. Add indexes for new high-use filters, joins, or ordering.
 5. Update generated or maintained application types as required.
 6. Document irreversible operations.
 
-Never edit historical production migrations solely to change an already-deployed schema.
+Treat every migration that may have been applied as immutable. Never edit it to alter an already-deployed schema; add a new migration instead. Design forward remediation for rollback-sensitive changes and document operational rollback or mitigation, especially for destructive or irreversible operations.
+
+Before applying or merging a migration, review existing-data compatibility, locking and deployment impact, constraints, defaults, backfills, foreign keys, indexes, grants, RLS policies, and dependent application code. Stage risky backfills or constraint changes when a single transaction would be unsafe.
 
 ## Row-level security
 - RLS should be enabled for tenant or user data.
@@ -37,6 +39,13 @@ Never edit historical production migrations solely to change an already-deployed
 - Client-side filtering is not authorization.
 - Never use broad public policies to bypass a development issue.
 - Privileged operations belong in secure server-side functions or Edge Functions.
+- Review policies and grants for every affected table, view, function, and storage object. Test relevant tenant, role, owner, and unauthenticated boundaries.
+- Never expose a Supabase service-role key in browser bundles, client code, public environment variables, logs, or screenshots. Service-role operations must remain in trusted server-side environments.
+
+## Generated types
+- When generated database types are adopted or present, regenerate and commit them after schema changes.
+- Verify that the types reflect the target schema and that application typecheck succeeds.
+- Do not hand-edit generated types to conceal schema drift; fix the schema or generation workflow.
 
 ## Auditing
 Important actions should preserve:
@@ -81,4 +90,5 @@ Before completion verify:
 - RLS and authorization remain correct.
 - Application types are updated.
 - Rollback or mitigation is understood.
+- Grants and service-role boundaries remain safe.
 - Relevant typecheck, build, and tests pass.
