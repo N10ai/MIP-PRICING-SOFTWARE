@@ -31,7 +31,29 @@ const serviceLibrary:ServiceTemplate[]=[
  {name:'AES Filing',icon:'A',chargeName:'AES Filing',defaultSell:35,note:'AES export filing'},
  {name:'ISF',icon:'I',chargeName:'ISF Filing',defaultSell:35,note:'Importer Security Filing'},
 ]
-const text=(v:any,f='')=>{if(v==null||v==='')return f;if(typeof v==='string'||typeof v==='number')return String(v);if(Array.isArray(v))return v.map(x=>text(x)).filter(Boolean).join(' · ');if(typeof v==='object'){for(const k of ['label','name','value','code','title','text']){const s=text(v[k]);if(s)return s}}return f}
+const text = (v: unknown, f = ''): string => {
+  if (v == null || v === '') return f;
+
+  if (typeof v === 'string' || typeof v === 'number') {
+    return String(v);
+  }
+
+  if (Array.isArray(v)) {
+    return v.map((x): string => text(x)).filter(Boolean).join(' · ');
+  }
+
+  if (typeof v === 'object') {
+    const obj = v as Record<string, unknown>;
+
+    for (const k of ['label', 'name', 'value', 'code', 'title', 'text', 'type']) {
+      const s: string = text(obj[k]);
+
+      if (s) return s;
+    }
+  }
+
+  return f;
+};
 const number=(v:any)=>Number(v)||0
 const money=(n:number,currency='USD')=>{try{return new Intl.NumberFormat('en-US',{style:'currency',currency,maximumFractionDigits:2}).format(Number.isFinite(n)?n:0)}catch{return `$${(Number(n)||0).toFixed(2)}`}}
 const route=(origin:string,destination:string)=>`${origin||'Origin'} → ${destination||'Destination'}`
