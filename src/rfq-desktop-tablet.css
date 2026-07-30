@@ -1,0 +1,38 @@
+/* Desktop + tablet RFQ pricing desk enhancements */
+@media (min-width: 761px){
+  .pricing-overlay{padding:12px;background:rgba(229,236,246,.95)}
+  .pricing-workspace{width:100%;min-height:calc(100vh - 24px);border-radius:26px}
+  .pricing-head{padding:18px 22px;grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr)}
+  .pricing-head h2{font-size:27px}
+  .pricing-grid{grid-template-columns:minmax(260px,.72fr) minmax(520px,1.55fr) minmax(320px,.88fr);gap:14px;padding:14px;align-items:start}
+  .pricing-vendors,.pricing-message,.pricing-existing{border-radius:20px;min-height:calc(100vh - 126px)}
+  .pricing-vendors,.pricing-existing{position:sticky;top:94px;max-height:calc(100vh - 108px);overflow:auto}
+  .pricing-message{min-height:calc(100vh - 126px)}
+  .rfq-inbox-list{max-height:310px}
+  .rfq-conversation{max-height:42vh;overflow:auto;scrollbar-gutter:stable;padding-right:4px}
+  .rfq-conversation article{transition:transform .16s ease,box-shadow .16s ease}
+  .rfq-conversation article:hover{transform:translateY(-1px);box-shadow:0 16px 34px rgba(15,23,42,.08)}
+  .pricing-email-card textarea{min-height:180px}
+  .pricing-sendbar{z-index:3;padding-bottom:4px}
+  .rfq-summary{grid-template-columns:1fr}
+  .rfq-summary>div{padding:12px 0}
+  .rfq-summary strong{max-width:190px;overflow-wrap:anywhere;text-align:right}
+  .pricing-existing-list article>button{min-height:74px}
+  .pricing-existing-list article>button span{min-width:0}
+  .pricing-existing-list article>button strong,.pricing-existing-list article>button small,.pricing-existing-list article>button em{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pricing-panel-head{padding:18px 18px 12px}
+}
+
+@media (min-width: 761px) and (max-width: 1180px){
+  .pricing-grid{grid-template-columns:minmax(230px,.72fr) minmax(430px,1.35fr)}
+  .pricing-existing{grid-column:1 / -1;position:static;max-height:none;min-height:auto}
+  .pricing-existing .rfq-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
+  .pricing-existing .pricing-cargo-summary{margin-top:4px}
+  .pricing-vendors{top:92px}
+  .rfq-conversation{max-height:38vh}
+}
+
+@media (min-width:1181px){
+  .pricing-message .pricing-panel-head:first-child{position:sticky;top:92px;z-index:5;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-radius:20px 20px 0 0}
+  .pricing-notice{position:relative;z-index:2}
+}
