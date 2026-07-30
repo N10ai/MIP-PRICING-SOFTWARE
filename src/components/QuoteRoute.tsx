@@ -10,7 +10,7 @@ type QuoteView='list'|'cards'
 type QuoteGroup='none'|'status'|'customer'|'date'
 
 const uid=()=>crypto.randomUUID()
-const text=(v:any,f='')=>{if(v==null||v==='')return f;if(typeof v==='string'||typeof v==='number')return String(v);if(Array.isArray(v))return v.map(x=>text(x)).filter(Boolean).join(' · ');if(typeof v==='object'){for(const k of ['label','name','value','code','title','text','type']){const s=text(v[k]);if(s)return s}}return f}
+const text=(v:unknown,f=''):string=>{if(v==null||v==='')return f;if(typeof v==='string'||typeof v==='number')return String(v);if(Array.isArray(v))return v.map((x:unknown)=>text(x)).filter(Boolean).join(' · ');if(typeof v==='object'){const obj=v as Record<string,unknown>;for(const k of ['label','name','value','code','title','text','type']){const s:string=text(obj[k]);if(s)return s}}return f}
 const number=(v:any)=>Number(v)||0
 const money=(v:any,c:any='USD')=>{const n=number(v),currency=text(c,'USD');try{return new Intl.NumberFormat('en-US',{style:'currency',currency}).format(n)}catch{return `$${n.toFixed(2)}`}}
 const qnum=()=>`Q-${new Date().toISOString().slice(2,10).replaceAll('-','')}-${Math.floor(100+Math.random()*900)}`

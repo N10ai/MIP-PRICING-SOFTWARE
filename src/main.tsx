@@ -78,34 +78,13 @@ import './rfq-rate-decision-cards.css'
 import './request-rates-compact-final.css'
 import './desktop-workspace-v1.css'
 import './desktop-workspace-v3.css'
-import './premium-workspace-v4.css'
-import './desktop-rail-tooltips-v5.css'
-import './desktop-layout-stability-v6.css'
-import './desktop-commercial-polish-v7.css'
-import './desktop-final-fixes-v8.css'
-import './apple-request-workspace-v8.css'
-import './quote-apple-workspace-v10.css'
-import './apple-quote-workspace-v10.css'
-import './mobile-quote-apple-v2.css'
-import './mobile-quote-apple-v12.css'
-import './professional-quote-document-v3.css'
-import './mobile-quote-summary-v2.css'
-import './desktop-quote-redesign-v1.css'
-import './desktop-quote-redesign-v2.css'
-import './desktop-quote-focus-v3.css'
-import './quote-workspace-v4.css'
-import './quote-workspace-v5.css'
-import './quote-workspace-v6.css'
-import './quote-workspace-v7.css'
-import './quotes-page-v2.css'
-import './quote-workspace-v8.css'
-import './quote-workspace-v9.css'
-import './gmail-rfq-automation.css'
+import './rfq-desktop-tablet.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
       <AuthGate>
+        <App />
         <AppEnhancements />
         <PremiumMobileInteractions />
         <MobileAccountDrawerEnhancer />
@@ -117,7 +96,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <RfqQuickActions />
         <DesktopWorkspaceQueue />
         <DesktopCommercialEnhancements />
-        <App />
       </AuthGate>
     </HashRouter>
   </React.StrictMode>,
