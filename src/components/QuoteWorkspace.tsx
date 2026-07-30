@@ -15,7 +15,29 @@ type SelectedRate={id:string;rfq_number:string;response_data:any;vendors?:{compa
 
 const basisLabels:Record<Basis,string>={flat:'Flat',per_actual_kg:'Actual kg',per_chargeable_kg:'Chargeable kg',per_lb:'Lb',per_cbm:'CBM',per_piece:'Piece',per_pallet:'Pallet',per_container:'Container'}
 const money=(n:number,currency='USD')=>{try{return new Intl.NumberFormat('en-US',{style:'currency',currency,maximumFractionDigits:2}).format(Number.isFinite(n)?n:0)}catch{return `$${(Number(n)||0).toFixed(2)}`}}
-const text=(v:any,f='')=>{if(v==null||v==='')return f;if(typeof v==='string'||typeof v==='number')return String(v);if(Array.isArray(v))return v.map(x=>text(x)).filter(Boolean).join(' · ');if(typeof v==='object'){for(const k of ['label','name','value','code','title','text']){const s=text(v[k]);if(s)return s}}return f}
+const text = (v: unknown, f = ''): string => {
+  if (v == null || v === '') return f;
+
+  if (typeof v === 'string' || typeof v === 'number') {
+    return String(v);
+  }
+
+  if (Array.isArray(v)) {
+    return v.map((x): string => text(x)).filter(Boolean).join(' · ');
+  }
+
+  if (typeof v === 'object') {
+    const obj = v as Record<string, unknown>;
+
+    for (const k of ['label', 'name', 'value', 'code', 'title', 'text', 'type']) {
+      const s: string = text(obj[k]);
+
+      if (s) return s;
+    }
+  }
+
+  return f;
+};
 const number=(v:any)=>Number(v)||0
 const normalizeBasis=(type:string):Basis=>({flat:'flat',per_chargeable_kg:'per_chargeable_kg',per_kg:'per_actual_kg',per_actual_kg:'per_actual_kg',per_lb:'per_lb',per_cbm:'per_cbm',per_piece:'per_piece',per_pallet:'per_pallet',per_container:'per_container',kg:'per_actual_kg',lb:'per_lb',cbm:'per_cbm',pallet:'per_pallet',container:'per_container',shipment:'flat'} as Record<string,Basis>)[type]||'flat'
 const route=(origin:string,destination:string)=>`${origin||'Origin'} → ${destination||'Destination'}`
