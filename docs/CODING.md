@@ -1,5 +1,13 @@
 # Coding, Testing, and Git Standards
 
+## Working-tree protection
+Before editing:
+1. Run `git status --short` and note every existing modification and untracked file.
+2. Treat pre-existing changes as user-owned. Do not edit, remove, stage, or commit them unless the task explicitly includes them.
+3. Keep staging precise; inspect `git diff` and `git diff --cached` before committing.
+
+Do not commit dependency directories, build output, screenshots, logs, local environment files, caches, or other generated artifacts unless they are explicit task deliverables. A required lockfile, migration, or generated database type is not disposable output. Review the complete final diff and status for unrelated changes, accidental truncation, and broad formatting churn.
+
 ## Scope discipline
 - Make the smallest complete change that satisfies the task.
 - Do not bundle unrelated cleanup into a functional change.
@@ -59,16 +67,18 @@ At minimum, verify:
 For UI work, verify desktop, tablet, mobile, keyboard, loading, empty, and error behavior when relevant.
 
 ## Required commands
-Use the repository's package manager and existing scripts. Before committing, run at minimum:
+Use npm and the repository's existing scripts. Use `npm ci` for a clean install when `package-lock.json` exists. Before committing, run:
 
 ```bash
 npm run typecheck
 npm run build
 ```
 
-Also run lint and test scripts when available or relevant.
+Run `npm run lint` and `npm test` when those scripts exist. If a relevant script is absent, mark it **unavailable**. Do not invent an ad hoc substitute unless the task specifically requires one, and do not call an unavailable or unexecuted check successful.
 
 Do not report a command as passing unless it was actually executed successfully.
+
+Establish a baseline before feature or bug-fix work. Record whether each failure existed before the change or was introduced by it. Stop on a broken baseline unless the task explicitly authorizes proceeding, and never disable a safeguard or suppress an error to obtain a green check.
 
 ## Git workflow
 - Work on the assigned/current branch.
@@ -90,6 +100,8 @@ A PR description should include:
 - Commands and results
 - Risks and rollback considerations
 - Screenshots for meaningful UI changes when available
+
+Report exact commands and classify each as passed, failed, skipped, or unavailable. Include both the commit SHA and PR link when they exist, plus explicit known-risks and remaining-work statements.
 
 ## Completion checklist
 - [ ] Task requirements are satisfied.

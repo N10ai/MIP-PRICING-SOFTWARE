@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+
+# Local environment files (keep shareable examples)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local caches and temporary files
+.cache/
+.vite/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+.tmp/
+tmp/
+temp/
