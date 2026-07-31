@@ -1,105 +1,33 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { rfqNumberFromRecipient, rfqNumbersFromText, sanitizeEmailHtml } from '../_shared/rfq-email.ts'
 
-const WEBHOOK_TOKEN = 'mip_rfq_inbound_2026_7f3d9b2a'
+const json=(payload:unknown,status=200)=>new Response(JSON.stringify(payload),{status,headers:{'Content-Type':'application/json'}})
+const strings=(value:unknown):string[]=>Array.isArray(value)?value.filter((x):x is string=>typeof x==='string'):typeof value==='string'?[value]:[]
+const header=(headers:unknown,name:string):string|null=>{if(!headers||typeof headers!=='object')return null;const value=(headers as Record<string,unknown>)[name]??(headers as Record<string,unknown>)[name.toLowerCase()];return typeof value==='string'?value:null}
+const parseSignatures=(value:string)=>value.split(' ').map(part=>part.replace(/^v\d+,/,'')).filter(Boolean)
+const bytes=(value:string)=>Uint8Array.from(atob(value),c=>c.charCodeAt(0))
+async function verify(req:Request,raw:string,secret:string){const id=req.headers.get('svix-id'),timestamp=req.headers.get('svix-timestamp'),signature=req.headers.get('svix-signature');if(!id||!timestamp||!signature)return false;if(Math.abs(Date.now()/1000-Number(timestamp))>300)return false;const key=secret.startsWith('whsec_')?secret.slice(6):secret;const cryptoKey=await crypto.subtle.importKey('raw',bytes(key),{name:'HMAC',hash:'SHA-256'},false,['sign']);const digest=new Uint8Array(await crypto.subtle.sign('HMAC',cryptoKey,new TextEncoder().encode(`${id}.${timestamp}.${raw}`)));const expected=btoa(String.fromCharCode(...digest));return parseSignatures(signature).some(candidate=>candidate===expected)}
 
-function json(payload: unknown, status = 200) {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
-function extractRfqNumber(...values: Array<unknown>): string | null {
-  const text = values.filter(Boolean).join(' ')
-  const match = text.match(/RFQ-[A-Z0-9-]+/i)
-  return match ? match[0].toUpperCase() : null
-}
-
-Deno.serve(async (req) => {
-  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
-
-  const url = new URL(req.url)
-  if (url.searchParams.get('token') !== WEBHOOK_TOKEN) return json({ error: 'Unauthorized' }, 401)
-
-  try {
-    const event = await req.json()
-    if (event?.type !== 'email.received') return json({ received: true, ignored: true })
-
-    const emailId = String(event?.data?.email_id || '')
-    if (!emailId) return json({ error: 'Missing email_id' }, 400)
-
-    const apiKey = Deno.env.get('RESEND_API_KEY')
-    if (!apiKey) return json({ error: 'RESEND_API_KEY is not configured' }, 500)
-
-    const emailResponse = await fetch(`https://api.resend.com/emails/receiving/${encodeURIComponent(emailId)}`, {
-      headers: { Authorization: `Bearer ${apiKey}` },
-    })
-    const email = await emailResponse.json()
-    if (!emailResponse.ok) return json({ error: email?.message || 'Unable to retrieve received email' }, 502)
-
-    const rfqNumber = extractRfqNumber(email.subject, email.text, email.html, ...(email.to || []))
-    if (!rfqNumber) return json({ received: true, matched: false, reason: 'RFQ number not found' })
-
-    const admin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-    )
-
-    const { data: rfq, error: rfqError } = await admin
-      .from('vendor_rfqs')
-      .select('id,quote_request_id,rfq_number,status')
-      .eq('rfq_number', rfqNumber)
-      .maybeSingle()
-
-    if (rfqError) throw rfqError
-    if (!rfq) return json({ received: true, matched: false, rfq_number: rfqNumber })
-
-    const attachments = Array.isArray(email.attachments)
-      ? email.attachments.map((item: Record<string, unknown>) => ({
-          id: item.id,
-          filename: item.filename,
-          content_type: item.content_type,
-          size: item.size,
-        }))
-      : []
-
-    const { error: insertError } = await admin.from('rfq_conversation_messages').upsert({
-      vendor_rfq_id: rfq.id,
-      direction: 'inbound',
-      provider_message_id: email.message_id || email.id,
-      provider_thread_id: email.headers?.references || email.headers?.['in-reply-to'] || null,
-      sender_email: email.from || null,
-      recipient_email: Array.isArray(email.to) ? email.to.join(', ') : null,
-      subject: email.subject || null,
-      body_text: email.text || null,
-      body_html: email.html || null,
-      status: 'received',
-      received_at: email.created_at || new Date().toISOString(),
-      attachments,
-      metadata: { resend_received_email_id: email.id || emailId, headers: email.headers || {} },
-    }, { onConflict: 'provider_message_id' })
-
-    if (insertError) throw insertError
-
-    const receivedAt = email.created_at || new Date().toISOString()
-    await admin.from('vendor_rfqs').update({
-      status: 'responded',
-      response_received_at: receivedAt,
-      original_response: email.text || email.html || null,
-    }).eq('id', rfq.id)
-
-    await admin.from('commercial_activities').insert({
-      quote_request_id: rfq.quote_request_id,
-      vendor_rfq_id: rfq.id,
-      activity_type: 'vendor_rfq_reply_received',
-      title: `${rfq.rfq_number} reply received`,
-      description: `Inbound vendor reply received from ${email.from || 'vendor'}.`,
-      actor_name: email.from || 'Vendor',
-      metadata: { resend_received_email_id: email.id || emailId, message_id: email.message_id || null },
-    })
-
-    return json({ received: true, matched: true, rfq_number: rfq.rfq_number })
-  } catch (error) {
-    return json({ error: error instanceof Error ? error.message : 'Unable to process inbound email' }, 500)
-  }
+Deno.serve(async(req)=>{
+ if(req.method!=='POST')return json({error:{code:'method_not_allowed',message:'Method not allowed'}},405)
+ const raw=await req.text(),secret=Deno.env.get('RESEND_WEBHOOK_SECRET');if(!secret)return json({error:{code:'configuration_error',message:'RESEND_WEBHOOK_SECRET is required'}},500)
+ if(!(await verify(req,raw,secret).catch(()=>false)))return json({error:{code:'invalid_signature',message:'Webhook signature verification failed'}},401)
+ try{
+  const event=JSON.parse(raw),eventId=req.headers.get('svix-id')||null;if(event?.type!=='email.received')return json({received:true,ignored:true,event_type:event?.type})
+  const receivedId=String(event?.data?.email_id||event?.data?.id||'');if(!receivedId)return json({error:{code:'invalid_event',message:'Received email ID is missing'}},400)
+  const apiKey=Deno.env.get('RESEND_API_KEY'),url=Deno.env.get('SUPABASE_URL'),service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');if(!apiKey||!url||!service)return json({error:{code:'configuration_error',message:'Server secrets are incomplete'}},500)
+  const admin=createClient(url,service);const{data:existing}=await admin.from('rfq_conversation_messages').select('id,vendor_rfq_id').eq('resend_received_email_id',receivedId).maybeSingle();if(existing)return json({received:true,matched:true,duplicate:true,vendor_rfq_id:existing.vendor_rfq_id})
+  const response=await fetch(`https://api.resend.com/emails/receiving/${encodeURIComponent(receivedId)}`,{headers:{Authorization:`Bearer ${apiKey}`}});const email=await response.json();if(!response.ok)return json({error:{code:'receive_fetch_failed',message:email?.message||'Unable to retrieve received email',received_email_id:receivedId}},502)
+  const to=strings(email.to),cc=strings(email.cc),headers=email.headers||{},replyTo=typeof email.reply_to==='string'?email.reply_to:header(headers,'reply-to'),messageId=email.message_id||header(headers,'message-id'),inReplyTo=header(headers,'in-reply-to'),references=strings(header(headers,'references')?.split(/\s+/).filter(Boolean)||[])
+  const domain=Deno.env.get('RESEND_INBOUND_DOMAIN')||'whidelaede.resend.app';const recipientNumbers=[...new Set(to.map(value=>rfqNumberFromRecipient(value,domain)).filter((x):x is string=>Boolean(x)))];const textNumbers=rfqNumbersFromText(email.subject,email.text,email.html);const candidates=new Map<string,{id:string;quote_request_id:string;rfq_number:string}>()
+  const lookup=async(numbers:string[])=>{if(!numbers.length)return;const{data,error}=await admin.from('vendor_rfqs').select('id,quote_request_id,rfq_number').in('rfq_number',numbers);if(error)throw error;for(const row of data||[])candidates.set(row.id,row)}
+  await lookup(recipientNumbers)
+  if(!candidates.size&&inReplyTo){const{data}=await admin.from('rfq_conversation_messages').select('vendor_rfq_id,vendor_rfqs!inner(id,quote_request_id,rfq_number)').or(`message_id.eq.${inReplyTo},provider_message_id.eq.${inReplyTo}`).limit(2);for(const row of data||[]){const r=row.vendor_rfqs as unknown as{id:string;quote_request_id:string;rfq_number:string};if(r)candidates.set(r.id,r)}}
+  if(!candidates.size)await lookup(textNumbers)
+  const attachments=Array.isArray(email.attachments)?email.attachments.map((item:Record<string,unknown>)=>({id:item.id,filename:item.filename,name:item.filename,content_type:item.content_type,size:item.size,content_disposition:item.content_disposition})):[];const receivedAt=email.created_at||new Date().toISOString();const html=sanitizeEmailHtml(email.html)
+  if(candidates.size!==1){const reason=candidates.size?'ambiguous_match':'no_strong_match';await admin.from('rfq_unmatched_inbound_messages').upsert({resend_received_email_id:receivedId,webhook_event_id:eventId,sender_email:email.from||null,recipient_emails:to,cc_emails:cc,reply_to_email:replyTo,subject:email.subject||null,body_text:email.text||null,body_html:html,message_id:messageId,in_reply_to:inReplyTo,message_references:references,received_at:receivedAt,attachments,match_candidates:[...candidates.values()],unmatched_reason:reason,raw_metadata:{recipient_numbers:recipientNumbers,text_numbers:textNumbers}},{onConflict:'resend_received_email_id'});return json({received:true,matched:false,reason,candidate_count:candidates.size})}
+  const rfq=[...candidates.values()][0];const{error:insertError}=await admin.from('rfq_conversation_messages').insert({vendor_rfq_id:rfq.id,quote_request_id:rfq.quote_request_id,direction:'inbound',sender_email:email.from||null,recipient_email:to.join(', ')||null,cc_emails:cc,reply_to_email:replyTo,subject:email.subject||null,body_text:email.text||null,body_html:html,provider_message_id:messageId||null,message_id:messageId,in_reply_to:inReplyTo,message_references:references,resend_received_email_id:receivedId,status:'received',received_at:receivedAt,attachments,metadata:{webhook_event_id:eventId}});if(insertError){if(insertError.code==='23505')return json({received:true,matched:true,duplicate:true,vendor_rfq_id:rfq.id});throw insertError}
+  await admin.from('vendor_rfqs').update({status:'responded',response_received_at:receivedAt,original_response:email.text||html||null}).eq('id',rfq.id);await admin.from('quote_requests').update({last_activity_at:receivedAt}).eq('id',rfq.quote_request_id);await admin.from('commercial_activities').insert({quote_request_id:rfq.quote_request_id,vendor_rfq_id:rfq.id,activity_type:'vendor_rfq_reply_received',title:`${rfq.rfq_number} vendor replied`,description:`Inbound reply received from ${email.from||'vendor'}.`,actor_name:email.from||'Vendor',metadata:{resend_received_email_id:receivedId,message_id:messageId}})
+  return json({received:true,matched:true,duplicate:false,vendor_rfq_id:rfq.id,rfq_number:rfq.rfq_number})
+ }catch(error){console.error('[resend-inbound-webhook]',error instanceof Error?error.message:'unknown error');return json({error:{code:'processing_failed',message:error instanceof Error?error.message:'Unable to process inbound email'}},500)}
 })
