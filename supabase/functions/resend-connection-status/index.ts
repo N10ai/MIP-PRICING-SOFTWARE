@@ -20,11 +20,11 @@ Deno.serve(async (req) => {
   if (!user) return new Response(JSON.stringify({ connected: false, error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
   const apiKey = Deno.env.get('RESEND_API_KEY')
-  const mode = (Deno.env.get('RESEND_MODE') || 'test') === 'production' ? 'production' : 'test'
-  const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'onboarding@resend.dev'
-  const testRecipient = Deno.env.get('RESEND_TEST_RECIPIENT') || user.email || null
+  const mode = (Deno.env.get('RESEND_MODE') || 'production') === 'production' ? 'production' : 'test'
+  const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || null
+  const testRecipient = Deno.env.get('RESEND_TEST_RECIPIENT') || null
 
-  return new Response(JSON.stringify({ connected: Boolean(apiKey), mode, from_email: fromEmail, test_recipient: testRecipient }), {
+  return new Response(JSON.stringify({ connected: Boolean(apiKey && fromEmail && (mode === 'production' || testRecipient)), mode, from_email: fromEmail, test_recipient: testRecipient }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 })

@@ -11,7 +11,7 @@ export type ResendConnectionStatus = {
 const SEND_TIMEOUT_MS = 20000
 
 type SendResult = {
-  error?: string
+  error?: string | { code?: string; message?: string }
   results?: Array<{ id?: string; status?: string; error?: string; reason?: string }>
 }
 
@@ -60,7 +60,7 @@ export async function sendRfqEmails(rfqIds: string[]) {
     }
 
     if (!data) throw new Error('The RFQ email service returned no response')
-    if (data.error) throw new Error(data.error)
+    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || 'Unable to send RFQs')
     if (!Array.isArray(data.results)) throw new Error('The RFQ email service returned an invalid response')
 
     const failed = data.results.filter(item => item.status === 'failed')
