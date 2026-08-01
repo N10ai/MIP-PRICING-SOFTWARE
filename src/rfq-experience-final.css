@@ -1,0 +1,51 @@
+/* Final RFQ experience: two-action request summary, focused chat, and simplified new-RFQ flow. */
+
+/* Main request summary: only the two workflow actions belong in the sticky footer. */
+.decision-actions.rfq-summary-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+.decision-actions.rfq-summary-actions>button{display:none!important}
+.decision-actions.rfq-summary-actions>button[data-rfq-primary-action="true"],
+.decision-actions.rfq-summary-actions>button[data-quote-primary-action="true"]{display:flex!important;width:100%!important;min-height:58px!important;align-items:center!important;justify-content:center!important}
+
+/* New RFQ setup is intentionally only Vendor + Template. */
+.pricing-workspace.rfq-new-request-mode .pricing-mobile-tabs button[data-rfq-hidden-tab="true"]{display:none!important}
+.pricing-workspace.rfq-new-request-mode .pricing-mobile-tabs{grid-template-columns:1fr 1fr!important}
+.pricing-workspace.rfq-new-request-mode .pricing-mobile-tabs button{min-width:0!important}
+
+/* Chat gets its own full-screen product surface, independent from the request drawer behind it. */
+body.rfq-chat-open{overflow:hidden!important}
+body.rfq-chat-open .request-overlay,
+body.rfq-chat-open .request-drawer,
+body.rfq-chat-open .pricing-decision-workspace{visibility:hidden!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode{visibility:visible!important;position:fixed!important;inset:0!important;z-index:9999!important;width:100vw!important;height:100dvh!important;max-width:none!important;border:0!important;border-radius:0!important;background:#f6f7f9!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-head,
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-mobile-tabs,
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-vendors,
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-existing,
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-notice,
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-message>.pricing-panel-head{display:none!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-grid{width:100%!important;max-width:980px!important;margin:0 auto!important;padding:0!important;flex:1!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .pricing-message{flex:1!important;min-height:0!important;display:flex!important;flex-direction:column!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:hidden!important}
+body.rfq-chat-open .rfq-chat-focus-header{flex:0 0 auto!important;position:relative!important;top:auto!important;padding:14px max(18px,env(safe-area-inset-right)) 11px max(18px,env(safe-area-inset-left))!important;background:#fff!important;border-bottom:1px solid #e5e7eb!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation{flex:1!important;min-height:0!important;overflow-y:auto!important;padding:18px max(16px,calc((100vw - 760px)/2)) 22px!important;background:#f6f7f9!important;display:flex!important;flex-direction:column!important;gap:10px!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation article{max-width:min(78%,620px)!important;width:auto!important;margin:0!important;border-radius:18px!important;box-shadow:none!important;padding:12px 14px!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation article.outbound{align-self:flex-end!important;border-bottom-right-radius:5px!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation article.inbound{align-self:flex-start!important;border-bottom-left-radius:5px!important;background:#fff!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation pre{white-space:pre-wrap!important;margin:7px 0 0!important;font:inherit!important;line-height:1.42!important}
+body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-chat-composer{flex:0 0 auto!important;position:relative!important;bottom:auto!important;padding:9px max(16px,calc((100vw - 760px)/2)) max(10px,env(safe-area-inset-bottom))!important;background:#fff!important;border-top:1px solid #e5e7eb!important}
+body.rfq-chat-open .rfq-chat-quick-actions{display:flex!important;gap:7px!important;overflow-x:auto!important;padding:0 0 7px!important;scrollbar-width:none!important}
+body.rfq-chat-open .rfq-chat-quick-actions::-webkit-scrollbar{display:none!important}
+body.rfq-chat-open .rfq-chat-compose-row{border:1px solid #dfe3ea!important;border-radius:24px!important;background:#f7f8fa!important;padding:5px 6px 5px 14px!important;display:flex!important;align-items:flex-end!important;gap:8px!important}
+body.rfq-chat-open .rfq-chat-compose-row textarea{min-height:38px!important;max-height:110px!important;padding:9px 0!important;background:transparent!important;border:0!important;box-shadow:none!important;resize:none!important}
+body.rfq-chat-open .rfq-chat-send{width:42px!important;height:42px!important;min-width:42px!important;border-radius:50%!important}
+body.rfq-chat-open .rfq-chat-compose-meta{padding:5px 5px 0!important;font-size:11px!important}
+
+@media(max-width:760px){
+  .decision-actions.rfq-summary-actions{grid-template-columns:1fr 1fr!important;padding-left:18px!important;padding-right:18px!important}
+  .decision-actions.rfq-summary-actions>button{font-size:14px!important;padding:12px 8px!important}
+  body.rfq-chat-open .rfq-chat-focus-title h2{font-size:20px!important}
+  body.rfq-chat-open .rfq-chat-focus-title small{display:none!important}
+  body.rfq-chat-open .rfq-chat-focus-title p{font-size:11px!important}
+  body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation{padding:14px 12px 18px!important}
+  body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-conversation article{max-width:88%!important}
+  body.rfq-chat-open .pricing-workspace.rfq-chat-focus-mode .rfq-chat-composer{padding:8px 10px max(8px,env(safe-area-inset-bottom))!important}
+}
