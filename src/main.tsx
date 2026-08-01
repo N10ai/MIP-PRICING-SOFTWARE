@@ -11,6 +11,7 @@ import { MobileQuoteSwipeEnhancer } from './components/MobileQuoteSwipeEnhancer'
 import { MobileQuotePdfEnhancer } from './components/MobileQuotePdfEnhancer'
 import { DesktopQuoteFocusEnhancer } from './components/DesktopQuoteFocusEnhancer'
 import { RfqQuickActions } from './components/RfqQuickActions'
+import { RfqConversationComposer } from './components/RfqConversationComposer'
 import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
 import { DesktopCommercialEnhancements } from './components/DesktopCommercialEnhancements'
 import { AuthGate } from './components/AuthGate'
@@ -102,6 +103,7 @@ import './quote-workspace-v8.css'
 import './quote-workspace-v9.css'
 import './gmail-rfq-automation.css'
 import './rfq-workspace-overrides.css'
+import './rfq-chat-conversation.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -116,6 +118,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileQuotePdfEnhancer />
         <DesktopQuoteFocusEnhancer />
         <RfqQuickActions />
+        <RfqConversationComposer />
         <DesktopWorkspaceQueue />
         <DesktopCommercialEnhancements />
         <App />
