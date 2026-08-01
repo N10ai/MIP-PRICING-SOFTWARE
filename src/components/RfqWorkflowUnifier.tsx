@@ -16,7 +16,23 @@ async function openConversation(card:HTMLElement){
   if(!requestId||!rfqNumber)return
   const{data}=await supabase.from('vendor_rfqs').select('id').eq('quote_request_id',requestId).eq('rfq_number',rfqNumber).maybeSingle()
   if(!data?.id)return
-  window.location.hash=requestWorkspaceRoute(requestId,'messages',data.id)
+  const nextHash=requestWorkspaceRoute(requestId,'messages',data.id)
+  if(window.location.hash===nextHash){window.location.reload();return}
+  document.documentElement.classList.add('rfq-chat-route-loading')
+  window.location.hash=nextHash
+  window.setTimeout(()=>window.location.reload(),40)
+}
+
+function organizeSummary(){
+  const body=document.querySelector<HTMLElement>('.decision-body')
+  const facts=body?.querySelector<HTMLElement>('.compact-shipment-facts')
+  const decision=body?.querySelector<HTMLElement>('.pricing-decision-card')
+  if(body&&facts&&decision&&facts.nextElementSibling!==decision)facts.insertAdjacentElement('afterend',decision)
+
+  exactText(document,'button','Compare vendor rates').forEach(button=>{
+    if(button.closest('.pricing-decision-card')||button.closest('.rates-heading'))return
+    button.classList.add('duplicate-compare-action')
+  })
 }
 
 function setCopy(){
@@ -46,6 +62,7 @@ function setCopy(){
   const ratesActive=Array.from(document.querySelectorAll<HTMLElement>('.decision-tabs button')).some(button=>button.classList.contains('active')&&button.textContent?.trim()==='Rates')
   const footer=document.querySelector<HTMLElement>('.decision-actions')
   if(footer)footer.dataset.ratesActive=ratesActive?'true':'false'
+  organizeSummary()
 }
 
 function wireRateCards(){
