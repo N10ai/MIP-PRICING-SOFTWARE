@@ -1,4 +1,4 @@
-export type PricingWorkspaceView = 'summary' | 'vendors' | 'messages' | 'rates'
+export type PricingWorkspaceView = 'summary' | 'vendors' | 'template' | 'messages' | 'rates'
 
 export function requestWorkspaceRoute(requestId: string, view: PricingWorkspaceView = 'summary', rfqId?: string) {
   const params = new URLSearchParams({ request: requestId, view })
@@ -13,6 +13,6 @@ export function quoteBuilderRoute(requestId: string) {
 export function readRequestWorkspace(search: string) {
   const params = new URLSearchParams(search)
   const rawView = params.get('view')
-  const view: PricingWorkspaceView = rawView === 'vendors' || rawView === 'messages' || rawView === 'rates' ? rawView : 'summary'
+  const view: PricingWorkspaceView = rawView === 'vendors' || rawView === 'template' || rawView === 'messages' || rawView === 'rates' ? rawView : 'summary'
   return { requestId: params.get('request'), view, rfqId: params.get('rfq') }
 }

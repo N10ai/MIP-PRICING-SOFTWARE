@@ -48,3 +48,17 @@ The inbound function performs Resend signature authentication, so it must be pub
 5. Confirm the full reply and attachment metadata appear once, the RFQ is Responded, the request activity advances, and the vendor-replied event is present.
 6. Replay the same signed webhook within its valid timestamp window and confirm `duplicate: true` without a second conversation row or activity.
 7. Repeat at desktop, tablet, and mobile widths; verify natural scrolling, focus, Refresh fallback, waiting and failed states.
+
+## Source-rendered RFQ workspace audit (2026-08)
+
+Before the workspace refactor, request summary content was owned by `RequestWorkspace`, while vendor selection, template fields, the sent conversation, and the new-message editor were all rendered together by `RfqComposer`. `ResponsiveVendorRateWorkspace` separately owned manual rate entry. Global `RfqExperienceController`, `RfqWorkflowUnifier`, and `RfqRouteStateEnforcer` logic then inferred modes from text and rendered DOM, and `RfqConversationComposer` mounted its header and follow-up form into discovered elements with portals.
+
+This overlap caused the observed state failures:
+
+- The composer always rendered vendor, conversation, editor, and summary columns. Mobile tabs and CSS merely hid parts, so the send editor remained present during vendor selection and chat inherited unrelated tabs.
+- The route could supply an RFQ ID before the composer's asynchronously loaded RFQ collection agreed with its local active ID. DOM-based header discovery could therefore find an RFQ label while the React conversation branch still rendered “No RFQ selected.”
+- Workflow enhancers opened conversations by reading visible RFQ text, querying it back to an ID, changing the hash, and forcing a reload rather than passing the selected ID into React.
+- The request action bar was a drawer sibling styled by several late override sheets. Fixed/sticky rules and compensating body padding disagreed across breakpoints, producing overlap and blank space.
+- Thirteen late RFQ layout sheets competed with the base composer and request styles; several MutationObservers repeatedly rewrote labels, classes, ordering, and mode attributes after render.
+
+The new model treats the URL as the source of truth: `view=summary`, `view=vendors`, `view=template`, or `view=messages&rfq=<id>`. These map to the explicit React modes `request-summary`, `new-rfq-vendors`, `new-rfq-template`, and `vendor-chat`. `RequestWorkspace` renders either the request screen or exactly one RFQ screen, and the selected RFQ ID is passed directly to the conversation. Vendor selections stay in the mounted new-RFQ component while moving between its two route-backed steps. Sending transitions directly to the newly created RFQ route. The RFQ-specific DOM controllers, portal conversation composer, and late override stylesheet imports are no longer mounted; one `rfq-workspace.css` stylesheet owns the new screens.
