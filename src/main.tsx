@@ -101,6 +101,7 @@ import './quotes-page-v2.css'
 import './quote-workspace-v8.css'
 import './quote-workspace-v9.css'
 import './gmail-rfq-automation.css'
+import './rfq-workspace-overrides.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
