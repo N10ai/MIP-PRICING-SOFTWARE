@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { RequestWorkspace, type RequestSummary } from './RequestWorkspace'
+import { requestWorkspaceRoute } from '../lib/pricingRoutes'
 
 export function DesktopRequestWorkspaceBridge() {
   const location = useLocation()
@@ -38,6 +39,7 @@ export function DesktopRequestWorkspaceBridge() {
       <RequestWorkspace
         request={request}
         onClose={() => navigate('/requests')}
+        onNavigateRfq={(view, rfqId) => navigate(requestWorkspaceRoute(request.id, view, rfqId))}
         onChanged={() => window.dispatchEvent(new CustomEvent('desktop-request-changed'))}
       />
     </div>,

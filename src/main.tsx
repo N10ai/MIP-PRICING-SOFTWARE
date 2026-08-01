@@ -10,11 +10,6 @@ import { MobileRequestNavigation } from './components/MobileRequestNavigation'
 import { MobileQuoteSwipeEnhancer } from './components/MobileQuoteSwipeEnhancer'
 import { MobileQuotePdfEnhancer } from './components/MobileQuotePdfEnhancer'
 import { DesktopQuoteFocusEnhancer } from './components/DesktopQuoteFocusEnhancer'
-import { RfqQuickActions } from './components/RfqQuickActions'
-import { RfqConversationComposer } from './components/RfqConversationComposer'
-import { RfqWorkflowUnifier } from './components/RfqWorkflowUnifier'
-import { RfqDeletionManager } from './components/RfqDeletionManager'
-import { RfqExperienceController } from './components/RfqExperienceController'
 import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
 import { DesktopCommercialEnhancements } from './components/DesktopCommercialEnhancements'
 import { AuthGate } from './components/AuthGate'
@@ -28,7 +23,7 @@ import './public-portal.css'
 import './public-portal-v2.css'
 import './public-portal-cargo-premium.css'
 import './stability-fixes.css'
-import './rfq-composer.css'
+import './rfq-workspace.css'
 import './pricing-workspace.css'
 import './rfq-template-builder.css'
 import './template-field-editor.css'
@@ -71,10 +66,6 @@ import './mobile-request-queue-v4.css'
 import './mobile-request-account-final.css'
 import './mobile-quote-queue-v1.css'
 import './request-decision-workspace.css'
-import './mobile-rfq-composer.css'
-import './rfq-mobile-exact.css'
-import './rfq-mobile-interactions.css'
-import './rfq-mobile-final-tuning.css'
 import './rfq-quick-vendor.css'
 import './mobile-vendor-response-v2.css'
 import './rfq-quick-vendor-primary-fix.css'
@@ -105,16 +96,7 @@ import './quotes-page-v2.css'
 import './quote-workspace-v8.css'
 import './quote-workspace-v9.css'
 import './gmail-rfq-automation.css'
-import './rfq-workspace-overrides.css'
-import './rfq-chat-conversation.css'
-import './rfq-chat-focus.css'
-import './rfq-workflow-unifier.css'
 import './rfq-delete-manager.css'
-import './rfq-experience-final.css'
-import './rfq-final-polish.css'
-import './rfq-state-correction.css'
-import './rfq-route-state.css'
-import './rfq-layout-recovery.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -128,11 +110,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MobileQuoteSwipeEnhancer />
         <MobileQuotePdfEnhancer />
         <DesktopQuoteFocusEnhancer />
-        <RfqQuickActions />
-        <RfqConversationComposer />
-        <RfqWorkflowUnifier />
-        <RfqDeletionManager />
-        <RfqExperienceController />
         <DesktopWorkspaceQueue />
         <DesktopCommercialEnhancements />
         <App />
