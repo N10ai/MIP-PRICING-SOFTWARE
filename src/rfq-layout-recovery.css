@@ -1,0 +1,137 @@
+/* Final RFQ layout recovery. Keep request summary, new RFQ, and chat as separate surfaces. */
+
+/* Request preview: scrollable content plus a real bottom action bar. */
+.pricing-decision-workspace{
+  display:flex!important;
+  flex-direction:column!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+}
+.pricing-decision-workspace .decision-body{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  padding-bottom:18px!important;
+}
+.pricing-decision-workspace .decision-actions.rfq-summary-actions{
+  position:relative!important;
+  inset:auto!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  transform:none!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:12px!important;
+  padding:12px 16px max(12px,env(safe-area-inset-bottom))!important;
+  background:#fff!important;
+  border-top:1px solid #e5e7eb!important;
+  box-shadow:0 -8px 24px rgba(15,23,42,.06)!important;
+  z-index:30!important;
+}
+.pricing-decision-workspace .decision-actions.rfq-summary-actions>button{display:none!important}
+.pricing-decision-workspace .decision-actions.rfq-summary-actions>button[data-rfq-primary-action="true"],
+.pricing-decision-workspace .decision-actions.rfq-summary-actions>button[data-quote-primary-action="true"]{
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:60px!important;
+  margin:0!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+/* A selected conversation is a full chat screen. */
+.pricing-workspace:has(.rfq-chat-focus-header) .mobile-rfq-tabs,
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-mobile-tabs,
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-head,
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-vendors,
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-existing,
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-notice,
+.pricing-workspace:has(.rfq-chat-focus-header) .empty-conversation,
+.pricing-workspace:has(.rfq-chat-focus-header) .conversation-empty{
+  display:none!important;
+}
+.pricing-workspace:has(.rfq-chat-focus-header){
+  position:fixed!important;
+  inset:0!important;
+  z-index:99999!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-width:none!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#f4f5f7!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-grid,
+.pricing-workspace:has(.rfq-chat-focus-header) .pricing-message{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  max-width:900px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.pricing-workspace:has(.rfq-chat-focus-header) .rfq-chat-focus-header{
+  flex:0 0 auto!important;
+  padding:max(14px,env(safe-area-inset-top)) 18px 12px!important;
+  background:#fff!important;
+  border-bottom:1px solid #e5e7eb!important;
+}
+.pricing-workspace:has(.rfq-chat-focus-header) .rfq-chat-focus-title small{display:none!important}
+.pricing-workspace:has(.rfq-chat-focus-header) .rfq-chat-focus-title h2{margin:0 0 3px!important;font-size:22px!important}
+.pricing-workspace:has(.rfq-chat-focus-header) .rfq-chat-focus-title p{margin:0!important;font-size:12px!important;color:#7d8799!important}
+.pricing-workspace:has(.rfq-chat-focus-header) .rfq-conversation{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  padding:14px 12px 18px!important;
+  background:#f4f5f7!important;
+}
+.pricing-workspace:has(.rfq-chat-focus-header) .rfq-chat-composer{
+  flex:0 0 auto!important;
+  position:relative!important;
+  inset:auto!important;
+  margin:0!important;
+  padding:8px 10px max(8px,env(safe-area-inset-bottom))!important;
+  background:#fff!important;
+  border-top:1px solid #e5e7eb!important;
+}
+
+/* New RFQ: exactly Vendors and Template. */
+.pricing-workspace.rfq-new-request-mode .mobile-rfq-tabs,
+.pricing-workspace.rfq-new-request-mode .pricing-mobile-tabs{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+}
+.pricing-workspace.rfq-new-request-mode .mobile-rfq-tabs button[data-rfq-hidden-tab="true"],
+.pricing-workspace.rfq-new-request-mode .pricing-mobile-tabs button[data-rfq-hidden-tab="true"]{display:none!important}
+.pricing-workspace.rfq-new-request-mode [data-rfq-auxiliary="true"]{display:none!important}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="vendors"] [data-rfq-panel="template"]{display:none!important}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="template"] [data-rfq-panel="vendors"]{display:none!important}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="vendors"] [data-rfq-panel="vendors"]{display:block!important}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="template"] [data-rfq-panel="template"]{display:block!important}
+.pricing-workspace.rfq-new-request-mode [data-rfq-panel="template"] .rfq-conversation,
+.pricing-workspace.rfq-new-request-mode [data-rfq-panel="template"] .empty-conversation,
+.pricing-workspace.rfq-new-request-mode [data-rfq-panel="template"] .conversation-empty{display:none!important}
+.pricing-workspace.rfq-new-request-mode .pricing-send-bar{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:20!important;
+  margin-top:auto!important;
+  background:#fff!important;
+  border-top:1px solid #e5e7eb!important;
+  padding-bottom:max(12px,env(safe-area-inset-bottom))!important;
+}

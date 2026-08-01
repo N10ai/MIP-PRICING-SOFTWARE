@@ -15,7 +15,6 @@ import { RfqConversationComposer } from './components/RfqConversationComposer'
 import { RfqWorkflowUnifier } from './components/RfqWorkflowUnifier'
 import { RfqDeletionManager } from './components/RfqDeletionManager'
 import { RfqExperienceController } from './components/RfqExperienceController'
-import { RfqRouteStateEnforcer } from './components/RfqRouteStateEnforcer'
 import { DesktopWorkspaceQueue } from './components/DesktopWorkspaceQueue'
 import { DesktopCommercialEnhancements } from './components/DesktopCommercialEnhancements'
 import { AuthGate } from './components/AuthGate'
@@ -115,7 +114,7 @@ import './rfq-experience-final.css'
 import './rfq-final-polish.css'
 import './rfq-state-correction.css'
 import './rfq-route-state.css'
-import './rfq-render-fix.css'
+import './rfq-layout-recovery.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -134,7 +133,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <RfqWorkflowUnifier />
         <RfqDeletionManager />
         <RfqExperienceController />
-        <RfqRouteStateEnforcer />
         <DesktopWorkspaceQueue />
         <DesktopCommercialEnhancements />
         <App />

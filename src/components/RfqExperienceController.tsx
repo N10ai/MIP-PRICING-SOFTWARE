@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
 const text=(node:Element)=>node.textContent?.trim().toLowerCase()||''
+const tabSelector='.mobile-rfq-tabs,.pricing-mobile-tabs'
 
 function configureSummary(){
   document.querySelectorAll<HTMLElement>('.decision-body').forEach(body=>{
@@ -10,17 +11,22 @@ function configureSummary(){
 
   document.querySelectorAll<HTMLElement>('.decision-actions').forEach(footer=>{
     footer.classList.add('rfq-summary-actions')
-    Array.from(footer.querySelectorAll<HTMLButtonElement>('button')).forEach(button=>{
+    const buttons=Array.from(footer.querySelectorAll<HTMLButtonElement>('button'))
+    buttons.forEach(button=>{
       delete button.dataset.rfqPrimaryAction
       delete button.dataset.quotePrimaryAction
       const label=text(button)
       if(label.includes('rfq')||label.includes('conversation')||label.includes('vendor rate')){
         button.dataset.rfqPrimaryAction='true'
         button.textContent='Request a vendor rate'
-      }else if(label.includes('open q-')||label.includes('open quote')){
+        return
+      }
+      if(label.includes('open q-')||label.includes('open quote')){
         button.dataset.quotePrimaryAction='true'
         button.textContent='Open quote'
-      }else if(label.includes('create quote')||label.includes('build quote')){
+        return
+      }
+      if(label.includes('create quote')||label.includes('build quote')){
         button.dataset.quotePrimaryAction='true'
         button.textContent='Create quote'
       }
@@ -30,23 +36,31 @@ function configureSummary(){
 
 function configureNewRfq(){
   document.querySelectorAll<HTMLElement>('.pricing-workspace').forEach(workspace=>{
-    if(workspace.classList.contains('rfq-chat-focus-mode'))return
-    const tabs=workspace.querySelector<HTMLElement>('.mobile-rfq-tabs')
-    if(!tabs)return
+    const hasConversation=Boolean(workspace.querySelector('.rfq-conversation'))
+    const hasChatHeader=Boolean(workspace.querySelector('.rfq-chat-focus-header'))
+    if(hasConversation||hasChatHeader||workspace.classList.contains('rfq-chat-focus-mode')){
+      workspace.classList.remove('rfq-new-request-mode')
+      delete workspace.dataset.rfqStep
+      return
+    }
 
+    const tabs=workspace.querySelector<HTMLElement>(tabSelector)
+    if(!tabs)return
     workspace.classList.add('rfq-new-request-mode')
     const buttons=Array.from(tabs.querySelectorAll<HTMLButtonElement>('button'))
     let activeStep:'vendors'|'template'='vendors'
 
-    buttons.forEach(button=>{
+    buttons.forEach((button,index)=>{
       const label=text(button)
-      button.removeAttribute('data-rfq-hidden-tab')
-      if(label==='messages'||label==='template'){
-        button.querySelector('span')!.textContent='Template'
+      delete button.dataset.rfqHiddenTab
+      delete button.dataset.rfqStep
+      const labelNode=button.querySelector<HTMLElement>('span')||button
+      if(label==='messages'||label==='template'||index===1){
+        labelNode.textContent='Template'
         button.dataset.rfqStep='template'
         if(button.classList.contains('active'))activeStep='template'
-      }else if(label==='vendors'||label==='vendor'){
-        button.querySelector('span')!.textContent='Vendors'
+      }else if(label==='vendors'||label==='vendor'||index===0){
+        labelNode.textContent='Vendors'
         button.dataset.rfqStep='vendors'
         if(button.classList.contains('active'))activeStep='vendors'
       }else{
@@ -59,7 +73,7 @@ function configureNewRfq(){
     const messagePanel=workspace.querySelector<HTMLElement>('.pricing-message')
     if(vendorPanel)vendorPanel.dataset.rfqPanel='vendors'
     if(messagePanel)messagePanel.dataset.rfqPanel='template'
-    workspace.querySelectorAll<HTMLElement>('.pricing-existing,.pricing-notice').forEach(node=>node.dataset.rfqAuxiliary='true')
+    workspace.querySelectorAll<HTMLElement>('.pricing-existing,.pricing-notice,.empty-conversation,.conversation-empty').forEach(node=>node.dataset.rfqAuxiliary='true')
 
     buttons.forEach(button=>{
       if(button.dataset.rfqBound==='true')return
@@ -73,21 +87,24 @@ function configureNewRfq(){
 }
 
 function configureChat(){
-  const header=document.querySelector<HTMLElement>('[data-rfq-chat-header]')
-  const focused=header?.closest<HTMLElement>('.pricing-workspace')||document.querySelector<HTMLElement>('.pricing-workspace.rfq-chat-focus-mode')
-  const open=Boolean(header&&focused)
+  const visibleHeader=document.querySelector<HTMLElement>('.rfq-chat-focus-header')
+  const focused=visibleHeader?.closest<HTMLElement>('.pricing-workspace')||document.querySelector<HTMLElement>('.pricing-workspace.rfq-chat-focus-mode')
+  const open=Boolean(visibleHeader&&focused)
   document.body.classList.toggle('rfq-chat-open',open)
 
-  document.querySelectorAll<HTMLElement>('.mobile-rfq-tabs').forEach(tabs=>{
-    const insideFocused=Boolean(focused&&tabs.closest('.pricing-workspace')===focused)
-    tabs.classList.toggle('rfq-hidden-for-chat',open&&insideFocused)
-    if(open&&insideFocused)tabs.setAttribute('aria-hidden','true')
+  document.querySelectorAll<HTMLElement>(tabSelector).forEach(tabs=>{
+    const belongsToChat=Boolean(open&&focused&&tabs.closest('.pricing-workspace')===focused)
+    tabs.classList.toggle('rfq-hidden-for-chat',belongsToChat)
+    if(belongsToChat)tabs.setAttribute('aria-hidden','true')
     else tabs.removeAttribute('aria-hidden')
   })
 
+  document.querySelectorAll<HTMLElement>('.pricing-workspace.rfq-chat-focus-mode').forEach(workspace=>{
+    if(workspace!==focused)workspace.classList.remove('rfq-chat-focus-mode')
+  })
   if(focused&&open){
-    focused.classList.remove('rfq-new-request-mode')
     focused.classList.add('rfq-chat-focus-mode')
+    focused.classList.remove('rfq-new-request-mode')
     focused.setAttribute('aria-label','Vendor conversation')
   }
 }
