@@ -9,10 +9,17 @@ export type ResendConnectionStatus = {
 }
 
 const SEND_TIMEOUT_MS = 20000
+const SENDABLE_STATUSES = new Set(['draft', 'failed'])
 
 type SendResult = {
   error?: string | { code?: string; message?: string }
   results?: Array<{ id?: string; status?: string; error?: string; reason?: string }>
+}
+
+type RfqSendState = {
+  id: string
+  rfq_number: string | null
+  status: string | null
 }
 
 export async function getResendConnectionStatus() {
@@ -26,8 +33,35 @@ function showSendFailure(message: string) {
   if (typeof window !== 'undefined') window.alert(`RFQ email error:\n\n${message}`)
 }
 
+async function getSendableRfqIds(rfqIds: string[]) {
+  const uniqueIds = [...new Set(rfqIds.filter(Boolean))]
+  if (!uniqueIds.length) throw new Error('No RFQs were provided for sending')
+
+  const { data, error } = await supabase
+    .from('vendor_rfqs')
+    .select('id,rfq_number,status')
+    .in('id', uniqueIds)
+
+  if (error) throw new Error(error.message || 'Unable to verify RFQ send status')
+
+  const rows = (data || []) as RfqSendState[]
+  const rowsById = new Map(rows.map(row => [row.id, row]))
+  const missingIds = uniqueIds.filter(id => !rowsById.has(id))
+  if (missingIds.length) throw new Error('One or more RFQs could not be found. Refresh the workspace and try again.')
+
+  const blocked = rows.filter(row => !SENDABLE_STATUSES.has(String(row.status || 'draft').toLowerCase()))
+  if (blocked.length) {
+    const details = blocked
+      .map(row => `${row.rfq_number || row.id} is already ${String(row.status || 'processed').replaceAll('_', ' ')}`)
+      .join(' • ')
+    throw new Error(`${details}. Open the existing conversation instead of sending it again.`)
+  }
+
+  return uniqueIds
+}
+
 export async function sendRfqEmails(rfqIds: string[]) {
-  if (!rfqIds.length) throw new Error('No RFQs were provided for sending')
+  const sendableIds = await getSendableRfqIds(rfqIds)
 
   let timeoutId: number | undefined
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -39,7 +73,7 @@ export async function sendRfqEmails(rfqIds: string[]) {
 
   try {
     const invokePromise = supabase.functions.invoke<SendResult>('send-rfq-resend', {
-      body: { rfq_ids: rfqIds },
+      body: { rfq_ids: sendableIds },
     })
 
     const { data, error } = await Promise.race([invokePromise, timeoutPromise])
