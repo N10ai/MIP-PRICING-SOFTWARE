@@ -1,0 +1,57 @@
+/* Route-driven RFQ states. Loaded last so old mobile overrides cannot reintroduce hidden panels. */
+
+/* Chat: only vendor/RFQ header, thread, and composer. */
+body.rfq-route-chat{overflow:hidden!important}
+body.rfq-route-chat .mobile-rfq-tabs,
+body.rfq-route-chat .pricing-head,
+body.rfq-route-chat .pricing-vendors,
+body.rfq-route-chat .pricing-existing,
+body.rfq-route-chat .pricing-notice,
+body.rfq-route-chat .pricing-message>.pricing-panel-head,
+body.rfq-route-chat .composer-head,
+body.rfq-route-chat .pricing-email-card,
+body.rfq-route-chat .pricing-sendbar,
+body.rfq-route-chat .pricing-disabled-reason,
+body.rfq-route-chat .pricing-feedback{display:none!important}
+body.rfq-route-chat .pricing-workspace{position:fixed!important;inset:0!important;z-index:10000!important;width:100vw!important;height:100dvh!important;max-width:none!important;border:0!important;border-radius:0!important;background:#f4f5f7!important;overflow:hidden!important}
+body.rfq-route-chat .pricing-grid{display:block!important;width:100%!important;height:100%!important;max-width:none!important;padding:0!important;margin:0!important;overflow:hidden!important}
+body.rfq-route-chat .pricing-message{display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;overflow:hidden!important}
+body.rfq-route-chat [data-rfq-chat-header]{display:block!important;flex:0 0 auto!important}
+body.rfq-route-chat .rfq-chat-focus-header{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:max(14px,env(safe-area-inset-top)) 18px 12px!important;background:#fff!important;border-bottom:1px solid #e6e8ec!important}
+body.rfq-route-chat .rfq-chat-focus-title small{display:none!important}
+body.rfq-route-chat .rfq-chat-focus-title h2{margin:0!important;font-size:21px!important;line-height:1.15!important}
+body.rfq-route-chat .rfq-chat-focus-title p{margin:4px 0 0!important;font-size:12px!important;color:#7f899b!important}
+body.rfq-route-chat .rfq-conversation{display:flex!important;flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;flex-direction:column!important;gap:10px!important;padding:16px 12px 20px!important;background:#f4f5f7!important}
+body.rfq-route-chat .rfq-conversation article{width:auto!important;max-width:86%!important;margin:0!important;padding:12px 14px!important;border-radius:18px!important;box-shadow:none!important}
+body.rfq-route-chat .rfq-conversation article.outbound{align-self:flex-end!important;border-bottom-right-radius:5px!important}
+body.rfq-route-chat .rfq-conversation article.inbound{align-self:flex-start!important;border-bottom-left-radius:5px!important;background:#fff!important}
+body.rfq-route-chat [data-rfq-chat-composer]{display:block!important;flex:0 0 auto!important}
+body.rfq-route-chat .rfq-chat-composer{position:relative!important;padding:8px 10px max(9px,env(safe-area-inset-bottom))!important;background:#fff!important;border-top:1px solid #e6e8ec!important}
+
+/* New RFQ: exactly Vendors and Template. */
+body.rfq-route-new .mobile-rfq-tabs{display:grid!important;grid-template-columns:1fr 1fr!important}
+body.rfq-route-new .mobile-rfq-tabs button[data-route-hidden="true"],
+body.rfq-route-new .mobile-rfq-tabs button:nth-child(3){display:none!important}
+body.rfq-route-new .pricing-existing{display:none!important}
+body.rfq-route-new .pricing-grid{grid-template-columns:1fr!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="vendors"] .pricing-message{display:none!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="vendors"] .pricing-vendors{display:block!important;width:100%!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="vendors"] .pricing-existing-list{display:none!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="vendors"] .pricing-panel-head:first-child h3{font-size:0!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="vendors"] .pricing-panel-head:first-child h3::after{content:'Choose vendors';font-size:22px!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .pricing-vendors{display:none!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .pricing-message{display:block!important;width:100%!important;padding-bottom:120px!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .pricing-message>.pricing-panel-head:first-child,
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .pricing-notice,
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .rfq-conversation{display:none!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .composer-head{display:flex!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .composer-head small{display:none!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .composer-head h3{font-size:0!important}
+body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .composer-head h3::after{content:'RFQ template';font-size:22px!important}
+body.rfq-route-new .pricing-sendbar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:10001!important;padding:12px 16px max(12px,env(safe-area-inset-bottom))!important;background:#fff!important;border-top:1px solid #e5e7eb!important;box-shadow:0 -8px 24px rgba(15,23,42,.08)!important}
+body.rfq-route-new .pricing-disabled-reason{position:fixed!important;left:16px!important;right:16px!important;bottom:calc(82px + env(safe-area-inset-bottom))!important;z-index:10002!important;margin:0!important;background:#fff!important}
+
+@media(min-width:761px){
+  body.rfq-route-new .pricing-workspace[data-mobile-rfq="vendors"] .pricing-vendors,
+  body.rfq-route-new .pricing-workspace[data-mobile-rfq="message"] .pricing-message{max-width:920px!important;margin:0 auto!important}
+}
