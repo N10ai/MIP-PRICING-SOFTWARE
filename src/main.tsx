@@ -106,6 +106,7 @@ import './quote-workspace-v9.css'
 import './gmail-rfq-automation.css'
 import './rfq-workspace-overrides.css'
 import './rfq-chat-conversation.css'
+import './rfq-chat-focus.css'
 import './rfq-workflow-unifier.css'
 import './rfq-delete-manager.css'
 
