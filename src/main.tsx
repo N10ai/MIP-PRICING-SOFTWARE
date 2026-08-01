@@ -112,6 +112,7 @@ import './rfq-workflow-unifier.css'
 import './rfq-delete-manager.css'
 import './rfq-experience-final.css'
 import './rfq-final-polish.css'
+import './rfq-state-correction.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
