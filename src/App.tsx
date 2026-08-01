@@ -1,10 +1,11 @@
-import { ArrowUpRight, Bell, Building2, CalendarDays, FilePlus2, FileText, Home, LayoutGrid, LayoutList, LogOut, Menu, PackagePlus, Plus, Search, Settings, Ship, Users, X } from 'lucide-react'
+import { ArrowUpRight, Building2, CalendarDays, FilePlus2, FileText, Home, LayoutGrid, LayoutList, LogOut, PackagePlus, Plus, Search, Ship, Users, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import { Button, EmptyState, GlassCard, SkeletonRows, StatusBadge } from './components/ui'
 import { RequestWorkspace, type RequestSummary } from './components/RequestWorkspace'
+import { readRequestWorkspace, requestWorkspaceRoute } from './lib/pricingRoutes'
 import { VendorsPage } from './components/VendorWorkspace'
 import { PublicRequestPortalV2 } from './components/PublicRequestPortalV2'
 import { QuoteRoute } from './components/QuoteRoute'
@@ -152,6 +153,7 @@ export default function App() {
   const [accountOpen, setAccountOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const requestRouteState = readRequestWorkspace(location.search)
 
   useEffect(() => {
     setLoading(true)
@@ -166,6 +168,14 @@ export default function App() {
       setLoading(false)
     })
   }, [refresh])
+
+  useEffect(() => {
+    if (location.pathname !== '/requests' || !requestRouteState.requestId) {
+      setSelected(null)
+      return
+    }
+    setSelected(requests.find(request => request.id === requestRouteState.requestId) || null)
+  }, [location.pathname, requestRouteState.requestId, requests])
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
@@ -210,7 +220,7 @@ export default function App() {
   const displayName = String(user?.user_metadata?.full_name || user?.user_metadata?.name || 'Pricing Team')
   const initials = displayName.split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase() || 'PT'
   const signOut = async () => { await supabase.auth.signOut(); setAccountOpen(false) }
-  const chooseRequest = (r: RequestRow) => { setSelected(r); setSearch(''); setSearchOpen(false) }
+  const chooseRequest = (r: RequestRow) => { setSearch(''); setSearchOpen(false); navigate(requestWorkspaceRoute(r.id)) }
   const chooseQuote = (q: SearchQuote) => { setSearch(''); setSearchOpen(false); navigate(`/quotes?quote=${q.id}`) }
   const chooseVendor = (v: SearchVendor) => { setSearch(v.company); setSearchOpen(false); navigate('/vendors') }
   const chooseCustomer = (c: CustomerResult) => { setSearch(c.name); setSearchOpen(false); navigate('/requests') }
@@ -225,15 +235,14 @@ export default function App() {
     <aside className="sidebar"><div className="brand"><img src={logo} /><div><b>MIP Pricing OS</b><span>Commercial Operations</span></div></div><nav>{navigation.map(([to, label, Icon]) => <NavLink key={to} to={to} end={to === '/'}><Icon size={18} /><span>{label}</span></NavLink>)}</nav><footer><div className="avatar">{initials}</div><div><b>{displayName}</b><span>{user?.email || 'MIP Cargo Express'}</span></div></footer></aside>
     <header className="topbar">
       <button className="mobile-brand" onClick={() => setAccountOpen(v => !v)} aria-label="Open account menu"><span className="mobile-logo-wrap"><img src={logo} /></span><div><b>MIP Cargo Express</b><span>Pricing OS</span></div></button>
-      <button className="mobile-menu"><Menu size={20} /></button>
       <label className={`global-search ${searchOpen ? 'active' : ''}`}><Search size={18} /><input aria-label="Global search" placeholder="Search everything" value={search} onFocus={() => setSearchOpen(true)} onChange={e => { setSearch(e.target.value); setSearchOpen(true) }} /><kbd>⌘ K</kbd>{search && <button type="button" className="search-clear" onClick={() => setSearch('')} aria-label="Clear search"><X size={15} /></button>}</label>
-      <div><button className="icon"><Bell size={18} /></button><NavLink to="/request"><Button><Plus size={17} />New</Button></NavLink></div>
+      <div><NavLink to="/request"><Button><Plus size={17} />New</Button></NavLink></div>
       {accountOpen && <div className="account-popover"><header><span>{initials}</span><div><b>{displayName}</b><small>{user?.email || 'Signed in'}</small></div></header><div className="account-company"><b>MIP Cargo Express</b><span>Commercial Pricing Workspace</span></div><button onClick={signOut}><LogOut size={17} />Sign out</button></div>}
       {searchOpen && query && <><button className="global-search-backdrop" onClick={() => setSearchOpen(false)} aria-label="Close search" /><section className="global-search-results"><header><div><small>UNIVERSAL SEARCH</small><b>{resultCount ? `${resultCount} matching records` : 'No records found'}</b></div><button onClick={() => setSearchOpen(false)}><X size={17} /></button></header>{searchResults.requests.length > 0 && <div className="search-result-group"><small>REQUESTS</small>{searchResults.requests.map(r => <button key={r.id} onClick={() => chooseRequest(r)}><span><Ship size={17} /></span><div><b>{r.request_number}</b><small>{requestCustomer(r)} · {requestRoute(r)}</small></div></button>)}</div>}{searchResults.quotes.length > 0 && <div className="search-result-group"><small>QUOTES</small>{searchResults.quotes.map(q => <button key={q.id} onClick={() => chooseQuote(q)}><span><FileText size={17} /></span><div><b>{q.quote_number || 'Draft quote'}</b><small>{q.customer_name || 'Customer'} · {q.quote_data?.route || q.status || 'Quote'}</small></div></button>)}</div>}{searchResults.vendors.length > 0 && <div className="search-result-group"><small>VENDORS</small>{searchResults.vendors.map(v => <button key={v.id} onClick={() => chooseVendor(v)}><span><Building2 size={17} /></span><div><b>{v.company}</b><small>{(v.vendor_type || 'Service provider').replaceAll('_', ' ')} · {v.general_email || 'No email'}</small></div></button>)}</div>}{searchResults.customers.length > 0 && <div className="search-result-group"><small>CUSTOMERS</small>{searchResults.customers.map(c => <button key={c.name} onClick={() => chooseCustomer(c)}><span><Users size={17} /></span><div><b>{c.name}</b><small>{c.email || c.source}</small></div></button>)}</div>}{resultCount === 0 && <div className="search-empty"><Search size={24} /><b>No matching records</b><span>Try a quote number, request, customer, vendor, route, or email.</span></div>}</section></>}
     </header>
-    <main className="workspace"><Routes><Route path="/" element={<Dashboard requests={requests} loading={loading} onOpen={setSelected} />} /><Route path="/requests" element={<>{desktopLanding}<div className="legacy-workspace-fallback"><Requests items={filtered} loading={loading} onOpen={setSelected} archived={archived} setArchived={setArchived} /></div></>} /><Route path="/quotes" element={<><div className="desktop-only-premium-landing">{desktopLanding}</div><div className="legacy-workspace-fallback"><WorkspaceErrorBoundary title="Quotes could not be loaded."><QuoteRoute /></WorkspaceErrorBoundary></div></>} /><Route path="/vendors" element={<VendorsPage />} /><Route path="/customers" element={<Placeholder title="Customers" copy="Customer profiles and commercial history." />} /></Routes></main>
-    <div className={`mobile-action-sheet ${actionsOpen ? 'open' : ''}`} aria-hidden={!actionsOpen}><button className="mobile-action-backdrop" onClick={() => setActionsOpen(false)} aria-label="Close actions" /><section><header><div><small>MENU & ACTIONS</small><h2>What do you need?</h2></div><button onClick={() => setActionsOpen(false)}><X size={18} /></button></header><div className="mobile-action-group"><small>CREATE</small><NavLink to="/request"><span><Ship size={20} /></span><div><b>Freight request</b><small>Start a customer pricing request</small></div></NavLink><NavLink to="/quotes"><span><FilePlus2 size={20} /></span><div><b>New quote</b><small>Create or continue a quotation</small></div></NavLink><NavLink to="/vendors"><span><Building2 size={20} /></span><div><b>Add vendor</b><small>Create a service provider</small></div></NavLink></div><div className="mobile-action-group"><small>WORKSPACES</small><NavLink to="/requests"><span><PackagePlus size={20} /></span><div><b>Requests</b><small>Review customer submissions</small></div></NavLink><NavLink to="/quotes"><span><FileText size={20} /></span><div><b>Quotes</b><small>Manage drafts and sent quotes</small></div></NavLink><NavLink to="/vendors"><span><Building2 size={20} /></span><div><b>Vendors</b><small>Rates and provider records</small></div></NavLink><NavLink to="/customers"><span><Users size={20} /></span><div><b>Customers</b><small>Profiles and commercial history</small></div></NavLink></div><div className="mobile-action-group"><small>TOOLS</small><NavLink to="/"><span><CalendarDays size={20} /></span><div><b>Activity</b><small>Dashboard and current priorities</small></div></NavLink><NavLink to="/"><span><Settings size={20} /></span><div><b>Settings</b><small>Workspace preferences</small></div></NavLink></div></section></div>
+    <main className="workspace"><Routes><Route path="/" element={<Dashboard requests={requests} loading={loading} onOpen={chooseRequest} />} /><Route path="/requests" element={<>{desktopLanding}<div className="legacy-workspace-fallback"><Requests items={filtered} loading={loading} onOpen={chooseRequest} archived={archived} setArchived={setArchived} /></div></>} /><Route path="/quotes" element={<><div className="desktop-only-premium-landing">{desktopLanding}</div><div className="legacy-workspace-fallback"><WorkspaceErrorBoundary title="Quotes could not be loaded."><QuoteRoute /></WorkspaceErrorBoundary></div></>} /><Route path="/vendors" element={<VendorsPage />} /><Route path="/customers" element={<Placeholder title="Customers" copy="Customer profiles and commercial history." />} /></Routes></main>
+    <div className={`mobile-action-sheet ${actionsOpen ? 'open' : ''}`} aria-hidden={!actionsOpen}><button className="mobile-action-backdrop" onClick={() => setActionsOpen(false)} aria-label="Close actions" /><section><header><div><small>MENU & ACTIONS</small><h2>What do you need?</h2></div><button onClick={() => setActionsOpen(false)}><X size={18} /></button></header><div className="mobile-action-group"><small>CREATE</small><NavLink to="/request"><span><Ship size={20} /></span><div><b>Freight request</b><small>Start a customer pricing request</small></div></NavLink><NavLink to="/quotes"><span><FilePlus2 size={20} /></span><div><b>New quote</b><small>Create or continue a quotation</small></div></NavLink><NavLink to="/vendors"><span><Building2 size={20} /></span><div><b>Add vendor</b><small>Create a service provider</small></div></NavLink></div><div className="mobile-action-group"><small>WORKSPACES</small><NavLink to="/requests"><span><PackagePlus size={20} /></span><div><b>Requests</b><small>Review customer submissions</small></div></NavLink><NavLink to="/quotes"><span><FileText size={20} /></span><div><b>Quotes</b><small>Manage drafts and sent quotes</small></div></NavLink><NavLink to="/vendors"><span><Building2 size={20} /></span><div><b>Vendors</b><small>Rates and provider records</small></div></NavLink><NavLink to="/customers"><span><Users size={20} /></span><div><b>Customers</b><small>Profiles and commercial history</small></div></NavLink></div><div className="mobile-action-group"><small>TOOLS</small><NavLink to="/"><span><CalendarDays size={20} /></span><div><b>Activity</b><small>Dashboard and current priorities</small></div></NavLink></div></section></div>
     <div className="mobile-dock"><nav className="bottom-nav">{navigation.slice(0, 4).map(([to, label, Icon]) => <NavLink key={to} to={to} end={to === '/'}><Icon size={19} /><span>{label}</span></NavLink>)}</nav><button className={`mobile-action-trigger ${actionsOpen ? 'open' : ''}`} onClick={() => setActionsOpen(v => !v)} aria-label="Open quick actions"><Plus size={23} /></button></div>
-    <RequestWorkspace request={selected} onClose={() => setSelected(null)} onChanged={changed} />
+    <RequestWorkspace request={selected} initialView={requestRouteState.view} initialRfqId={requestRouteState.rfqId} onClose={() => navigate('/requests')} onChanged={changed} />
   </div>
 }

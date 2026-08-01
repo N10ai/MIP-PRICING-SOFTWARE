@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { AppleRequestWorkspace } from './AppleRequestWorkspace'
 
 type QueueRequest = {
   id: string
@@ -40,7 +39,6 @@ export function DesktopWorkspaceQueue() {
   const location = useLocation()
   const navigate = useNavigate()
   const [host, setHost] = useState<HTMLElement | null>(null)
-  const [workspaceHost, setWorkspaceHost] = useState<HTMLElement | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
@@ -55,7 +53,6 @@ export function DesktopWorkspaceQueue() {
   useEffect(() => {
     const app = document.querySelector<HTMLElement>('.app-bg')
     setHost(app)
-    setWorkspaceHost(document.querySelector<HTMLElement>('.workspace'))
   }, [location.pathname])
 
   useEffect(() => {
@@ -165,6 +162,5 @@ export function DesktopWorkspaceQueue() {
       </aside>
       {collapsed && <button className="queue-reopen-button" onClick={() => setCollapsed(false)} aria-label="Show queue" title="Show queue (⌘B)"><PanelLeftOpen size={17} /></button>}
     </>, host)}
-    {workspaceHost && selectedRequestId && createPortal(<AppleRequestWorkspace requestId={selectedRequestId}/>, workspaceHost)}
   </>
 }
