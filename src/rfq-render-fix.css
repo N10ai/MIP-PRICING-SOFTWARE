@@ -1,0 +1,81 @@
+/* Source-aligned RFQ fixes. This file intentionally loads last. */
+
+/* Request preview: content ends immediately above the two actions. */
+.pricing-decision-workspace .decision-body{
+  flex:0 1 auto!important;
+  min-height:0!important;
+  padding-bottom:0!important;
+}
+.pricing-decision-workspace .decision-actions{
+  position:static!important;
+  margin-top:0!important;
+  flex:0 0 auto!important;
+}
+
+/* The live component class is mobile-rfq-tabs, not pricing-mobile-tabs. */
+body.rfq-chat-open .mobile-rfq-tabs,
+body.rfq-chat-open .rfq-hidden-for-chat{
+  display:none!important;
+}
+
+/* Chat is only vendor/RFQ header, thread and composer. */
+body.rfq-chat-open .pricing-head,
+body.rfq-chat-open .pricing-vendors,
+body.rfq-chat-open .pricing-existing,
+body.rfq-chat-open .pricing-notice,
+body.rfq-chat-open .pricing-message>.pricing-panel-head,
+body.rfq-chat-open .pricing-email-card,
+body.rfq-chat-open .pricing-sendbar,
+body.rfq-chat-open .pricing-disabled-reason,
+body.rfq-chat-open .pricing-feedback{
+  display:none!important;
+}
+
+/* New RFQ: exactly Vendors and Template. */
+.pricing-workspace.rfq-new-request-mode .mobile-rfq-tabs{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+}
+.pricing-workspace.rfq-new-request-mode .mobile-rfq-tabs button[data-rfq-hidden-tab="true"]{
+  display:none!important;
+}
+.pricing-workspace.rfq-new-request-mode [data-rfq-auxiliary="true"],
+.pricing-workspace.rfq-new-request-mode .pricing-existing-list,
+.pricing-workspace.rfq-new-request-mode .rfq-inbox-list{
+  display:none!important;
+}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="vendors"] [data-rfq-panel="template"]{
+  display:none!important;
+}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="template"] [data-rfq-panel="vendors"]{
+  display:none!important;
+}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="vendors"] [data-rfq-panel="vendors"]{
+  display:block!important;
+}
+.pricing-workspace.rfq-new-request-mode[data-rfq-step="template"] [data-rfq-panel="template"]{
+  display:block!important;
+}
+.pricing-workspace.rfq-new-request-mode [data-rfq-panel="template"] .rfq-conversation,
+.pricing-workspace.rfq-new-request-mode [data-rfq-panel="template"] .pricing-panel-head:not(.composer-head),
+.pricing-workspace.rfq-new-request-mode [data-rfq-panel="template"] .pricing-notice{
+  display:none!important;
+}
+.pricing-workspace.rfq-new-request-mode .pricing-sendbar{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:30!important;
+  background:#fff!important;
+  border-top:1px solid #e5e7eb!important;
+  padding-bottom:max(12px,env(safe-area-inset-bottom))!important;
+}
+
+@media(max-width:760px){
+  .pricing-decision-workspace{
+    height:auto!important;
+    max-height:calc(100dvh - 10px)!important;
+  }
+  .pricing-decision-workspace .decision-body{
+    overflow:visible!important;
+  }
+}
