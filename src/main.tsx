@@ -111,6 +111,7 @@ import './rfq-chat-focus.css'
 import './rfq-workflow-unifier.css'
 import './rfq-delete-manager.css'
 import './rfq-experience-final.css'
+import './rfq-final-polish.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
