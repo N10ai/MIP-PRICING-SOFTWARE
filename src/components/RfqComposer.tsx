@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Check, ChevronLeft, Copy, Mail, MoreHorizontal, Pencil, Plus, Save, Search, Send, Star, Trash2, X } from 'lucide-react'
+import { Check, ChevronLeft, Copy, MoreHorizontal, Pencil, Plus, Save, Search, Send, Star, Trash2, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { getResendConnectionStatus, sendRfqEmails } from '../lib/resendRfq'
 import { Button, StatusBadge } from './ui'
@@ -27,24 +27,26 @@ const tokenDefinitions=[
  ['Estimated departure','{{estimated_departure}}'],['Incoterm','{{incoterm}}'],['Special instructions','{{special_instructions}}']
 ] as const
 
-const tokenValues=(request:RequestSummary):Record<string,string>=>({
- customer_name:String(firstValue(request.customer_company,request.contact_name,'Customer')),
- customer_reference:String(firstValue(request.customer_reference,request.reference,'Not provided')),
- request_number:request.request_number,
- origin:String(firstValue(request.origin_code,request.origin_name,'Origin')),
- destination:String(firstValue(request.destination_code,request.destination_name,'Destination')),
- route:requestRoute(request),
- mode:String(firstValue(request.mode,'Not specified')),
- service_level:String(firstValue(request.service_level,request.service,'Not specified')),
- cargo_summary:`${Number(firstValue(request.total_pieces,request.pieces,0))} pieces · ${Number(firstValue(request.total_weight_kg,request.weight_kg,0))} kg · ${Number(firstValue(request.total_volume_cbm,request.volume_cbm,0))} CBM`,
- pieces:String(firstValue(request.total_pieces,request.pieces,0)),
- weight:`${Number(firstValue(request.total_weight_kg,request.weight_kg,0))} kg`,
- volume:`${Number(firstValue(request.total_volume_cbm,request.volume_cbm,0))} CBM`,
- commodity:String(firstValue(request.commodity,'Not specified')),
- estimated_departure:String(firstValue(request.estimated_departure,request.requested_departure,'Not specified')),
- incoterm:String(firstValue(request.incoterm,'Not specified')),
- special_instructions:String(firstValue(request.special_instructions,request.instructions,'None')),
-})
+const tokenValues=(request:RequestSummary):Record<string,string>=>{
+ const raw=request as unknown as Record<string,unknown>
+ const pieces=firstValue(raw.total_pieces,raw.pieces,0),weight=firstValue(raw.total_weight_kg,raw.weight_kg,0),volume=firstValue(raw.total_volume_cbm,raw.volume_cbm,0)
+ return{
+  customer_name:String(firstValue(request.customer_company,request.contact_name,'Customer')),
+  customer_reference:String(firstValue(request.customer_reference,raw.reference,'Not provided')),
+  request_number:request.request_number,
+  origin:String(firstValue(request.origin_code,request.origin_name,'Origin')),
+  destination:String(firstValue(request.destination_code,request.destination_name,'Destination')),
+  route:requestRoute(request),
+  mode:String(firstValue(request.mode,'Not specified')),
+  service_level:String(firstValue(raw.service_level,raw.service,request.service_type,'Not specified')),
+  cargo_summary:`${Number(pieces)} pieces · ${Number(weight)} kg · ${Number(volume)} CBM`,
+  pieces:String(pieces),weight:`${Number(weight)} kg`,volume:`${Number(volume)} CBM`,
+  commodity:String(firstValue(raw.commodity,'Not specified')),
+  estimated_departure:String(firstValue(raw.estimated_departure,raw.requested_departure,'Not specified')),
+  incoterm:String(firstValue(raw.incoterm,'Not specified')),
+  special_instructions:String(firstValue(raw.special_instructions,raw.instructions,request.notes,'None')),
+ }
+}
 
 const renderTemplate=(value:string,request:RequestSummary)=>{const values=tokenValues(request);return Object.entries(values).reduce((output,[key,replacement])=>output.replaceAll(`{{${key}}}`,replacement),value)}
 
