@@ -1,4 +1,4 @@
-import { ArrowUpRight, Building2, CalendarDays, FilePlus2, FileText, Home, LayoutGrid, LayoutList, LogOut, PackagePlus, Plus, Search, Ship, Users, X } from 'lucide-react'
+import { ArrowUpRight, Building2, FileText, Home, LayoutGrid, LayoutList, LogOut, Plus, Search, Ship, Users, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
@@ -149,7 +149,6 @@ export default function App() {
   const [selected, setSelected] = useState<RequestRow | null>(null)
   const [archived, setArchived] = useState(false)
   const [refresh, setRefresh] = useState(0)
-  const [actionsOpen, setActionsOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
@@ -184,7 +183,6 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    setActionsOpen(false)
     setAccountOpen(false)
     setSearchOpen(false)
   }, [location.pathname, location.search])
@@ -224,6 +222,12 @@ export default function App() {
   const chooseQuote = (q: SearchQuote) => { setSearch(''); setSearchOpen(false); navigate(`/quotes?quote=${q.id}`) }
   const chooseVendor = (v: SearchVendor) => { setSearch(v.company); setSearchOpen(false); navigate('/vendors') }
   const chooseCustomer = (c: CustomerResult) => { setSearch(c.name); setSearchOpen(false); navigate('/requests') }
+  const sectionAction = () => {
+    if (location.pathname === '/requests') navigate('/request')
+    else if (location.pathname === '/quotes') navigate('/quotes?new=1')
+    else if (location.pathname === '/vendors') window.dispatchEvent(new CustomEvent('open-premium-vendor-editor', { detail: null }))
+  }
+  const hasSectionAction = ['/requests', '/quotes', '/vendors'].includes(location.pathname)
   const activeRequests = requests.filter(r => !r.archived_at)
   const newCount = activeRequests.filter(r => r.status === 'new').length
   const rfqCount = activeRequests.filter(r => r.status === 'vendor_rfq').length
@@ -241,8 +245,7 @@ export default function App() {
       {searchOpen && query && <><button className="global-search-backdrop" onClick={() => setSearchOpen(false)} aria-label="Close search" /><section className="global-search-results"><header><div><small>UNIVERSAL SEARCH</small><b>{resultCount ? `${resultCount} matching records` : 'No records found'}</b></div><button onClick={() => setSearchOpen(false)}><X size={17} /></button></header>{searchResults.requests.length > 0 && <div className="search-result-group"><small>REQUESTS</small>{searchResults.requests.map(r => <button key={r.id} onClick={() => chooseRequest(r)}><span><Ship size={17} /></span><div><b>{r.request_number}</b><small>{requestCustomer(r)} · {requestRoute(r)}</small></div></button>)}</div>}{searchResults.quotes.length > 0 && <div className="search-result-group"><small>QUOTES</small>{searchResults.quotes.map(q => <button key={q.id} onClick={() => chooseQuote(q)}><span><FileText size={17} /></span><div><b>{q.quote_number || 'Draft quote'}</b><small>{q.customer_name || 'Customer'} · {q.quote_data?.route || q.status || 'Quote'}</small></div></button>)}</div>}{searchResults.vendors.length > 0 && <div className="search-result-group"><small>VENDORS</small>{searchResults.vendors.map(v => <button key={v.id} onClick={() => chooseVendor(v)}><span><Building2 size={17} /></span><div><b>{v.company}</b><small>{(v.vendor_type || 'Service provider').replaceAll('_', ' ')} · {v.general_email || 'No email'}</small></div></button>)}</div>}{searchResults.customers.length > 0 && <div className="search-result-group"><small>CUSTOMERS</small>{searchResults.customers.map(c => <button key={c.name} onClick={() => chooseCustomer(c)}><span><Users size={17} /></span><div><b>{c.name}</b><small>{c.email || c.source}</small></div></button>)}</div>}{resultCount === 0 && <div className="search-empty"><Search size={24} /><b>No matching records</b><span>Try a quote number, request, customer, vendor, route, or email.</span></div>}</section></>}
     </header>
     <main className="workspace"><Routes><Route path="/" element={<Dashboard requests={requests} loading={loading} onOpen={chooseRequest} />} /><Route path="/requests" element={<>{desktopLanding}<div className="legacy-workspace-fallback"><Requests items={filtered} loading={loading} onOpen={chooseRequest} archived={archived} setArchived={setArchived} /></div></>} /><Route path="/quotes" element={<><div className="desktop-only-premium-landing">{desktopLanding}</div><div className="legacy-workspace-fallback"><WorkspaceErrorBoundary title="Quotes could not be loaded."><QuoteRoute /></WorkspaceErrorBoundary></div></>} /><Route path="/vendors" element={<VendorsPage />} /><Route path="/customers" element={<Placeholder title="Customers" copy="Customer profiles and commercial history." />} /></Routes></main>
-    <div className={`mobile-action-sheet ${actionsOpen ? 'open' : ''}`} aria-hidden={!actionsOpen}><button className="mobile-action-backdrop" onClick={() => setActionsOpen(false)} aria-label="Close actions" /><section><header><div><small>MENU & ACTIONS</small><h2>What do you need?</h2></div><button onClick={() => setActionsOpen(false)}><X size={18} /></button></header><div className="mobile-action-group"><small>CREATE</small><NavLink to="/request"><span><Ship size={20} /></span><div><b>Freight request</b><small>Start a customer pricing request</small></div></NavLink><NavLink to="/quotes"><span><FilePlus2 size={20} /></span><div><b>New quote</b><small>Create or continue a quotation</small></div></NavLink><NavLink to="/vendors"><span><Building2 size={20} /></span><div><b>Add vendor</b><small>Create a service provider</small></div></NavLink></div><div className="mobile-action-group"><small>WORKSPACES</small><NavLink to="/requests"><span><PackagePlus size={20} /></span><div><b>Requests</b><small>Review customer submissions</small></div></NavLink><NavLink to="/quotes"><span><FileText size={20} /></span><div><b>Quotes</b><small>Manage drafts and sent quotes</small></div></NavLink><NavLink to="/vendors"><span><Building2 size={20} /></span><div><b>Vendors</b><small>Rates and provider records</small></div></NavLink><NavLink to="/customers"><span><Users size={20} /></span><div><b>Customers</b><small>Profiles and commercial history</small></div></NavLink></div><div className="mobile-action-group"><small>TOOLS</small><NavLink to="/"><span><CalendarDays size={20} /></span><div><b>Activity</b><small>Dashboard and current priorities</small></div></NavLink></div></section></div>
-    <div className="mobile-dock"><nav className="bottom-nav">{navigation.slice(0, 4).map(([to, label, Icon]) => <NavLink key={to} to={to} end={to === '/'}><Icon size={19} /><span>{label}</span></NavLink>)}</nav><button className={`mobile-action-trigger ${actionsOpen ? 'open' : ''}`} onClick={() => setActionsOpen(v => !v)} aria-label="Open quick actions"><Plus size={23} /></button></div>
+    <div className="mobile-dock"><nav className="bottom-nav">{navigation.slice(0, 4).map(([to, label, Icon]) => <NavLink key={to} to={to} end={to === '/'}><Icon size={19} /><span>{label}</span></NavLink>)}</nav>{hasSectionAction&&<button className="mobile-action-trigger" onClick={sectionAction} aria-label={location.pathname==='/vendors'?'Add vendor':location.pathname==='/quotes'?'New quote':'Create request'}><Plus size={23} /></button>}</div>
     <RequestWorkspace request={selected} initialView={requestRouteState.view} initialRfqId={requestRouteState.rfqId} onClose={() => navigate('/requests')} onChanged={changed} onNavigateRfq={(view, rfqId) => selected && navigate(requestWorkspaceRoute(selected.id, view, rfqId))} />
   </div>
 }
