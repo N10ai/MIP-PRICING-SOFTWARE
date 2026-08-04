@@ -99,6 +99,7 @@ import './gmail-rfq-automation.css'
 import './rfq-delete-manager.css'
 import './navigation-request-preview-fixes.css'
 import './desktop-request-finished-product-v2.css'
+import './request-apple-finish-v3.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
