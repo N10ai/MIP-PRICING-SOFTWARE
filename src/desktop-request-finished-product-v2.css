@@ -1,0 +1,357 @@
+/* Finished-product desktop polish for request preview and vendor-rate cards. */
+@media (min-width: 768px) {
+  .request-overlay {
+    padding: 16px !important;
+    background: rgba(23, 31, 44, .28) !important;
+    backdrop-filter: blur(18px) saturate(125%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(125%) !important;
+  }
+
+  .request-drawer.pricing-decision-workspace {
+    width: min(980px, calc(100vw - 290px)) !important;
+    border: 1px solid rgba(255,255,255,.72) !important;
+    border-radius: 30px !important;
+    background: #f5f5f7 !important;
+    box-shadow: 0 34px 110px rgba(20, 28, 40, .24), 0 2px 12px rgba(20,28,40,.08) !important;
+  }
+
+  .pricing-decision-workspace .compact-request-head {
+    padding: 24px 28px 20px !important;
+    border-bottom: 1px solid rgba(60,60,67,.12) !important;
+    background: rgba(255,255,255,.92) !important;
+    backdrop-filter: blur(24px) saturate(145%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(145%) !important;
+  }
+
+  .pricing-decision-workspace .drawer-title h2 {
+    margin: 4px 0 5px !important;
+    max-width: 760px !important;
+    font-size: clamp(25px, 2vw, 32px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.038em !important;
+    color: #0b0b0f !important;
+  }
+
+  .pricing-decision-workspace .drawer-title p,
+  .pricing-decision-workspace .drawer-title small {
+    color: #6e6e73 !important;
+    font-size: 13px !important;
+  }
+
+  .pricing-decision-workspace .request-quick-meta {
+    padding: 10px 28px !important;
+    min-height: 50px !important;
+    border-bottom: 1px solid rgba(60,60,67,.10) !important;
+    background: rgba(255,255,255,.86) !important;
+  }
+
+  .pricing-decision-workspace .decision-tabs {
+    display: inline-flex !important;
+    align-self: flex-start !important;
+    gap: 3px !important;
+    margin: 12px 28px 14px !important;
+    padding: 4px !important;
+    width: auto !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    background: #e9e9ec !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.035) !important;
+  }
+
+  .pricing-decision-workspace .decision-tabs button {
+    min-height: 34px !important;
+    padding: 0 17px !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    color: #5f6067 !important;
+    box-shadow: none !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+
+  .pricing-decision-workspace .decision-tabs button.active,
+  .pricing-decision-workspace .decision-tabs button[aria-selected="true"] {
+    background: #fff !important;
+    color: #111216 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.055) !important;
+  }
+
+  .pricing-decision-workspace .decision-body {
+    gap: 14px !important;
+    padding: 10px 28px 30px !important;
+    background: #f5f5f7 !important;
+  }
+
+  .pricing-decision-workspace .pricing-decision-card,
+  .pricing-decision-workspace .compact-shipment-facts article,
+  .pricing-decision-workspace .workflow-snapshot,
+  .pricing-decision-workspace .request-supporting-info {
+    border-color: rgba(60,60,67,.13) !important;
+    background: rgba(255,255,255,.96) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.025), 0 8px 24px rgba(0,0,0,.035) !important;
+  }
+
+  .pricing-decision-workspace .pricing-decision-card {
+    padding: 24px !important;
+    border-radius: 20px !important;
+  }
+
+  .pricing-decision-workspace .compact-shipment-facts {
+    gap: 12px !important;
+  }
+
+  .pricing-decision-workspace .compact-shipment-facts article {
+    padding: 17px 19px !important;
+    border-radius: 18px !important;
+  }
+
+  .pricing-decision-workspace .compact-shipment-facts article > :first-child {
+    color: #6e6e73 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
+
+  .pricing-decision-workspace .compact-shipment-facts article > :nth-child(2) {
+    color: #111216 !important;
+    font-size: 16px !important;
+    font-weight: 650 !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Rates workspace */
+  .pricing-decision-workspace .rates-workspace {
+    padding: 2px 0 22px !important;
+  }
+
+  .pricing-decision-workspace .rates-heading {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) auto !important;
+    align-items: end !important;
+    gap: 20px !important;
+    margin: 0 0 16px !important;
+  }
+
+  .pricing-decision-workspace .rates-heading h3 {
+    margin: 5px 0 4px !important;
+    color: #111216 !important;
+    font-size: 24px !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.03em !important;
+  }
+
+  .pricing-decision-workspace .rates-heading p {
+    margin: 0 !important;
+    color: #73737a !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .pricing-decision-workspace .rates-primary,
+  .pricing-decision-workspace .secondary-rate-action {
+    min-height: 42px !important;
+    padding: 0 17px !important;
+    border: 1px solid rgba(60,60,67,.14) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    color: #1d1d1f !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
+    font-size: 13px !important;
+    font-weight: 650 !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 14px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card {
+    display: grid !important;
+    grid-template-rows: auto auto 1fr auto !important;
+    gap: 15px !important;
+    min-width: 0 !important;
+    padding: 18px !important;
+    border: 1px solid rgba(60,60,67,.14) !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    color: #111216 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.025), 0 10px 28px rgba(0,0,0,.04) !important;
+    overflow: hidden !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card.selected {
+    border-color: rgba(0,113,227,.55) !important;
+    box-shadow: 0 0 0 3px rgba(0,113,227,.11), 0 12px 30px rgba(0,0,0,.05) !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > header > div {
+    display: grid !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > header b {
+    overflow: hidden !important;
+    color: #111216 !important;
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    letter-spacing: -.018em !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > header small {
+    overflow: hidden !important;
+    color: #77777e !important;
+    font-size: 12px !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .pricing-decision-workspace .status-badge {
+    flex: none !important;
+    padding: 5px 9px !important;
+    border-radius: 999px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: .01em !important;
+  }
+
+  .pricing-decision-workspace .rfq-rate-summary {
+    display: grid !important;
+    grid-template-columns: 1.3fr repeat(3, minmax(0,1fr)) !important;
+    gap: 8px !important;
+    margin: 0 !important;
+  }
+
+  .pricing-decision-workspace .rfq-rate-summary > span {
+    display: grid !important;
+    align-content: center !important;
+    gap: 5px !important;
+    min-width: 0 !important;
+    min-height: 68px !important;
+    padding: 11px 12px !important;
+    border: 1px solid rgba(60,60,67,.11) !important;
+    border-radius: 14px !important;
+    background: #f6f6f8 !important;
+  }
+
+  .pricing-decision-workspace .rfq-rate-summary > span:first-child {
+    background: #1c1c1e !important;
+    border-color: #1c1c1e !important;
+  }
+
+  .pricing-decision-workspace .rfq-rate-summary small {
+    overflow: hidden !important;
+    color: #86868b !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: .08em !important;
+    line-height: 1 !important;
+    text-overflow: ellipsis !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+  }
+
+  .pricing-decision-workspace .rfq-rate-summary > span:first-child small { color: #aeb9cb !important; }
+
+  .pricing-decision-workspace .rfq-rate-summary b {
+    overflow: hidden !important;
+    color: #1d1d1f !important;
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .pricing-decision-workspace .rfq-rate-summary > span:first-child b {
+    color: #fff !important;
+    font-size: 18px !important;
+    letter-spacing: -.02em !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > p {
+    margin: 0 !important;
+    color: #73737a !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > footer {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 9px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > footer button {
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    border: 1px solid rgba(60,60,67,.15) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    color: #1d1d1f !important;
+    font-size: 12px !important;
+    font-weight: 650 !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > footer .select-rate {
+    border-color: #1d1d1f !important;
+    background: #1d1d1f !important;
+    color: #fff !important;
+  }
+
+  .pricing-decision-workspace .rfq-decision-card > footer .select-rate:disabled {
+    border-color: #dedee2 !important;
+    background: #eeeeF1 !important;
+    color: #96969d !important;
+    opacity: 1 !important;
+  }
+
+  .pricing-decision-workspace .decision-actions {
+    gap: 12px !important;
+    padding: 14px 28px 18px !important;
+    border-top: 1px solid rgba(60,60,67,.12) !important;
+    background: rgba(255,255,255,.88) !important;
+    box-shadow: 0 -12px 30px rgba(0,0,0,.045) !important;
+    backdrop-filter: blur(24px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+  }
+
+  .pricing-decision-workspace .decision-actions button {
+    min-height: 52px !important;
+    border-radius: 14px !important;
+    font-size: 14px !important;
+    font-weight: 650 !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1080px) {
+  .request-drawer.pricing-decision-workspace {
+    width: calc(100vw - 245px) !important;
+  }
+  .pricing-decision-workspace .rfq-rate-summary {
+    grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+  }
+  .pricing-decision-workspace .rfq-rate-summary > span:first-child {
+    grid-column: 1 / -1 !important;
+  }
+}
