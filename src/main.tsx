@@ -98,6 +98,7 @@ import './quote-workspace-v9.css'
 import './gmail-rfq-automation.css'
 import './rfq-delete-manager.css'
 import './navigation-request-preview-fixes.css'
+import './desktop-request-finished-product-v2.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
